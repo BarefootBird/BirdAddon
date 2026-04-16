@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "birdaddon",
+  "version": "${version}",
+  "name": "BirdAddon",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "BSD-3-Clause",
+  "icon": "assets/birdaddon/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "com.barefootbird.birdaddon.BirdAddon"
+      }
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": ">=${fabric_api_version}",
+    "minecraft": "~${minecraft_version}",
+    "fabric-language-kotlin": ">=${fabric_kotlin_version}",
+    "odin": "*"
+  }
+}
