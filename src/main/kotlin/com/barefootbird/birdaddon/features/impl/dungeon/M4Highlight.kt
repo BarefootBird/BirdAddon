@@ -56,15 +56,16 @@ object M4Highlight: Module(
 
     init {
 
-        on<TickEvent.End> {
+        on<TickEvent.Server> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
 
-            val allEntities = OdinMod.mc.level?.getEntities(null, searchBox) ?: emptyList()
-
             if (hideNameTags) {
-                allEntities.filterIsInstance<ArmorStand>().forEach {
-                    if (it.name.string.contains("❤")) {
-                        it.remove(Entity.RemovalReason.DISCARDED)
+                runCatching {
+                    val allEntities = OdinMod.mc.level?.getEntities(null, searchBox)?.toList() ?: emptyList()
+                    allEntities.filterIsInstance<ArmorStand>().forEach {
+                        if (it.name.string.contains("❤")) {
+                            it.isInvisible = true
+                        }
                     }
                 }
             }
@@ -73,17 +74,6 @@ object M4Highlight: Module(
         on<RenderEvent.Extract> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
             val style = renderStyle
-            var mobList: List<Pair<Set<LivingEntity>, Color>> = listOf(
-                sheep to sheepColor,
-                wolves to wolfColor,
-                bats to batColor,
-                chickens to chickenColor,
-                rabbits to rabbitColor,
-                cows to cowColor,
-            )
-            if (highlightThorn) {
-                mobList = mobList + listOf(ghasts to thornColor)
-            }
 
             listOf(
                 sheep to sheepColor,
@@ -94,8 +84,10 @@ object M4Highlight: Module(
                 cows to cowColor,
                 ghasts to thornColor,
             ).forEach { (entities, color) ->
-                entities.forEach { entity ->
-                    drawStyledBox(entity.renderBoundingBox, color, style, depth)
+                runCatching {
+                    entities.toList().forEach { entity ->
+                        drawStyledBox(entity.renderBoundingBox, color, style, depth)
+                    }
                 }
             }
             if (highlightBear) {

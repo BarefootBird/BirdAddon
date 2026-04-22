@@ -28,7 +28,7 @@ object ThornStunTimer: Module(
 
 
     private fun timerText (example: Boolean): String {
-        if (example) return "§51.05s"
+        if (example) return "§cNot Stunned"
         if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return ""
         if (onlyShowOnHealer && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) return ""
         if (timer >= 0) {
