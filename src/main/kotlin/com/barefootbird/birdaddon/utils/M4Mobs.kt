@@ -6,14 +6,14 @@ import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.world.entity.ambient.Bat
-import net.minecraft.world.entity.animal.Chicken
-import net.minecraft.world.entity.animal.Cow
-import net.minecraft.world.entity.animal.Rabbit
+import net.minecraft.world.entity.animal.chicken.Chicken
+import net.minecraft.world.entity.animal.cow.Cow
+import net.minecraft.world.entity.animal.rabbit.Rabbit
 import net.minecraft.world.entity.animal.sheep.Sheep
 import net.minecraft.world.entity.animal.wolf.Wolf
 import net.minecraft.world.entity.monster.Ghast
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.AABB
-
 
 object M4Mobs {
     val totalSheep = mutableSetOf<Sheep>()
@@ -29,7 +29,9 @@ object M4Mobs {
     val rabbits = mutableSetOf<Rabbit>()
     val cows = mutableSetOf<Cow>()
     val ghasts = mutableSetOf<Ghast>()
+    val bears = mutableSetOf<Player>()
     private val searchBox = AABB(-36.0, -36.0, -36.0, 47.0, 110.0, 47.0) // m4 arena size
+
 
     init {
 
@@ -103,6 +105,11 @@ object M4Mobs {
                         }
                     }
                     is Ghast -> ghasts.add(entity)
+                }
+                if (entity is Player) {
+                    if (entity.gameProfile.name.lowercase().startsWith("Spirit Bear")) {
+                        bears.add(entity)
+                    }
                 }
             }
         }

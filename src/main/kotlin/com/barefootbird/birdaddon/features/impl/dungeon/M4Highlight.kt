@@ -21,6 +21,7 @@ import com.barefootbird.birdaddon.utils.M4Mobs.ghasts
 import com.barefootbird.birdaddon.utils.M4Mobs.rabbits
 import com.barefootbird.birdaddon.utils.M4Mobs.sheep
 import com.barefootbird.birdaddon.utils.M4Mobs.wolves
+import com.barefootbird.birdaddon.utils.M4Mobs.bears
 
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
@@ -35,6 +36,8 @@ object M4Highlight: Module(
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val depth by BooleanSetting("Depth", true, desc = "no show through da wall")
     private val highlightThorn by BooleanSetting("Thorn Highlight", true, desc = "Highlights thorn")
+    private val highlightBear by BooleanSetting("Bear Highlight", true, desc = "Highlights bears")
+    private val noInterpolateBear by BooleanSetting("No Bear Interpolation", true, desc = "Removes interpolation from bears").withDependency { highlightBear }
 
     private val hideNameTags by BooleanSetting("Hide Name tags", true, desc = "Hides animal name tags")
     private val thornColor by ColorSetting("Thorn Color", Colors.WHITE, true, desc = "Color of thorn highlight").withDependency { highlightThorn }
@@ -44,6 +47,8 @@ object M4Highlight: Module(
     private val cowColor by ColorSetting("Cow Color", Colors.MINECRAFT_AQUA, true, desc = "Color of cow highlight")
     private val chickenColor by ColorSetting("Chicken Color", Colors.MINECRAFT_RED, true, desc = "Color of chicken highlight")
     private val rabbitColor by ColorSetting("Rabbit Color", Colors.MINECRAFT_DARK_GREEN, true, desc = "Color of rabbit highlight")
+    private val bearColor by ColorSetting("Bear Color", Colors.MINECRAFT_DARK_PURPLE, true, desc = "Color of bear highlight")
+
 
     private val searchBox = AABB(-36.0, -36.0, -36.0, 47.0, 110.0, 47.0) // m4 arena size
 
@@ -89,6 +94,16 @@ object M4Highlight: Module(
             ).forEach { (entities, color) ->
                 entities.forEach { entity ->
                     drawStyledBox(entity.renderBoundingBox, color, style, depth)
+                }
+            }
+            if (highlightBear) {
+                bears.forEach { bear ->
+                    if (noInterpolateBear) {
+                        drawStyledBox(bear.boundingBox, bearColor, style, depth)
+
+                    } else {
+                        drawStyledBox(bear.renderBoundingBox, bearColor, style, depth)
+                    }
                 }
             }
         }
