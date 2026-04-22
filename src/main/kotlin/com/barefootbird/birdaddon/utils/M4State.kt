@@ -41,6 +41,7 @@ object M4State {
     // The whole idea of this timer is to use events that are processed earlier in the tick than the block updates
     init {
         on<ChatPacketEvent> {
+            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
             if (bearSpawnRegex.matches(value)) {
                 bearSpawnTimes.add(timer)
             }
@@ -72,8 +73,8 @@ object M4State {
             }
         }
 
-
         onReceive<ClientboundEntityEventPacket> {
+            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
             if (this.eventId.toInt() == 3) {
                 val entity = this.getEntity(mc.level!!)
 

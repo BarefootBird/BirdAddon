@@ -10,6 +10,7 @@ import com.barefootbird.birdaddon.features.impl.dungeon.M4Logging
 import com.barefootbird.birdaddon.features.impl.dungeon.M4Timer
 import com.barefootbird.birdaddon.features.impl.dungeon.M4Waypoints
 import com.barefootbird.birdaddon.features.impl.dungeon.SpiritBearTimer
+import com.barefootbird.birdaddon.features.impl.dungeon.ThornStunTimer
 import com.barefootbird.birdaddon.features.impl.dungeon.WishyWishy
 import com.barefootbird.birdaddon.utils.M4Mobs
 import com.barefootbird.birdaddon.utils.M4State
@@ -31,6 +32,6 @@ object BirdAddon : ClientModInitializer {
 
         // Register modules by adding to the list
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"), SpiritBearTimer, M4Highlight,
-            WishyWishy, M4Waypoints, M4Timer, M4Logging)
+            WishyWishy, M4Waypoints, M4Timer, M4Logging, ThornStunTimer)
     }
 }
