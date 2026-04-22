@@ -22,6 +22,7 @@ import com.barefootbird.birdaddon.utils.M4Mobs.rabbits
 import com.barefootbird.birdaddon.utils.M4Mobs.sheep
 import com.barefootbird.birdaddon.utils.M4Mobs.wolves
 import com.barefootbird.birdaddon.utils.M4Mobs.bears
+import com.odtheking.odin.features.Category
 
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
@@ -31,7 +32,8 @@ import net.minecraft.world.phys.AABB
 
 object M4Highlight: Module(
     name = "M4 Highlight",
-    description = "Highlights M4 animals"
+    description = "Highlights M4 animals",
+    category = Category.BOSS
 ) {
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val depth by BooleanSetting("Depth", true, desc = "no show through da wall")

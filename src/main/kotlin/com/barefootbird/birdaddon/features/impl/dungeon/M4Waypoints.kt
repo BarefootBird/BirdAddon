@@ -10,13 +10,15 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.barefootbird.birdaddon.utils.M4State
+import com.odtheking.odin.features.Category
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.world.phys.AABB
 
 
 object M4Waypoints: Module(
     name = "M4 Waypoints",
-    description = "Waypoints for m4"
+    description = "Waypoints for m4",
+    category = Category.BOSS
 ) {
     private val swapRabbits by BooleanSetting("Swap Rabbit Waypoints", true, "Swaps the tank and bers waypoints for rabbits")
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")

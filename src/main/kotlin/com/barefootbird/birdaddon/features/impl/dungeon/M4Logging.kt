@@ -8,6 +8,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.barefootbird.birdaddon.utils.M4Mobs
 import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.features.Category
 import net.minecraft.client.Minecraft
 import java.io.File
 import java.time.Instant
@@ -16,7 +17,8 @@ import java.time.format.DateTimeFormatter
 
 object M4Logging: Module(
     name = "M4Logging",
-    description = "Logging for m4 <3"
+    description = "Logging for m4 <3",
+    category = Category.BOSS
 ) {
     private val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
     private val logs = mutableListOf<List<String>>()
