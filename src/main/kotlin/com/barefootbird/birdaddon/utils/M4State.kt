@@ -42,6 +42,8 @@ object M4State {
 
     var damagePackets = mutableListOf<DamagePacket>()
     var lastServerTick: Long = 0
+    var overkill = 0
+
 
     // The whole idea of this timer is to use events that are processed earlier in the tick than the block updates
     init {
@@ -94,23 +96,16 @@ object M4State {
                 val entity = this.getEntity(mc.level!!)
 
                 // living entity death
-                if (bearTimer == -1) {
-                    var validDeath = false
-                    when (entity) {
-                        is Wolf -> validDeath = true
-                        is Cow -> validDeath = true
-                        is Rabbit -> validDeath = true
-                        is Bat -> validDeath = true
-                        is Sheep -> validDeath = true
-                        is Chicken -> validDeath = true
-                    }
-                    if (validDeath) {
+                if (entity is Wolf || entity is Cow || entity is Rabbit ||
+                    entity is Bat || entity is Sheep || entity is Chicken) {
+                    if (bearTimer == -1) {
+
                         kills++ // temporarily updates the kills before the block update event is processed
                         if (kills >= maxKills) {
                             bearTimer = 70
                             bearSpawnStartTimes.add(timer)
                             val damagePacket = damagePackets.find {
-                                it.pos?.distanceTo(entity?.position()!! )!! < 2.0
+                                it.pos?.distanceTo(entity.position() )!! < 2.0
                             }
                             if (damagePacket != null) {
 
@@ -123,6 +118,9 @@ object M4State {
                                 }
                             }
                         }
+                    }
+                    else {
+                        overkill++
                     }
                 }
             }
@@ -143,6 +141,7 @@ object M4State {
             bearKillTimes.clear()
             bearSpawnStartTimes.clear()
             bearSpawnTimes.clear()
+            overkill = 0
         }
     }
 
