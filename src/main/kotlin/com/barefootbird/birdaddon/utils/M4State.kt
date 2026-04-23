@@ -13,9 +13,9 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.ambient.Bat
-import net.minecraft.world.entity.animal.chicken.Chicken
-import net.minecraft.world.entity.animal.cow.Cow
-import net.minecraft.world.entity.animal.rabbit.Rabbit
+import net.minecraft.world.entity.animal.Chicken
+import net.minecraft.world.entity.animal.Cow
+import net.minecraft.world.entity.animal.Rabbit
 import net.minecraft.world.entity.animal.sheep.Sheep
 import net.minecraft.world.entity.animal.wolf.Wolf
 import net.minecraft.world.level.block.Blocks

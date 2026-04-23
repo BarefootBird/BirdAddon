@@ -16,7 +16,7 @@ import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 object WishyWishy: Module(
     name = "Wishy Wishy",
     description = "Wish helper for m4",
-    category = Category.BOSS
+    category = Category.DUNGEON
 ) {
     // Credit to Devonian for some of this code <3
     private val autoWish by BooleanSetting("Auto Wish", true, desc = "Automatically uses wish when tank mastiff swaps")
