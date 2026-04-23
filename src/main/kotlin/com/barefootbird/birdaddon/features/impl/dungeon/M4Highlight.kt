@@ -9,6 +9,7 @@ import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.renderBoundingBox
@@ -23,6 +24,8 @@ import com.barefootbird.birdaddon.utils.M4Mobs.wolves
 import com.barefootbird.birdaddon.utils.M4Mobs.bears
 import com.odtheking.odin.features.Category
 
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.phys.AABB
 
@@ -30,7 +33,7 @@ import net.minecraft.world.phys.AABB
 object M4Highlight: Module(
     name = "M4 Highlight",
     description = "Highlights M4 animals",
-    category = Category.DUNGEON
+    category = Category.BOSS
 ) {
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val depth by BooleanSetting("Depth", true, desc = "no show through da wall")

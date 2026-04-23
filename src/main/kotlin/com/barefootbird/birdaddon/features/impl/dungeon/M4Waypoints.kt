@@ -18,7 +18,7 @@ import net.minecraft.world.phys.AABB
 object M4Waypoints: Module(
     name = "M4 Waypoints",
     description = "Waypoints for m4",
-    category = Category.DUNGEON
+    category = Category.BOSS
 ) {
     private val swapRabbits by BooleanSetting("Swap Rabbit Waypoints", true, "Swaps the tank and bers waypoints for rabbits")
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
