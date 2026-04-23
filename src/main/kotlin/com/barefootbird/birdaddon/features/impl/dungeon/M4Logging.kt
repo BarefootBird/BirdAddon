@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter
 object M4Logging: Module(
     name = "M4Logging",
     description = "Logging for m4 <3",
-    category = Category.BOSS
+    category = Category.DUNGEON
 ) {
     private val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
     private val logs = mutableListOf<List<String>>()

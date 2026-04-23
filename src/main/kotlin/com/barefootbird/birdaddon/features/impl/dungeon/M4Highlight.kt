@@ -33,7 +33,7 @@ import net.minecraft.world.phys.AABB
 object M4Highlight: Module(
     name = "M4 Highlight",
     description = "Highlights M4 animals",
-    category = Category.BOSS
+    category = Category.DUNGEON
 ) {
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val depth by BooleanSetting("Depth", true, desc = "no show through da wall")

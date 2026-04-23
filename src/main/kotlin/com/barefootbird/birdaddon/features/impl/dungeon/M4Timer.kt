@@ -11,7 +11,7 @@ import com.odtheking.odin.features.Category
 object M4Timer: Module(
     name = "M4Timer",
     description = "Shows how long the boss has gone on for",
-    category = Category.BOSS
+    category = Category.DUNGEON
 ) {
     private val hud by HUD(name, "Displays the current state of Spirit Bear in the HUD.", false) { example ->
         when {
