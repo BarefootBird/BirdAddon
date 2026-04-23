@@ -19,7 +19,7 @@ import net.minecraft.world.entity.monster.Ghast
 object ThornStunTimer: Module(
     name = "Thorn Stun Timer",
     description = "Shows the how long thorn is stunned for",
-    category = Category.DUNGEON
+    category = Category.BOSS
 ) {
     private val hud by HUD(name, "Displays how long thorn is stunned for", false) { example ->
         textDim(timerText(example), 0, 0, Colors.WHITE)
