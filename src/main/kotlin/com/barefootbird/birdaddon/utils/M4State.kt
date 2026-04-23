@@ -1,5 +1,6 @@
 package com.barefootbird.birdaddon.utils
 
+import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.TickEvent
@@ -8,15 +9,17 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket
-import net.minecraft.world.level.block.Blocks
-import com.odtheking.odin.OdinMod.mc
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.ambient.Bat
 import net.minecraft.world.entity.animal.chicken.Chicken
 import net.minecraft.world.entity.animal.cow.Cow
 import net.minecraft.world.entity.animal.rabbit.Rabbit
 import net.minecraft.world.entity.animal.sheep.Sheep
 import net.minecraft.world.entity.animal.wolf.Wolf
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.phys.Vec3
 
 
 object M4State {
@@ -31,6 +34,14 @@ object M4State {
     val bearSpawnTimes = mutableListOf<Int>()
     val bearKillTimes = mutableListOf<Int>()
     val bearSpawnStartTimes = mutableListOf<Int>()
+
+    class DamagePacket constructor(
+        var time: Long = 0,
+        var pos: Vec3? = null
+    )
+
+    var damagePackets = mutableListOf<DamagePacket>()
+    var lastServerTick: Long = 0
 
     // The whole idea of this timer is to use events that are processed earlier in the tick than the block updates
     init {
@@ -67,6 +78,16 @@ object M4State {
             }
         }
 
+        onReceive<ClientboundAddEntityPacket> {
+            val now = System.nanoTime()
+            if (type == EntityType.ARMOR_STAND) {
+                damagePackets.add(DamagePacket(now, Vec3(x, y, z)))
+                // Just assume that every armor stand is a dmg splash
+                // The ones that aren't dmg splashes probably aren't relevant anyway
+            }
+            damagePackets.removeIf { now - it.time > 125_000_000 } // 125 ms
+        }
+
         onReceive<ClientboundEntityEventPacket> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
             if (this.eventId.toInt() == 3) {
@@ -88,6 +109,19 @@ object M4State {
                         if (kills >= maxKills) {
                             bearTimer = 70
                             bearSpawnStartTimes.add(timer)
+                            val damagePacket = damagePackets.find {
+                                it.pos?.distanceTo(entity?.position()!! )!! < 2.0
+                            }
+                            if (damagePacket != null) {
+
+                                if (damagePacket.time < lastServerTick) {
+                                    // The damage splash appeared before the last tick
+                                    // Therefore the mob was counted as killed before the last tick
+                                    // So 1 tick has already passed since the kill
+                                    // This doesn't seem to work that well, or at least it needs further testing
+                                    bearTimer--
+                                }
+                            }
                         }
                     }
                 }
@@ -98,6 +132,8 @@ object M4State {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
             if (bearTimer > 0) bearTimer--
             timer++
+            val now = System.nanoTime()
+            lastServerTick = now
         }
 
         on<WorldEvent.Load> {
