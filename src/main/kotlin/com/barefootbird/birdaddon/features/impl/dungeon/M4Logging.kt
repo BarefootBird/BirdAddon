@@ -7,6 +7,8 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.barefootbird.birdaddon.utils.M4Mobs
 import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.Webserver.startWebserver
+import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.features.Category
 import net.minecraft.client.Minecraft
@@ -23,6 +25,9 @@ object M4Logging: Module(
     private val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
     private val logs = mutableListOf<List<String>>()
     private var ended = false // prevents logging multiple times
+    private val startWebserver by ActionSetting("Start Webserver", "Starts the m4 webserver website thingy") {
+        startWebserver()
+    }
 
     init {
         on<TickEvent.Server> {
@@ -52,7 +57,7 @@ object M4Logging: Module(
                 ended = true
 
                 val mc: Minecraft = Minecraft.getInstance()
-                val logsFolder = File(mc.gameDirectory, "m4logs").apply { mkdirs() }
+                val logsFolder = File(mc.gameDirectory, "m4logs/logs").apply { mkdirs() }
                 val timestamp = Instant.now().toEpochMilli()
                 val target = File(logsFolder, "$timestamp.csv").apply { createNewFile() }
                 val logText = StringBuilder()
