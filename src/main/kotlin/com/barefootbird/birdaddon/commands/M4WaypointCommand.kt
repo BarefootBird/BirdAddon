@@ -1,7 +1,7 @@
 package com.barefootbird.birdaddon.commands
 
-import com.barefootbird.birdaddon.features.impl.dungeon.M4Waypoints.addWaypoint
-import com.barefootbird.birdaddon.features.impl.dungeon.M4Waypoints.removeWaypoint
+import com.barefootbird.birdaddon.features.impl.m4.Waypoints.addWaypoint
+import com.barefootbird.birdaddon.features.impl.m4.Waypoints.removeWaypoint
 import com.github.stivais.commodore.Commodore
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.modMessage

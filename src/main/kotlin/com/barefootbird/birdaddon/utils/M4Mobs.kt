@@ -43,6 +43,7 @@ object M4Mobs {
             rabbits.clear()
             cows.clear()
             ghasts.clear()
+            bears.clear()
         }
 
         on<TickEvent.Server> {
@@ -58,6 +59,7 @@ object M4Mobs {
                 rabbits.clear()
                 cows.clear()
                 ghasts.clear()
+                bears.clear()
 
                 allEntities.forEach { entity ->
                     if (!entity.isAlive) return@forEach

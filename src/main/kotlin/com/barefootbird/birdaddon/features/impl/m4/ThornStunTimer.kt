@@ -1,5 +1,6 @@
-package com.barefootbird.birdaddon.features.impl.dungeon
+package com.barefootbird.birdaddon.features.impl.m4
 
+import com.barefootbird.birdaddon.utils.Category
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -11,7 +12,6 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.features.Category
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import net.minecraft.network.protocol.game.ClientboundHurtAnimationPacket
 import net.minecraft.world.entity.monster.Ghast
@@ -19,7 +19,7 @@ import net.minecraft.world.entity.monster.Ghast
 object ThornStunTimer: Module(
     name = "Thorn Stun Timer",
     description = "Shows the how long thorn is stunned for",
-    category = Category.BOSS
+    category = Category.M4
 ) {
     private val hud by HUD(name, "Displays how long thorn is stunned for", false) { example ->
         textDim(timerText(example), 0, 0, Colors.WHITE)

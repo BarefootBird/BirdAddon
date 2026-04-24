@@ -1,11 +1,11 @@
-package com.barefootbird.birdaddon.features.impl.dungeon
+package com.barefootbird.birdaddon.features.impl.m4
 
+import com.barefootbird.birdaddon.utils.Category
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
@@ -16,7 +16,7 @@ import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 object WishyWishy: Module(
     name = "Wishy Wishy",
     description = "Wish helper for m4",
-    category = Category.BOSS
+    category = Category.M4
 ) {
     // Credit to Devonian for some of this code <3
     private val autoWish by BooleanSetting("Auto Wish", true, desc = "Automatically uses wish when tank mastiff swaps")

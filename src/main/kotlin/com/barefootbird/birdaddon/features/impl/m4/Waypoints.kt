@@ -1,5 +1,6 @@
-package com.barefootbird.birdaddon.features.impl.dungeon
+package com.barefootbird.birdaddon.features.impl.m4
 
+import com.barefootbird.birdaddon.utils.Category
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
@@ -10,7 +11,6 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.barefootbird.birdaddon.utils.M4State
-import com.odtheking.odin.features.Category
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.core.BlockPos
@@ -26,10 +26,10 @@ import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 import java.io.File
 
 
-object M4Waypoints: Module(
-    name = "M4 Waypoints",
+object Waypoints: Module(
+    name = "Waypoints",
     description = "Waypoints for m4",
-    category = Category.BOSS
+    category = Category.M4
 ) {
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val depth by BooleanSetting("depth", true, "depth")

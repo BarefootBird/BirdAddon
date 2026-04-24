@@ -3,17 +3,18 @@ package com.barefootbird.birdaddon
 import com.barefootbird.birdaddon.commands.startWebserverCommand
 import com.barefootbird.birdaddon.commands.stopWebserverCommand
 import com.barefootbird.birdaddon.commands.waypointCommand
+import com.barefootbird.birdaddon.features.impl.m4.Titles
 import com.odtheking.odin.config.ModuleConfig
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.ModuleManager
-import com.barefootbird.birdaddon.features.impl.dungeon.M4Highlight
-import com.barefootbird.birdaddon.features.impl.dungeon.M4Logging
-import com.barefootbird.birdaddon.features.impl.dungeon.M4Timer
-import com.barefootbird.birdaddon.features.impl.dungeon.M4Waypoints
-import com.barefootbird.birdaddon.features.impl.dungeon.OverkillDisplay
-import com.barefootbird.birdaddon.features.impl.dungeon.SpiritBearTimer
-import com.barefootbird.birdaddon.features.impl.dungeon.ThornStunTimer
-import com.barefootbird.birdaddon.features.impl.dungeon.WishyWishy
+import com.barefootbird.birdaddon.features.impl.m4.Highlight
+import com.barefootbird.birdaddon.features.impl.m4.Logging
+import com.barefootbird.birdaddon.features.impl.m4.Timer
+import com.barefootbird.birdaddon.features.impl.m4.OverkillDisplay
+import com.barefootbird.birdaddon.features.impl.m4.SpiritBearTimer
+import com.barefootbird.birdaddon.features.impl.m4.ThornStunTimer
+import com.barefootbird.birdaddon.features.impl.m4.Waypoints
+import com.barefootbird.birdaddon.features.impl.m4.WishyWishy
 import com.barefootbird.birdaddon.utils.M4Mobs
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.Webserver
@@ -58,7 +59,7 @@ object BirdAddon : ClientModInitializer {
         listOf(this, M4State, M4Mobs, Webserver).forEach { EventBus.subscribe(it) }
 
         // Register modules by adding to the list
-        ModuleManager.registerModules(ModuleConfig("BirdAddon.json"), SpiritBearTimer, M4Highlight,
-            WishyWishy, M4Waypoints, M4Timer, M4Logging, ThornStunTimer, OverkillDisplay)
+        ModuleManager.registerModules(ModuleConfig("BirdAddon.json"), SpiritBearTimer, Highlight,
+            WishyWishy, Waypoints, Timer, Logging, ThornStunTimer, OverkillDisplay, Titles)
     }
 }

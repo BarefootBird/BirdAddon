@@ -1,5 +1,6 @@
-package com.barefootbird.birdaddon.features.impl.dungeon
+package com.barefootbird.birdaddon.features.impl.m4
 
+import com.barefootbird.birdaddon.utils.Category
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -21,16 +22,15 @@ import com.barefootbird.birdaddon.utils.M4Mobs.rabbits
 import com.barefootbird.birdaddon.utils.M4Mobs.sheep
 import com.barefootbird.birdaddon.utils.M4Mobs.wolves
 import com.barefootbird.birdaddon.utils.M4Mobs.bears
-import com.odtheking.odin.features.Category
 
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.phys.AABB
 
 
-object M4Highlight: Module(
-    name = "M4 Highlight",
+object Highlight: Module(
+    name = "Highlight",
     description = "Highlights M4 animals",
-    category = Category.BOSS
+    category = Category.M4
 ) {
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val depth by BooleanSetting("Depth", true, desc = "no show through da wall")

@@ -1,5 +1,6 @@
-package com.barefootbird.birdaddon.features.impl.dungeon
+package com.barefootbird.birdaddon.features.impl.m4
 
+import com.barefootbird.birdaddon.utils.Category
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
@@ -10,17 +11,16 @@ import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.Webserver.startWebserver
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.events.WorldEvent
-import com.odtheking.odin.features.Category
 import net.minecraft.client.Minecraft
 import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-object M4Logging: Module(
-    name = "M4Logging",
+object Logging: Module(
+    name = "Logging",
     description = "Logging for m4 <3",
-    category = Category.BOSS
+    category = Category.M4
 ) {
     private val logs = mutableListOf<List<String>>()
     private var ended = false // prevents logging multiple times

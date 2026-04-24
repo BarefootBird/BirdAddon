@@ -1,5 +1,6 @@
 package com.barefootbird.birdaddon.utils
 
+import com.barefootbird.birdaddon.features.impl.m4.Titles
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.ChatPacketEvent
@@ -43,6 +44,12 @@ object M4State {
     var damagePackets = mutableListOf<DamagePacket>()
     var lastServerTick: Long = 0
     var overkill = 0
+    var overkillBats = 0
+    var overkillChickens = 0
+    var overkillCows = 0
+    var overkillSheep = 0
+    var overkillRabbits = 0
+    var overkillWolves = 0
     val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
     var ended = false
 
@@ -53,12 +60,14 @@ object M4State {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
             if (bearSpawnRegex.matches(value)) {
                 bearSpawnTimes.add(timer)
+                Titles.handleBearSpawn()
             }
             if (bearKillRegex.matches(value)) {
                 bearKillTimes.add(timer)
                 if (bearTimer != -1) {
                     bearTimer = -1
                     kills = 0
+                    Titles.handleBearKill()
                 }
             }
             if (endRegex.matches(value) && !ended) {
@@ -80,6 +89,7 @@ object M4State {
                     if (pos == lastBlockLocation && bearTimer == -1) {
                         bearTimer = 69
                         bearSpawnStartTimes.add(timer)
+                        Titles.handleBearSpawnStart()
                     }
                 }
             }
@@ -111,6 +121,7 @@ object M4State {
                         if (kills >= maxKills) {
                             bearTimer = 70
                             bearSpawnStartTimes.add(timer)
+                            Titles.handleBearSpawnStart()
                             val damagePacket = damagePackets.find {
                                 it.pos?.distanceTo(entity.position() )!! < 2.0
                             }
@@ -128,6 +139,12 @@ object M4State {
                     }
                     else {
                         overkill++
+                        if (entity is Wolf) overkillWolves++
+                        if (entity is Cow) overkillCows++
+                        if (entity is Rabbit) overkillRabbits++
+                        if (entity is Sheep) overkillSheep++
+                        if (entity is Chicken) overkillChickens++
+                        if (entity is Bat) overkillBats++
                     }
                 }
             }
@@ -150,6 +167,12 @@ object M4State {
             bearSpawnStartTimes.clear()
             bearSpawnTimes.clear()
             overkill = 0
+            overkillBats = 0
+            overkillChickens = 0
+            overkillCows = 0
+            overkillSheep = 0
+            overkillRabbits = 0
+            overkillWolves = 0
             ended = false
         }
     }

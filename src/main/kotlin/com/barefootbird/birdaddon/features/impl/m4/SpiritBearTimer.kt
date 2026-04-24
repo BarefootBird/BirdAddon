@@ -1,5 +1,6 @@
-package com.barefootbird.birdaddon.features.impl.dungeon
+package com.barefootbird.birdaddon.features.impl.m4
 
+import com.barefootbird.birdaddon.utils.Category
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -7,12 +8,11 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import com.barefootbird.birdaddon.utils.M4State
-import com.odtheking.odin.features.Category
 
 object SpiritBearTimer: Module(
     name = "Spirit Bear Timer",
     description = "Shows the state of the spirit bear spawns",
-    category = Category.BOSS
+    category = Category.M4
 ) {
     private val hud by HUD(name, "Displays the current state of Spirit Bear in the HUD.", false) { example ->
         textDim(timerText(example), 0, 0, Colors.WHITE)
