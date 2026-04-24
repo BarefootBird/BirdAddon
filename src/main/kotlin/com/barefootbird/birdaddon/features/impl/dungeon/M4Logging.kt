@@ -22,7 +22,6 @@ object M4Logging: Module(
     description = "Logging for m4 <3",
     category = Category.BOSS
 ) {
-    private val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
     private val logs = mutableListOf<List<String>>()
     private var ended = false // prevents logging multiple times
     private val startWebserver by ActionSetting("Start Webserver", "Starts the m4 webserver website thingy") {
@@ -53,7 +52,7 @@ object M4Logging: Module(
         on<ChatPacketEvent> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
 
-            if (endRegex.matches(value) && !ended) {
+            if (M4State.endRegex.matches(value) && !ended) {
                 ended = true
 
                 val mc: Minecraft = Minecraft.getInstance()

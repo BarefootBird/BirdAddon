@@ -2,6 +2,7 @@ package com.barefootbird.birdaddon
 
 import com.barefootbird.birdaddon.commands.startWebserverCommand
 import com.barefootbird.birdaddon.commands.stopWebserverCommand
+import com.barefootbird.birdaddon.commands.waypointCommand
 import com.odtheking.odin.config.ModuleConfig
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.ModuleManager
@@ -50,7 +51,7 @@ object BirdAddon : ClientModInitializer {
 
         // Register commands by adding to the array
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-            arrayOf(startWebserverCommand, stopWebserverCommand).forEach { commodore -> commodore.register(dispatcher) }
+            arrayOf(startWebserverCommand, stopWebserverCommand, waypointCommand).forEach { commodore -> commodore.register(dispatcher) }
         }
 
         // Register objects to event bus by adding to the list

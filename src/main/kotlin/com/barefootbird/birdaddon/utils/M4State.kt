@@ -43,6 +43,8 @@ object M4State {
     var damagePackets = mutableListOf<DamagePacket>()
     var lastServerTick: Long = 0
     var overkill = 0
+    val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
+    var ended = false
 
 
     // The whole idea of this timer is to use events that are processed earlier in the tick than the block updates
@@ -58,6 +60,9 @@ object M4State {
                     bearTimer = -1
                     kills = 0
                 }
+            }
+            if (endRegex.matches(value) && !ended) {
+                ended = true
             }
         }
 
@@ -87,7 +92,9 @@ object M4State {
                 // Just assume that every armor stand is a dmg splash
                 // The ones that aren't dmg splashes probably aren't relevant anyway
             }
-            damagePackets.removeIf { now - it.time > 125_000_000 } // 125 ms
+            runCatching {
+                damagePackets.removeIf { now - it.time > 125_000_000 } // 125 ms
+            }
         }
 
         onReceive<ClientboundEntityEventPacket> {
@@ -128,6 +135,7 @@ object M4State {
 
         on<TickEvent.Server> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
+            if (ended) return@on
             if (bearTimer > 0) bearTimer--
             timer++
             val now = System.nanoTime()
@@ -142,6 +150,7 @@ object M4State {
             bearSpawnStartTimes.clear()
             bearSpawnTimes.clear()
             overkill = 0
+            ended = false
         }
     }
 

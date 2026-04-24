@@ -114,7 +114,7 @@ object M4Mobs {
                         is Ghast -> ghasts.add(entity)
                     }
                     if (entity is Player) {
-                        if (entity.gameProfile.name.lowercase().startsWith("Spirit Bear")) {
+                        if (entity.gameProfile.name.lowercase().startsWith("spirit bear")) {
                             bears.add(entity)
                         }
                     }
