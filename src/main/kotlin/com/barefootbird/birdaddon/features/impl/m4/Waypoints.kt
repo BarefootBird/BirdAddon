@@ -11,6 +11,7 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.M4State.onCgm4
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.core.BlockPos
@@ -33,6 +34,8 @@ object Waypoints: Module(
 ) {
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val depth by BooleanSetting("depth", true, "depth")
+    private val showOnCgm4 by BooleanSetting("Show on cgm4", true, "Shows the waypoints on cgm4's is")
+
     private val bearSpawn by BooleanSetting("Bear Spawn Waypoint", true, "Shows the waypoint for bear spawn")
     private val bearSpawnOnMage by BooleanSetting("Bear wp Only on Mage", true, "Shows the waypoint for bear spawn").withDependency { bearSpawn }
 
@@ -40,7 +43,6 @@ object Waypoints: Module(
 
     val wpConfig = File(mc.gameDirectory, "config/odin/addons/m4waypoints.json")
 
-    var onCgm4 = false
 
     data class Waypoint(
         val pos: BlockPos,
@@ -158,11 +160,11 @@ object Waypoints: Module(
     }
 
     fun RenderEvent.Extract.renderCustomWaypoints() {
-        if (!onCgm4 && !(DungeonUtils.inBoss && DungeonUtils.inDungeons)) return
+        if (!onCgm4 && !(DungeonUtils.inBoss && DungeonUtils.isFloor(4))) return
         waypoints.forEach {
             if (it.clazz == DungeonUtils.currentDungeonPlayer.clazz.toString() || onCgm4) {
                 val clazz = enumValueOf<DungeonClass>(it.clazz)
-                if (onCgm4) {
+                if (onCgm4 && showOnCgm4) {
                     renderWaypoint(BlockPos(it.pos.x + 2, it.pos.y + 41, it.pos.z + 2), clazz)
                 } else {
                     if (shouldRenderNow(it.start, it.end)) {
@@ -202,9 +204,10 @@ object Waypoints: Module(
     }
 
     private fun RenderEvent.Extract.renderBearSpawn () {
-        var bearSpawn = AABB(5.75, 70.4, 5.75, 6.25, 71.5, 6.25)
+        val spawnSpot = M4State.bearSpawnSpot
+        var bearSpawn = AABB(spawnSpot.x - 0.3, 70.4, spawnSpot.z - 0.3, spawnSpot.x + 0.3, 71.5, spawnSpot.z + 0.3)
         if (onCgm4) {
-            bearSpawn = AABB(7.75, 111.4, 7.75, 8.25, 112.5, 8.25)
+            bearSpawn = AABB(spawnSpot.x + 1.7, 111.4, spawnSpot.z + 1.7, spawnSpot.x + 2.3, 112.5, spawnSpot.x + 2.3)
         }
         val bearSpawnColor: Color = if (M4State.bearTimer == -1) {
             Colors.MINECRAFT_BLUE
@@ -215,11 +218,10 @@ object Waypoints: Module(
                 Colors.MINECRAFT_RED
             }
         }
-
-        drawStyledBox(bearSpawn, bearSpawnColor, renderStyle, false) // bear spawn
+        if ((onCgm4 && showOnCgm4) || (DungeonUtils.inBoss && DungeonUtils.isFloor(4))) {
+            drawStyledBox(bearSpawn, bearSpawnColor, renderStyle, false) // bear spawn
+        }
     }
-
-    private val teamRegex = "^team_(\\d+)$".toRegex()
 
     init {
         on<RenderEvent.Extract> {
@@ -234,24 +236,8 @@ object Waypoints: Module(
             if (waypoints.isEmpty()) {
                 loadWaypoints()
             }
-            onCgm4 = false
         }
 
-        onReceive<ClientboundSetPlayerTeamPacket> { event ->
-            val packet = event.packet
-            if (packet is ClientboundSetPlayerTeamPacket) {
-                val opt = packet.parameters
-                if (!opt.isPresent) return@onReceive
-                val team = opt.get()
-                val teamPrefix = team.playerPrefix.string
-                val teamSuffix = team.playerSuffix.string
-                if (teamPrefix.isEmpty()) return@onReceive
-                if (!packet.name.matches(teamRegex)) return@onReceive
-                val message = "${teamPrefix}${teamSuffix.trim()}".noControlCodes
-                if (message.contains("catgirlm4")) {
-                    onCgm4 = true
-                }
-            }
-        }
+
     }
 }

@@ -7,13 +7,16 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import com.barefootbird.birdaddon.utils.M4State
+import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 
 object Timer: Module(
     name = "Timer",
     description = "Shows how long the boss has gone on for",
     category = Category.M4
 ) {
-    private val hud by HUD(name, "Displays the current state of Spirit Bear in the HUD.", false) { example ->
+    val printToChat by BooleanSetting("Print To Chat", true, desc = "Prints run time to chat")
+
+    private val hud by HUD(name, "Displays the time on the hud", true) { example ->
         when {
             example -> "§c48.2"
             !DungeonUtils.isFloor(4) || !DungeonUtils.inBoss -> null

@@ -1,5 +1,7 @@
 package com.barefootbird.birdaddon.utils
 
+import com.barefootbird.birdaddon.features.impl.m4.Logging.writeKills
+import com.barefootbird.birdaddon.features.impl.m4.Timer
 import com.barefootbird.birdaddon.features.impl.m4.Titles
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.BlockUpdateEvent
@@ -8,10 +10,19 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
+import com.odtheking.odin.utils.modMessage
+import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import com.odtheking.odin.utils.toFixed
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.ambient.Bat
 import net.minecraft.world.entity.animal.chicken.Chicken
@@ -21,8 +32,12 @@ import net.minecraft.world.entity.animal.sheep.Sheep
 import net.minecraft.world.entity.animal.wolf.Wolf
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.Vec3
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 
+@OptIn(DelicateCoroutinesApi::class)
 object M4State {
     private inline val blockLocations get() = if (DungeonUtils.floor?.isMM == true) m4BlockLocations else f4BlockLocations
     inline val maxKills get() = if (DungeonUtils.floor?.isMM == true) 30 else 25
@@ -35,6 +50,10 @@ object M4State {
     val bearSpawnTimes = mutableListOf<Int>()
     val bearKillTimes = mutableListOf<Int>()
     val bearSpawnStartTimes = mutableListOf<Int>()
+    var onCgm4 = false
+    var inThornBoss = false
+
+    val enteredRegex = Regex("^\\[BOSS] Thorn: Welcome Adventurers! I am Thorn, the Spirit! And host of the Vegan Trials!$")
 
     class DamagePacket constructor(
         var time: Long = 0,
@@ -52,12 +71,41 @@ object M4State {
     var overkillWolves = 0
     val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
     var ended = false
+    var bearSpawnSpot = Vec3(5.5, 6.0, 5.5)
+
+    fun updateBearSpawnSpot () {
+        if (bearTimer == -1) {
+            if (M4Mobs.ghasts.isEmpty()) return
+            val thorn = M4Mobs.ghasts.find { true }!!
+
+            val dx = thorn.x - 5.5
+            val dz = thorn.z - 5.5
+
+            val angle = atan2(dz, dx)
+
+            val r = 0.7
+            val newX = 5.5 + r * cos(angle)
+            val newZ = 5.5 + r * sin(angle)
+
+            bearSpawnSpot = Vec3(newX, 6.0, newZ)
+        }
+    }
+
+    fun updateKills (kills: Int) {
+        this.kills = kills
+        if (inThornBoss) {
+            writeKills(kills)
+        }
+    }
 
 
     // The whole idea of this timer is to use events that are processed earlier in the tick than the block updates
     init {
         on<ChatPacketEvent> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
+            if (enteredRegex.matches(value)) {
+                inThornBoss = true
+            }
+            if (!inThornBoss) return@on
             if (bearSpawnRegex.matches(value)) {
                 bearSpawnTimes.add(timer)
                 Titles.handleBearSpawn()
@@ -66,24 +114,30 @@ object M4State {
                 bearKillTimes.add(timer)
                 if (bearTimer != -1) {
                     bearTimer = -1
-                    kills = 0
+                    updateKills(0)
                     Titles.handleBearKill()
                 }
             }
             if (endRegex.matches(value) && !ended) {
                 ended = true
+                if (Timer.printToChat) {
+                    GlobalScope.launch {
+                        delay(1000)
+                        modMessage("Thorn Defeated in ${(timer / 20.0).toFixed(2)}s")
+                    }
+                }
             }
         }
 
         on<BlockUpdateEvent> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss || !blockLocations.contains(pos)) return@on
+            if (!inThornBoss || !blockLocations.contains(pos)) return@on
 
             when (updated.block) {
                 Blocks.SEA_LANTERN if old.block == Blocks.COAL_BLOCK -> {
                     if (kills < maxKills) {
                         val newKills = blockLocations.indexOf(pos) + 1
                         if (newKills > kills) {
-                            kills = newKills
+                            updateKills(newKills)
                         }
                     }
                     if (pos == lastBlockLocation && bearTimer == -1) {
@@ -108,7 +162,7 @@ object M4State {
         }
 
         onReceive<ClientboundEntityEventPacket> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
+            if (!inThornBoss) return@onReceive
             if (this.eventId.toInt() == 3) {
                 val entity = this.getEntity(mc.level!!)
 
@@ -117,7 +171,7 @@ object M4State {
                     entity is Bat || entity is Sheep || entity is Chicken) {
                     if (bearTimer == -1) {
 
-                        kills++ // temporarily updates the kills before the block update event is processed
+                        updateKills(kills + 1) // temporarily updates the kills before the block update event is processed
                         if (kills >= maxKills) {
                             bearTimer = 70
                             bearSpawnStartTimes.add(timer)
@@ -151,16 +205,17 @@ object M4State {
         }
 
         on<TickEvent.Server> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
+            if (!inThornBoss) return@on
             if (ended) return@on
             if (bearTimer > 0) bearTimer--
             timer++
             val now = System.nanoTime()
             lastServerTick = now
+            updateBearSpawnSpot()
         }
 
         on<WorldEvent.Load> {
-            kills = 0
+            updateKills(0)
             bearTimer = -1
             timer = 0
             bearKillTimes.clear()
@@ -174,8 +229,29 @@ object M4State {
             overkillRabbits = 0
             overkillWolves = 0
             ended = false
+            onCgm4 = false
+            inThornBoss = false
+        }
+
+        onReceive<ClientboundSetPlayerTeamPacket> { event ->
+            val packet = event.packet
+            if (packet is ClientboundSetPlayerTeamPacket) {
+                val opt = packet.parameters
+                if (!opt.isPresent) return@onReceive
+                val team = opt.get()
+                val teamPrefix = team.playerPrefix.string
+                val teamSuffix = team.playerSuffix.string
+                if (teamPrefix.isEmpty()) return@onReceive
+                if (!packet.name.matches(teamRegex)) return@onReceive
+                val message = "${teamPrefix}${teamSuffix.trim()}".noControlCodes
+                if (message.contains("catgirlm4")) {
+                    onCgm4 = true
+                }
+            }
         }
     }
+    private val teamRegex = "^team_(\\d+)$".toRegex()
+
 
     private val f4BlockLocations = listOf(
         BlockPos(-3, 77, 33), BlockPos(-9, 77, 31), BlockPos(-16, 77, 26), BlockPos(-20, 77, 20), BlockPos(-23, 77, 13),

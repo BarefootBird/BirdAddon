@@ -30,7 +30,7 @@ object M4Mobs {
     val cows = mutableSetOf<Cow>()
     val ghasts = mutableSetOf<Ghast>()
     val bears = mutableSetOf<Player>()
-    private val searchBox = AABB(-36.0, -36.0, -36.0, 47.0, 110.0, 47.0) // m4 arena size
+    private val searchBox = AABB(-36.0, 68.0, -36.0, 47.0, 110.0, 47.0) // m4 arena size
 
 
     init {

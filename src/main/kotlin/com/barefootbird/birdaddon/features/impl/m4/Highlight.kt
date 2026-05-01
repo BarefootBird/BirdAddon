@@ -22,6 +22,8 @@ import com.barefootbird.birdaddon.utils.M4Mobs.rabbits
 import com.barefootbird.birdaddon.utils.M4Mobs.sheep
 import com.barefootbird.birdaddon.utils.M4Mobs.wolves
 import com.barefootbird.birdaddon.utils.M4Mobs.bears
+import com.odtheking.odin.utils.Color
+import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.phys.AABB
@@ -36,17 +38,26 @@ object Highlight: Module(
     private val depth by BooleanSetting("Depth", true, desc = "no show through da wall")
     private val highlightThorn by BooleanSetting("Thorn Highlight", true, desc = "Highlights thorn")
     private val highlightBear by BooleanSetting("Bear Highlight", true, desc = "Highlights bears")
+    private val onlyShowBearOnMage by BooleanSetting("Only Show Bear On Mage", false, desc = "Only shows the bear on mage class").withDependency { highlightBear }
     private val noInterpolateBear by BooleanSetting("No Bear Interpolation", true, desc = "Removes interpolation from bears").withDependency { highlightBear }
+    val bearColor by ColorSetting("Bear Color", Colors.MINECRAFT_DARK_PURPLE, true, desc = "Color of bear highlight").withDependency { highlightBear }
+
+    private val highlightWolves by BooleanSetting("Wolf Highlight", true, desc = "Highlights wolves")
+    private val highlightBats by BooleanSetting("Bat Highlight", true, desc = "Highlights bats")
+    private val highlightSheep by BooleanSetting("Sheep Highlight", true, desc = "Highlights sheep")
+    private val highlightCow by BooleanSetting("Cow Highlight", true, desc = "Highlights cows")
+    private val highlightChicken by BooleanSetting("Chicken Highlight", true, desc = "Highlights chickens")
+    private val highlightRabbit by BooleanSetting("Rabbit Highlight", true, desc = "Highlights rabbits")
+
 
     private val hideNameTags by BooleanSetting("Hide Name tags", true, desc = "Hides animal name tags")
-    private val thornColor by ColorSetting("Thorn Color", Colors.WHITE, true, desc = "Color of thorn highlight").withDependency { highlightThorn }
-    private val wolfColor by ColorSetting("Wolf Color", Colors.MINECRAFT_GOLD, true, desc = "Color of wolf highlight")
-    private val batColor by ColorSetting("Bat Color", Colors.MINECRAFT_DARK_BLUE, true, desc = "Color of bat highlight")
-    private val sheepColor by ColorSetting("Sheep Color", Colors.MINECRAFT_YELLOW, true, desc = "Color of sheep highlight")
-    private val cowColor by ColorSetting("Cow Color", Colors.MINECRAFT_AQUA, true, desc = "Color of cow highlight")
-    private val chickenColor by ColorSetting("Chicken Color", Colors.MINECRAFT_RED, true, desc = "Color of chicken highlight")
-    private val rabbitColor by ColorSetting("Rabbit Color", Colors.MINECRAFT_DARK_GREEN, true, desc = "Color of rabbit highlight")
-    private val bearColor by ColorSetting("Bear Color", Colors.MINECRAFT_DARK_PURPLE, true, desc = "Color of bear highlight")
+    val thornColor by ColorSetting("Thorn Color", Colors.WHITE, true, desc = "Color of thorn highlight").withDependency { highlightThorn }
+    val wolfColor by ColorSetting("Wolf Color", Colors.MINECRAFT_GOLD, true, desc = "Color of wolf highlight").withDependency { highlightWolves }
+    val batColor by ColorSetting("Bat Color", Colors.MINECRAFT_DARK_BLUE, true, desc = "Color of bat highlight").withDependency { highlightBats }
+    val sheepColor by ColorSetting("Sheep Color", Colors.MINECRAFT_YELLOW, true, desc = "Color of sheep highlight").withDependency { highlightSheep }
+    val cowColor by ColorSetting("Cow Color", Colors.MINECRAFT_AQUA, true, desc = "Color of cow highlight").withDependency { highlightCow }
+    val chickenColor by ColorSetting("Chicken Color", Colors.MINECRAFT_RED, true, desc = "Color of chicken highlight").withDependency { highlightChicken }
+    val rabbitColor by ColorSetting("Rabbit Color", Colors.MINECRAFT_DARK_GREEN, true, desc = "Color of rabbit highlight").withDependency { highlightRabbit }
 
 
     private val searchBox = AABB(-36.0, -36.0, -36.0, 47.0, 110.0, 47.0) // m4 arena size
@@ -70,39 +81,36 @@ object Highlight: Module(
 
         on<RenderEvent.Extract> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
-            val style = renderStyle
+            runCatching {
+                val style = renderStyle
 
-            val entities = mutableListOf(
-                sheep to sheepColor,
-                wolves to wolfColor,
-                bats to batColor,
-                chickens to chickenColor,
-                rabbits to rabbitColor,
-                cows to cowColor,
+                val entities = mutableListOf<Pair<List<net.minecraft.world.entity.Entity>, Color>>()
 
-            )
-            if (highlightThorn) {
-                entities.add(ghasts to thornColor)
-            }
 
-            entities.forEach { (entities, color) ->
-                runCatching {
+                if (highlightSheep) entities.add(sheep.toList() to sheepColor)
+                if (highlightWolves) entities.add(wolves.toList() to wolfColor)
+                if (highlightBats) entities.add(bats.toList() to batColor)
+                if (highlightChicken) entities.add(chickens.toList() to chickenColor)
+                if (highlightRabbit) entities.add(rabbits.toList() to rabbitColor)
+                if (highlightCow) entities.add(cows.toList() to cowColor)
+                if (highlightThorn) entities.add(ghasts.toList() to thornColor)
+
+                entities.forEach { (entities, color) ->
                     entities.toList().forEach { entity ->
                         drawStyledBox(entity.renderBoundingBox, color, style, depth)
                     }
                 }
-            }
-            if (highlightBear) {
-                bears.forEach { bear ->
-                    if (noInterpolateBear) {
-                        drawStyledBox(bear.boundingBox, bearColor, style, depth)
 
-                    } else {
-                        drawStyledBox(bear.renderBoundingBox, bearColor, style, depth)
+                if (highlightBear && !(onlyShowBearOnMage && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Mage)) {
+                    bears.forEach { bear ->
+                        if (noInterpolateBear) {
+                            drawStyledBox(bear.boundingBox, bearColor, style, depth)
+                        } else {
+                            drawStyledBox(bear.renderBoundingBox, bearColor, style, depth)
+                        }
                     }
                 }
             }
         }
-
     }
 }

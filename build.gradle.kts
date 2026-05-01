@@ -18,6 +18,8 @@ repositories {
 dependencies {
     minecraft("com.mojang:minecraft:${property("minecraft_version")}")
     mappings(loom.officialMojangMappings())
+    modImplementation("com.github.luben:zstd-jni:1.5.5-11")
+    include("com.github.luben:zstd-jni:1.5.5-11")
     modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_api_version")}")

@@ -33,28 +33,38 @@ object Titles: Module(
     val bowMiss = Regex("""^\[CROWD] [^:]+: (Yeah!!! Keep dodging them Thorn!|[A-Za-z0-9_]+ missed the shot! No way!! Hahaha|My goodness, [A-Za-z0-9_]+ really can't aim!!|Alright those humans are a joke, missing easy shots like that\.\.\.|[A-Za-z0-9_]+ has no thumbs!)$""")
     val bowPickup = "You picked up the Spirit Bow! Use it to attack Thorn!"
 
+
+
     fun handleBearSpawnStart() {
-        setTitle(bearTimerStarted)
+        if (enabled) {
+            setTitle(bearTimerStarted)
+        }
     }
     fun handleBearSpawn() {
-        setTitle(bearSpawned)
+        if (enabled) {
+            setTitle(bearSpawned)
+        }
     }
     fun handleBearKill() {
-        setTitle(bearKilled)
+        if (enabled) {
+            setTitle(bearKilled)
+        }
     }
 
     init {
-
         onReceive<ClientboundSetSubtitleTextPacket> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
+            if (!hideDefault) return@onReceive
             it.cancel()
         }
         onReceive<ClientboundSetTitlesAnimationPacket> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
+            if (!hideDefault) return@onReceive
             it.cancel()
         }
         onReceive<ClientboundSetTitleTextPacket> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
+            if (!hideDefault) return@onReceive
             it.cancel()
         }
 
