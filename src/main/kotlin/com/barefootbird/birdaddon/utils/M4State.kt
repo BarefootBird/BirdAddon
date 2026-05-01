@@ -126,6 +126,12 @@ object M4State {
                         modMessage("Thorn Defeated in ${(timer / 20.0).toFixed(2)}s")
                     }
                 }
+                if (Timer.printLastBowTime) {
+                    GlobalScope.launch {
+                        delay(1000)
+                        modMessage("Last Bow Shot In ${((timer - bearKillTimes[bearKillTimes.size - 1]) / 20.0).toFixed(2)}s")
+                    }
+                }
             }
         }
 

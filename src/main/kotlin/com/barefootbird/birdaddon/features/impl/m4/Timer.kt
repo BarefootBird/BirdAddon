@@ -14,7 +14,8 @@ object Timer: Module(
     description = "Shows how long the boss has gone on for",
     category = Category.M4
 ) {
-    val printToChat by BooleanSetting("Print To Chat", true, desc = "Prints run time to chat")
+    val printToChat by BooleanSetting("Print Tick Time", true, desc = "Prints run time in ticks to chat")
+    val printLastBowTime by BooleanSetting("Print Last Bow Time", true, desc = "Prints time taken to shoot last bow (Measured from when the bear dies to when boss ends)")
 
     private val hud by HUD(name, "Displays the time on the hud", true) { example ->
         when {

@@ -20,12 +20,14 @@ object MobCounters: Module(
         if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(4)) {
             return@HUD 0 to 0
         }
-
         val features = listOf(totalGUI, cowsGUI, sheepGUI, chickensGUI, batsGUI, wolvesGUI, rabbitsGUI, rabbitsUnderThornGui)
+
+        var enabledFeatures = 0
 
         runCatching {
             features.forEachIndexed { index, enabled ->
                 if (!enabled) return@forEachIndexed
+                enabledFeatures++
                 val displayText = when (index) {
                     0 -> "Mobs: " +
                             (M4Mobs.cows.size +
@@ -44,10 +46,10 @@ object MobCounters: Module(
                     7 -> "Rabbits under Thorn: " + M4Mobs.rabbits.count { it.x > 21 && it.z > 21 }
                     else -> ""
                 }
-                textDim(displayText, 0, (index - 1) * 9, Colors.WHITE)
+                textDim(displayText, 0, (enabledFeatures - 1) * 9, Colors.WHITE)
             }
         }
-        "Rabbits Under Thorn: 00".length to 9 * (features.count { it })
+        "Rabbits Under Thorn: 00".length to 9 * enabledFeatures
 
 
     }
