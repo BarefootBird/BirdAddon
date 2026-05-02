@@ -261,7 +261,7 @@ class LogSelectScreen(
 
     override fun init() {
         super.init()
-        list = LogListWidget(minecraft!!, width, 32, height - 150, 20)
+        list = LogListWidget(minecraft, width, 32, height - 150, 20)
         addRenderableWidget(list)
 
         addRenderableWidget(
@@ -269,7 +269,7 @@ class LogSelectScreen(
                 val selected = list.selected
                 if (selected != null) {
                     onReplaySelected(selected.file)
-                    minecraft!!.setScreen(null) // close the screen
+                    minecraft.setScreen(null) // close the screen
                 }
             }.bounds(width / 2 - 100, height - 70, 200, 20).build()
         )
@@ -295,7 +295,7 @@ class LogSelectScreen(
 
                     if (oldFile.renameTo(newFile)) {
                         removeWidget(list)
-                        list = LogListWidget(minecraft!!, width, 32, height - 150, 20)
+                        list = LogListWidget(minecraft, width, 32, height - 150, 20)
                         addRenderableWidget(list)
                         //list.children().remove(selected)
                         //list.addNewEntry(LogEntry(newFile))
