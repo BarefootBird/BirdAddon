@@ -239,7 +239,6 @@ class LogListWidget(
         val dir = File(mc.gameDirectory, "m4logs/logs").apply { mkdirs() }
 
         try {
-
             dir.listFiles().filter{
                 it.name.endsWith(".bin")
             }.sorted().reversed().forEach {

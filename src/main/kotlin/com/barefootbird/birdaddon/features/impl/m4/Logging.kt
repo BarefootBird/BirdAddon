@@ -328,6 +328,7 @@ object Logging: Module(
                     out?.close()
                     out = null
                     ended = true
+                    logFile = null
                     modMessage("Logged boss")
                 }
             } catch (e: ConcurrentModificationException) {

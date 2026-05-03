@@ -21,9 +21,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.events.WorldEvent
-import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.utils.noControlCodes
-import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 import java.io.File
 
 

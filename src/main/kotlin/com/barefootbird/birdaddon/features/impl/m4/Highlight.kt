@@ -35,7 +35,6 @@ object Highlight: Module(
     category = Category.M4
 ) {
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
-    private val depth by BooleanSetting("Depth", true, desc = "no show through da wall")
     private val highlightThorn by BooleanSetting("Thorn Highlight", true, desc = "Highlights thorn")
     private val highlightBear by BooleanSetting("Bear Highlight", true, desc = "Highlights bears")
     private val onlyShowBearOnMage by BooleanSetting("Only Show Bear On Mage", false, desc = "Only shows the bear on mage class").withDependency { highlightBear }
@@ -97,16 +96,16 @@ object Highlight: Module(
 
                 entities.forEach { (entities, color) ->
                     entities.toList().forEach { entity ->
-                        drawStyledBox(entity.renderBoundingBox, color, style, depth)
+                        drawStyledBox(entity.renderBoundingBox, color, style, true)
                     }
                 }
 
                 if (highlightBear && !(onlyShowBearOnMage && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Mage)) {
                     bears.forEach { bear ->
                         if (noInterpolateBear) {
-                            drawStyledBox(bear.boundingBox, bearColor, style, depth)
+                            drawStyledBox(bear.boundingBox, bearColor, style, true)
                         } else {
-                            drawStyledBox(bear.renderBoundingBox, bearColor, style, depth)
+                            drawStyledBox(bear.renderBoundingBox, bearColor, style, true)
                         }
                     }
                 }

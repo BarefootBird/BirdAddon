@@ -17,7 +17,6 @@ import com.barefootbird.birdaddon.features.impl.m4.Replay
 import com.barefootbird.birdaddon.features.impl.m4.SpiritBearTimer
 import com.barefootbird.birdaddon.features.impl.m4.ThornStunTimer
 import com.barefootbird.birdaddon.features.impl.m4.Waypoints
-import com.barefootbird.birdaddon.features.impl.m4.WishyWishy
 import com.barefootbird.birdaddon.utils.M4Mobs
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.Webserver
@@ -63,7 +62,7 @@ object BirdAddon : ClientModInitializer {
 
         // Register modules by adding to the list
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"), SpiritBearTimer, Highlight,
-            WishyWishy, Waypoints, Timer, Logging, ThornStunTimer, OverkillDisplay, Titles, Replay, MobCounters
+            Waypoints, Timer, Logging, ThornStunTimer, OverkillDisplay, Titles, Replay, MobCounters
         )
     }
 }

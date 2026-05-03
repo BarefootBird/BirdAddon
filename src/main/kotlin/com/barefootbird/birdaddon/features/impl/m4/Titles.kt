@@ -20,7 +20,7 @@ object Titles: Module(
     description = "Custom Titles for m4 (leave them blank to disable them)",
     category = Category.M4
 ) {
-    private val hideDefault by BooleanSetting("Hide Defualt Titles", true, desc = "Hides the titles for picking up bows and bears dying")
+    private val hideDefault by BooleanSetting("Hide Default Titles", true, desc = "Hides the titles for picking up bows and bears dying")
 
     private val missWarning by StringSetting("Miss Warning", "§cBow Missed", desc = "Shows a title when bow is missed")
     private val pickupWarning by StringSetting("Non-Tank Pickup Warning", "§cBow Picked Up", desc = "Shows a title when bow is picked up if you're not on tank")
