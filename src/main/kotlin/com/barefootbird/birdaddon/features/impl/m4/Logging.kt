@@ -344,6 +344,7 @@ object Logging: Module(
             nextId = 0
             currentTick = 0
             lastTick = 0
+            pendingEnd = false
             ended = false
 
             out?.close()
