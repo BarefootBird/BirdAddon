@@ -1,13 +1,9 @@
 package com.barefootbird.birdaddon.utils
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.WorldEvent
-import com.odtheking.odin.events.core.on
-import com.odtheking.odin.utils.modMessage
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.ClientStopping
 import net.minecraft.ChatFormatting
-import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
@@ -16,7 +12,6 @@ import java.io.FileOutputStream
 import java.net.URI
 import java.net.URL
 import java.security.MessageDigest
-import java.util.concurrent.TimeUnit
 import java.util.zip.ZipFile
 import kotlin.concurrent.thread
 

@@ -2,7 +2,6 @@ package com.barefootbird.birdaddon.utils
 
 import com.github.luben.zstd.ZstdInputStream
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.utils.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button

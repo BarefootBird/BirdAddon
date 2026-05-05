@@ -6,6 +6,7 @@ import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.M4State.onCgm4
 import com.barefootbird.birdaddon.utils.ReplayDecoder
 import com.barefootbird.birdaddon.utils.ReplayRuntime
+import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.TickEvent
@@ -14,12 +15,10 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.toFixed
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3

@@ -3,6 +3,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.Webserver.startWebserver
+import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.events.ChatPacketEvent
@@ -10,7 +11,6 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.world.entity.EntityType
