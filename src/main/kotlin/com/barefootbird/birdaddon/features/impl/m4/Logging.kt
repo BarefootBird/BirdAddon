@@ -2,7 +2,6 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
-import com.barefootbird.birdaddon.utils.Webserver.startWebserver
 import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
@@ -32,9 +31,9 @@ object Logging: Module(
     private var ended = false // prevents logging multiple times
     private var pendingEnd = false
 
-    private val startWebserver by ActionSetting("Start Webserver", "Starts the m4 webserver website thingy") {
-        startWebserver()
-    }
+    //private val startWebserver by ActionSetting("Start Webserver", "Starts the m4 webserver website thingy") {
+    //    startWebserver()
+    //}
 
     val eventBuffer = ArrayList<Event>(256)
 
