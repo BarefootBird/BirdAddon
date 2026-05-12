@@ -26,7 +26,7 @@ object MobCounters: Module(
         var enabledFeatures = 0
 
         fun isUnderThorn(x: Double, y: Double, z: Double): Boolean {
-            return (y < 75 && (x > 21 && z > 21)
+            return y < 75 && ((x > 21 && z > 21)
                     || (x > 26 && z > 16)
                     || (x > 16 && z > 26))
         }
