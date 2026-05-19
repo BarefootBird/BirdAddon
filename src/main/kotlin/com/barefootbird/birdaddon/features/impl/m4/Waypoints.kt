@@ -21,6 +21,8 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.impl.ActionSetting
+import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.WorldEvent
 import java.io.File
 
@@ -34,10 +36,16 @@ object Waypoints: Module(
     private val depth by BooleanSetting("depth", true, "depth")
     private val showOnCgm4 by BooleanSetting("Show on cgm4", true, "Shows the waypoints on cgm4's is")
     private val showOnM4Miku by BooleanSetting("Show on m4miku", true, "Shows the waypoints on m4miku's is")
+    private val loadCommand by ActionSetting("Load Waypoints from file", "Load Waypoints from .minecraft/config/odin/addons/m4waypoints.json") { loadWaypoints() }
 
     private val bearSpawn by BooleanSetting("Bear Spawn Waypoint", true, "Shows the waypoint for bear spawn")
-    private val bearSpawnOnMage by BooleanSetting("Bear wp Only on Mage", true, "Shows the waypoint for bear spawn").withDependency { bearSpawn }
-
+    private val bearSpawnOnMage by BooleanSetting("Bear wp only on Mage", true, "Shows the waypoint for bear spawn").withDependency { bearSpawn }
+    private val bearSpawnOnlyWhenBearIsSpawning by BooleanSetting("Bear wp only when spawning", false, "Only shows the waypoint when the bear is spawning").withDependency { bearSpawn }
+    private val bearSpawnColors by BooleanSetting("Bear wp change colors", true, "Changes colors: red when bear is spawning, green when its spawning and you're looking at it, orange when you're too close to it").withDependency { bearSpawn }
+    private val defaultColor by ColorSetting("Default", Colors.MINECRAFT_BLUE, true, desc = "Color when bear isnt spawning").withDependency { bearSpawnColors }
+    private val lookingAtColor by ColorSetting("Looking at", Colors.MINECRAFT_GREEN, true, desc = "Color when bear is spawning and you're looking at it").withDependency { bearSpawnColors }
+    private val notLookingAtColor by ColorSetting("Not looking at", Colors.MINECRAFT_RED, true, desc = "Color when bear is spawning you're not looking at it").withDependency { bearSpawnColors }
+    private val tooCloseColor by ColorSetting("Too close", Colors.MINECRAFT_GOLD, true, desc = "Color when you're too close that you'd do a vanilla melee hit").withDependency { bearSpawnColors }
 
 
     val wpConfig = File(mc.gameDirectory, "config/odin/addons/m4waypoints.json")
@@ -194,28 +202,36 @@ object Waypoints: Module(
         renderWaypoint(pos.x, pos.y, pos.z, clazz)
     }
 
-    private fun lookingAt (box: AABB): Boolean {
+    private fun lookingAt (box: AABB, range: Double): Boolean {
 
         val eyePos = mc.player?.eyePosition ?: return false
         val lookVec = mc.player?.getViewVector(1.0F) ?: return false
-        val end = eyePos.add(lookVec.scale(100.0))
+        val end = eyePos.add(lookVec.scale(range))
         return box.clip(eyePos, end).isPresent
     }
 
     private fun RenderEvent.Extract.renderBearSpawn () {
+
+        if (bearSpawnOnlyWhenBearIsSpawning && (M4State.bearTimer == -1 || M4State.bearTimer == 0)) return
+
         val spawnSpot = M4State.bearSpawnSpot
         var bearSpawn = AABB(spawnSpot.x - 0.3, 70.4, spawnSpot.z - 0.3, spawnSpot.x + 0.3, 71.5, spawnSpot.z + 0.3)
         if (onCgm4) {
             bearSpawn = AABB(spawnSpot.x + 1.7, 111.4, spawnSpot.z + 1.7, spawnSpot.x + 2.3, 112.5, spawnSpot.x + 2.3)
         }
-        val bearSpawnColor: Color = if (M4State.bearTimer == -1) {
-            Colors.MINECRAFT_BLUE
+
+        val bearSpawnColor: Color = if (M4State.bearTimer == -1 || !bearSpawnColors) {
+            defaultColor
         } else {
-            if (lookingAt(bearSpawn)) {
-                Colors.MINECRAFT_GREEN
+
+            if (lookingAt(bearSpawn, 3.0)) {
+                tooCloseColor
+            } else if (lookingAt(bearSpawn, 100.0)) {
+                lookingAtColor
             } else {
-                Colors.MINECRAFT_RED
+                notLookingAtColor
             }
+
         }
         if ((onCgm4 && showOnCgm4) || (onM4Miku && showOnM4Miku) || (DungeonUtils.inBoss && DungeonUtils.isFloor(4))) {
             drawStyledBox(bearSpawn, bearSpawnColor, renderStyle, false) // bear spawn
