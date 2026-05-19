@@ -109,8 +109,8 @@ object Replay : Module(
             return
         }
 
-        if (!file.name.endsWith(".bin")) {
-            modMessage("[Replay] Expected .bin file: ${file.name}")
+        if (!file.name.endsWith(".m4replay")) {
+            modMessage("[Replay] Expected .m4replay file: ${file.name}")
             return
         }
 

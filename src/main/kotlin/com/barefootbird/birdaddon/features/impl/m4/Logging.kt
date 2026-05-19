@@ -4,7 +4,6 @@ import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.OdinMod
-import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
@@ -20,8 +19,7 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 import kotlin.math.roundToInt
-import com.github.luben.zstd.ZstdOutputStream
-
+import java.util.zip.GZIPOutputStream
 
 object Logging: Module(
     name = "Logging",
@@ -235,10 +233,9 @@ object Logging: Module(
                 if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(4)) return@on
                 currentTick++
                 if (out == null) {
-                    logFile = File(logsFolder, "${System.currentTimeMillis()}.bin")
-                    val zstd = ZstdOutputStream(logFile!!.outputStream().buffered(64*1024))
-                    zstd.setLevel(3)
-                    out = DataOutputStream(zstd)
+                    logFile = File(logsFolder, "${System.currentTimeMillis()}.m4replay")
+                    val gzip = GZIPOutputStream(logFile!!.outputStream().buffered(64*1024))
+                    out = DataOutputStream(gzip)
                     out!!.writeInt(0x4D344C31)
                     out!!.writeByte(1) // version
                 }

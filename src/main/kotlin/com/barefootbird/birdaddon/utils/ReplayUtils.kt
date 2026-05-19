@@ -1,6 +1,6 @@
 package com.barefootbird.birdaddon.utils
 
-import com.github.luben.zstd.ZstdInputStream
+import java.util.zip.GZIPInputStream
 import com.odtheking.odin.OdinMod.mc
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
@@ -10,6 +10,7 @@ import net.minecraft.client.gui.components.ObjectSelectionList
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 import java.io.DataInputStream
+import java.io.EOFException
 import java.io.File
 import kotlin.collections.emptyList
 
@@ -39,7 +40,7 @@ class ReplayDecoder(file: File) {
 
     private var currentKills = 0
 
-    private val input = DataInputStream(ZstdInputStream(file.inputStream().buffered()))
+    private val input = DataInputStream(GZIPInputStream(file.inputStream().buffered()))
 
     val snapshots = mutableListOf<Snapshot>()
 
@@ -51,23 +52,28 @@ class ReplayDecoder(file: File) {
     }
 
     private fun decode() {
-        val magic = input.readInt()
-        if (magic != 0x4D344C31) {
-            throw RuntimeException("Invalid M4 file magic")
+        input.use {
+            val magic = it.readInt()
+            if (magic != 0x4D344C31) {
+                throw RuntimeException("Invalid M4 file magic")
+            }
+
+            val version = it.readUnsignedByte()
+            if (version != 1) {
+                throw RuntimeException("Unsupported version: $version")
+            }
+
+            snapshots.add(Snapshot(0, emptyMap(), 0))
+
+            try {
+                while (true) {
+                    stepBlock()
+                }
+            } catch (_: EOFException) {
+            }
+
+            snapshots.add(Snapshot(currentTick, deepCopyState(), currentKills))
         }
-
-        val version = input.readUnsignedByte()
-        if (version != 1) {
-            throw RuntimeException("Unsupported version: $version")
-        }
-
-        snapshots.add(Snapshot(0, emptyMap(), 0))
-
-        while (input.available() > 0) {
-            stepBlock()
-        }
-
-        snapshots.add(Snapshot(currentTick, deepCopyState(), currentKills))
     }
 
     private fun stepBlock() {
@@ -238,9 +244,9 @@ class LogListWidget(
         val dir = File(mc.gameDirectory, "m4logs/logs").apply { mkdirs() }
 
         try {
-            dir.listFiles().filter{
-                it.name.endsWith(".bin")
-            }.sorted().reversed().forEach {
+            dir.listFiles()?.filter{
+                it.name.endsWith(".m4replay")
+            }?.sorted()?.reversed()?.forEach {
                 addEntry(LogEntry(it))
             }
         } catch (e: Exception) {
@@ -284,9 +290,9 @@ class LogSelectScreen(
                 val newName = renameField.value.trim()
                 if (selected != null && newName.isNotEmpty()) {
                     val oldFile = selected.file
-                    val newFile = File(oldFile.parentFile, "$newName.bin")
+                    val newFile = File(oldFile.parentFile, "$newName.m4replay")
 
-                    if (File(oldFile.parentFile, "$newName.bin").exists()) {
+                    if (File(oldFile.parentFile, "$newName.m4replay").exists()) {
                         modMessage("File with this name already exists")
                         return@builder
                     }
