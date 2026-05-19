@@ -12,6 +12,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.M4State.onCgm4
+import com.barefootbird.birdaddon.utils.M4State.onM4Miku
 import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.core.BlockPos
@@ -32,6 +33,7 @@ object Waypoints: Module(
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val depth by BooleanSetting("depth", true, "depth")
     private val showOnCgm4 by BooleanSetting("Show on cgm4", true, "Shows the waypoints on cgm4's is")
+    private val showOnM4Miku by BooleanSetting("Show on m4miku", true, "Shows the waypoints on m4miku's is")
 
     private val bearSpawn by BooleanSetting("Bear Spawn Waypoint", true, "Shows the waypoint for bear spawn")
     private val bearSpawnOnMage by BooleanSetting("Bear wp Only on Mage", true, "Shows the waypoint for bear spawn").withDependency { bearSpawn }
@@ -64,10 +66,8 @@ object Waypoints: Module(
         var newPos = pos
         if (onCgm4) {
             newPos = BlockPos(pos.x - 2, pos.y - 41, pos.z -2) // cgm4's island is offset from actual m4
-        } else {
-            if (!DungeonUtils.inBoss || !DungeonUtils.inDungeons) {
-                modMessage("need to be in f4/m4 or on catgirlm4's is")
-            }
+        } else if ((!DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !onM4Miku) {
+            modMessage("need to be in f4/m4 or on catgirlm4's/m4miku's is")
         }
         if (waypoints.removeIf { it.pos.x == newPos.x && it.pos.y == newPos.y && it.pos.z == newPos.z }) {
             modMessage("removed waypoint")
@@ -82,8 +82,8 @@ object Waypoints: Module(
         if (onCgm4) {
             newPos = BlockPos(pos.x - 2, pos.y - 41, pos.z -2) // cgm4's island is offset from actual m4
         } else {
-            if (!DungeonUtils.inBoss || !DungeonUtils.inDungeons) {
-                modMessage("need to be in f4/m4 or on catgirlm4's is")
+            if ((!DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !onM4Miku) {
+                modMessage("need to be in f4/m4 or on catgirlm4's/m4miku's is")
             }
         }
 
@@ -157,12 +157,14 @@ object Waypoints: Module(
     }
 
     fun RenderEvent.Extract.renderCustomWaypoints() {
-        if (!onCgm4 && !(DungeonUtils.inBoss && DungeonUtils.isFloor(4))) return
+        if (!onCgm4 && !onM4Miku && !(DungeonUtils.inBoss && DungeonUtils.isFloor(4))) return
         waypoints.forEach {
-            if (it.clazz == DungeonUtils.currentDungeonPlayer.clazz.toString() || onCgm4) {
+            if (it.clazz == DungeonUtils.currentDungeonPlayer.clazz.toString() || onCgm4 || onM4Miku) {
                 val clazz = enumValueOf<DungeonClass>(it.clazz)
                 if (onCgm4 && showOnCgm4) {
                     renderWaypoint(BlockPos(it.pos.x + 2, it.pos.y + 41, it.pos.z + 2), clazz)
+                } else if (onM4Miku && showOnM4Miku) {
+                    renderWaypoint(BlockPos(it.pos.x, it.pos.y, it.pos.z), clazz)
                 } else {
                     if (shouldRenderNow(it.start, it.end)) {
                         renderWaypoint(it.pos, DungeonUtils.currentDungeonPlayer.clazz)
@@ -215,7 +217,7 @@ object Waypoints: Module(
                 Colors.MINECRAFT_RED
             }
         }
-        if ((onCgm4 && showOnCgm4) || (DungeonUtils.inBoss && DungeonUtils.isFloor(4))) {
+        if ((onCgm4 && showOnCgm4) || (onM4Miku && showOnM4Miku) || (DungeonUtils.inBoss && DungeonUtils.isFloor(4))) {
             drawStyledBox(bearSpawn, bearSpawnColor, renderStyle, false) // bear spawn
         }
     }
@@ -223,8 +225,8 @@ object Waypoints: Module(
     init {
         on<RenderEvent.Extract> {
             renderCustomWaypoints()
-            if ((DungeonUtils.inBoss && DungeonUtils.isFloor(4)) || onCgm4) {
-                if (bearSpawnOnMage && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Mage && !onCgm4) return@on
+            if ((DungeonUtils.inBoss && DungeonUtils.isFloor(4)) || onCgm4 || onM4Miku) {
+                if (bearSpawnOnMage && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Mage && !onCgm4 && !onM4Miku) return@on
                 renderBearSpawn()
             }
         }

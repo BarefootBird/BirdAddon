@@ -49,6 +49,7 @@ object M4State {
     val bearKillTimes = mutableListOf<Int>()
     val bearSpawnStartTimes = mutableListOf<Int>()
     var onCgm4 = false
+    var onM4Miku = false
     var inThornBoss = false
 
     val enteredRegex = Regex("^\\[BOSS] Thorn: Welcome Adventurers! I am Thorn, the Spirit! And host of the Vegan Trials!$")
@@ -234,6 +235,7 @@ object M4State {
             overkillWolves = 0
             ended = false
             onCgm4 = false
+            onM4Miku = false
             inThornBoss = false
         }
 
@@ -248,8 +250,12 @@ object M4State {
                 if (teamPrefix.isEmpty()) return@onReceive
                 if (!packet.name.matches(teamRegex)) return@onReceive
                 val message = "${teamPrefix}${teamSuffix.trim()}".noControlCodes
+                // Hardcoded names :/
                 if (message.contains("catgirlm4")) {
                     onCgm4 = true
+                }
+                if (message.contains("M4Miku")) {
+                    onM4Miku = true
                 }
             }
         }

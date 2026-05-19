@@ -4,6 +4,7 @@ import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.LogSelectScreen
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.M4State.onCgm4
+import com.barefootbird.birdaddon.utils.M4State.onM4Miku
 import com.barefootbird.birdaddon.utils.ReplayDecoder
 import com.barefootbird.birdaddon.utils.ReplayRuntime
 import com.barefootbird.birdaddon.utils.modMessage
@@ -257,6 +258,13 @@ object Replay : Module(
                 var x = e.x
                 var y = e.y
                 var z = e.z
+
+                if (onM4Miku) {
+                    // translate from cgm4 coords to miku coords (miku's coords are the same as actual m4/f4 coords)
+                    x -= 2
+                    y -= 41
+                    z -= 2
+                }
 
                 if (playing && r.lastTicksEntities.contains(it.key) && abs(playSpeed) >= 1) {
                     val last = r.lastTicksEntities[it.key]!!
