@@ -24,8 +24,16 @@ import com.barefootbird.birdaddon.utils.M4Mobs.wolves
 import com.barefootbird.birdaddon.utils.M4Mobs.bears
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.ambient.Bat
+import net.minecraft.world.entity.animal.chicken.Chicken
+import net.minecraft.world.entity.animal.cow.Cow
+import net.minecraft.world.entity.animal.rabbit.Rabbit
+import net.minecraft.world.entity.animal.sheep.Sheep
+import net.minecraft.world.entity.animal.wolf.Wolf
 
 import net.minecraft.world.entity.decoration.ArmorStand
+import net.minecraft.world.entity.monster.Ghast
 import net.minecraft.world.phys.AABB
 
 
@@ -35,7 +43,12 @@ object Highlight: Module(
     category = Category.M4
 ) {
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
+
+    private val hideNameTags by BooleanSetting("Hide Name tags", true, desc = "Hides animal name tags")
+    private val hideMobs by BooleanSetting("Hide highlighted mobs", false, desc = "Hides mobs")
+
     private val highlightThorn by BooleanSetting("Thorn Highlight", true, desc = "Highlights thorn")
+
     private val highlightBear by BooleanSetting("Bear Highlight", true, desc = "Highlights bears")
     private val onlyShowBearOnMage by BooleanSetting("Only Show Bear On Mage", false, desc = "Only shows the bear on mage class").withDependency { highlightBear }
     private val noInterpolateBear by BooleanSetting("No Bear Interpolation", true, desc = "Removes interpolation from bears").withDependency { highlightBear }
@@ -48,8 +61,6 @@ object Highlight: Module(
     private val highlightChicken by BooleanSetting("Chicken Highlight", true, desc = "Highlights chickens")
     private val highlightRabbit by BooleanSetting("Rabbit Highlight", true, desc = "Highlights rabbits")
 
-
-    private val hideNameTags by BooleanSetting("Hide Name tags", true, desc = "Hides animal name tags")
     val thornColor by ColorSetting("Thorn Color", Colors.WHITE, true, desc = "Color of thorn highlight").withDependency { highlightThorn }
     val wolfColor by ColorSetting("Wolf Color", Colors.MINECRAFT_GOLD, true, desc = "Color of wolf highlight").withDependency { highlightWolves }
     val batColor by ColorSetting("Bat Color", Colors.MINECRAFT_DARK_BLUE, true, desc = "Color of bat highlight").withDependency { highlightBats }
@@ -60,6 +71,24 @@ object Highlight: Module(
 
 
     private val searchBox = AABB(-36.0, -36.0, -36.0, 47.0, 110.0, 47.0) // m4 arena size
+
+    @JvmStatic
+    fun shouldHideEntity(entity: Entity): Boolean {
+        if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return false
+        if (hideNameTags) {
+            if (entity is ArmorStand && entity.name.string.contains("❤")) return true
+        }
+        if (hideMobs) {
+            if (entity is Bat && highlightBats) return true
+            if (entity is Chicken && highlightChicken) return true
+            if (entity is Rabbit && highlightRabbit) return true
+            if (entity is Sheep && highlightSheep) return true
+            if (entity is Cow && highlightCow) return true
+            if (entity is Wolf && highlightWolves) return true
+            if (entity is Ghast && highlightThorn) return true
+        }
+        return false
+    }
 
     init {
 
