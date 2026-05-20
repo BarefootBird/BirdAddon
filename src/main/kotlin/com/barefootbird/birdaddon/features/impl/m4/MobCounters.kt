@@ -21,7 +21,7 @@ object MobCounters: Module(
         if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(4)) {
             return@HUD 0 to 0
         }
-        val features = listOf(totalGUI, cowsGUI, sheepGUI, chickensGUI, batsGUI, wolvesGUI, rabbitsGUI, mobsUnderThornGui)
+        val features = listOf(totalGUI, cowsGUI, sheepGUI, chickensGUI, batsGUI, wolvesGUI, rabbitsGUI, mobsUnderThornGui, rabbitsNotUnderThornGui)
 
         var enabledFeatures = 0
 
@@ -58,6 +58,9 @@ object MobCounters: Module(
                             isUnderThorn(mob.x, mob.y, mob.z)
                         }
                     }
+                    8 -> rabbitsNotUnderThornPrefix + M4Mobs.rabbits.count { rabbit ->
+                        !isUnderThorn(rabbit.x, rabbit.y, rabbit.z)
+                    }
                     else -> ""
                 }
                 textDim(displayText, 0, (enabledFeatures - 1) * 9, Colors.WHITE)
@@ -74,6 +77,8 @@ object MobCounters: Module(
     private val wolvesGUI by BooleanSetting("Wolves", true, desc = "Shows alive wolves")
     private val rabbitsGUI by BooleanSetting("Rabbits", true, desc = "Shows alive rabbits")
     private val mobsUnderThornGui by BooleanSetting("Mobs Under Thorn", default = true, desc = "Shows mobs under thorn")
+    private val rabbitsNotUnderThornGui by BooleanSetting("Rabbits Not Under Thorn", default = true, desc = "Shows the number of rabbits that aren't under thorn")
+
 
     private val totalMobsPrefix by StringSetting("Total Prefix", "§fMobs: ", desc = "Prefix for total mob counter")
     private val cowsPrefix by StringSetting("Cows Prefix", "§bCows: ", desc = "Prefix for cow counter")
@@ -83,5 +88,6 @@ object MobCounters: Module(
     private val wolvesPrefix by StringSetting("Wolves Prefix", "§6Wolves: ", desc = "Prefix for wolf counter")
     private val rabbitsPrefix by StringSetting("Rabbits Prefix", "§2Rabbits: ", desc = "Prefix for rabbit counter")
     private val mobsUnderThornPrefix by StringSetting("Mobs Under Thorn Prefix", "§7Under Thorn: ", desc = "Prefix for mobs under thorn counter")
+    private val rabbitsNotUnderThornPrefix by StringSetting("Rabbits Not Under Thorn Prefix", "§2Rabbits in mid: ", desc = "Prefix for rabbits not under thorn counter")
 
 }
