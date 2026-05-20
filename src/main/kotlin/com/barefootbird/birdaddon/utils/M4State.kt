@@ -1,6 +1,7 @@
 package com.barefootbird.birdaddon.utils
 
 import com.barefootbird.birdaddon.features.impl.m4.Logging.writeKills
+import com.barefootbird.birdaddon.features.impl.m4.Tac
 import com.barefootbird.birdaddon.features.impl.m4.Timer
 import com.barefootbird.birdaddon.features.impl.m4.Titles
 import com.odtheking.odin.OdinMod.mc
@@ -128,6 +129,14 @@ object M4State {
                                     2
                                 )
                             }s"
+                        )
+                    }
+                }
+                if (Tac.printTacTime && Tac.lastBearTaccedOn == bearKillTimes.size - 1) {
+                    GlobalScope.launch {
+                        delay(1000)
+                        modMessage(
+                            "Tacced at ${((Tac.lastBearTacTime / 20.0).toFixed(2))}s"
                         )
                     }
                 }
