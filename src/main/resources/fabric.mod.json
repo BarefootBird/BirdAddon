@@ -17,6 +17,9 @@
       }
     ]
   },
+  "mixins": [
+    "birdaddon.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": ">=${fabric_api_version}",
