@@ -211,6 +211,7 @@ object Waypoints: Module(
     }
 
     private fun RenderEvent.Extract.renderBearSpawn () {
+        if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return
 
         if (bearSpawnOnlyWhenBearIsSpawning && (M4State.bearTimer == -1 || M4State.bearTimer == 0)) return
 
