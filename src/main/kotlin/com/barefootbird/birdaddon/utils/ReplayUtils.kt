@@ -230,7 +230,7 @@ class LogEntry(val file: File) : ObjectSelectionList.Entry<LogEntry>() {
 }
 
 class LogListWidget(
-    client: Minecraft,
+    client: Minecraft?,
     width: Int,
     top: Int,
     bottom: Int,
@@ -273,7 +273,7 @@ class LogSelectScreen(
                 val selected = list.selected
                 if (selected != null) {
                     onReplaySelected(selected.file)
-                    minecraft.setScreen(null) // close the screen
+                    minecraft?.setScreen(null) // close the screen
                 }
             }.bounds(width / 2 - 100, height - 70, 200, 20).build()
         )
