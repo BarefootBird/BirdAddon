@@ -10,7 +10,7 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.utils.noControlCodes
+import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket
-import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.ambient.Bat
 import net.minecraft.world.entity.animal.chicken.Chicken
@@ -48,13 +48,11 @@ object M4State {
     val bearSpawnTimes = mutableListOf<Int>()
     val bearKillTimes = mutableListOf<Int>()
     val bearSpawnStartTimes = mutableListOf<Int>()
-    var onCgm4 = false
-    var onM4Miku = false
     var inThornBoss = false
 
     val enteredRegex = Regex("^\\[BOSS] Thorn: Welcome Adventurers! I am Thorn, the Spirit! And host of the Vegan Trials!$")
 
-    class DamagePacket constructor(
+    class DamagePacket (
         var time: Long = 0,
         var pos: Vec3? = null
     )
@@ -128,7 +126,13 @@ object M4State {
                 if (Timer.printLastBowTime) {
                     GlobalScope.launch {
                         delay(1000)
-                        modMessage("Last Bow Shot In ${((timer - bearKillTimes[bearKillTimes.size - 1]) / 20.0).toFixed(2)}s")
+                        modMessage(
+                            "Last Bow Shot In ${
+                                ((timer - bearKillTimes[bearKillTimes.size - 1]) / 20.0).toFixed(
+                                    2
+                                )
+                            }s"
+                        )
                     }
                 }
             }
@@ -173,7 +177,8 @@ object M4State {
 
                 // living entity death
                 if (entity is Wolf || entity is Cow || entity is Rabbit ||
-                    entity is Bat || entity is Sheep || entity is Chicken) {
+                    entity is Bat || entity is Sheep || entity is Chicken
+                ) {
                     if (bearTimer == -1) {
 
                         updateKills(kills + 1) // temporarily updates the kills before the block update event is processed
@@ -182,7 +187,7 @@ object M4State {
                             bearSpawnStartTimes.add(timer)
                             Titles.handleBearSpawnStart()
                             val damagePacket = damagePackets.find {
-                                it.pos?.distanceTo(entity.position() )!! < 2.0
+                                it.pos?.distanceTo(entity.position())!! < 2.0
                             }
                             if (damagePacket != null) {
 
@@ -195,8 +200,7 @@ object M4State {
                                 }
                             }
                         }
-                    }
-                    else {
+                    } else {
                         overkill++
                         if (entity is Wolf) overkillWolves++
                         if (entity is Cow) overkillCows++
@@ -234,33 +238,9 @@ object M4State {
             overkillRabbits = 0
             overkillWolves = 0
             ended = false
-            onCgm4 = false
-            onM4Miku = false
             inThornBoss = false
         }
-
-        onReceive<ClientboundSetPlayerTeamPacket> { event ->
-            val packet = event.packet
-            if (packet is ClientboundSetPlayerTeamPacket) {
-                val opt = packet.parameters
-                if (!opt.isPresent) return@onReceive
-                val team = opt.get()
-                val teamPrefix = team.playerPrefix.string
-                val teamSuffix = team.playerSuffix.string
-                if (teamPrefix.isEmpty()) return@onReceive
-                if (!packet.name.matches(teamRegex)) return@onReceive
-                val message = "${teamPrefix}${teamSuffix.trim()}".noControlCodes
-                // Hardcoded names :/
-                if (message.contains("catgirlm4")) {
-                    onCgm4 = true
-                }
-                if (message.contains("M4Miku")) {
-                    onM4Miku = true
-                }
-            }
-        }
     }
-    private val teamRegex = "^team_(\\d+)$".toRegex()
 
 
     private val f4BlockLocations = listOf(

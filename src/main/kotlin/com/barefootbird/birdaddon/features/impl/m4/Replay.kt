@@ -3,8 +3,8 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.LogSelectScreen
 import com.barefootbird.birdaddon.utils.M4State
-import com.barefootbird.birdaddon.utils.M4State.onCgm4
-import com.barefootbird.birdaddon.utils.M4State.onM4Miku
+import com.barefootbird.birdaddon.utils.Islands.onCgm4
+import com.barefootbird.birdaddon.utils.Islands.onM4Miku
 import com.barefootbird.birdaddon.utils.ReplayDecoder
 import com.barefootbird.birdaddon.utils.ReplayRuntime
 import com.barefootbird.birdaddon.utils.modMessage

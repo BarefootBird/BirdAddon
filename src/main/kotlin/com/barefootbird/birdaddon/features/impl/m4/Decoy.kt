@@ -1,24 +1,6 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
-import com.barefootbird.birdaddon.features.impl.m4.Decoy.npcHighlight
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.M4State.bearKillTimes
-import com.barefootbird.birdaddon.utils.M4State.bearSpawnStartTimes
-import com.barefootbird.birdaddon.utils.M4State.bearSpawnTimes
-import com.barefootbird.birdaddon.utils.M4State.bearTimer
-import com.barefootbird.birdaddon.utils.M4State.ended
-import com.barefootbird.birdaddon.utils.M4State.inThornBoss
-import com.barefootbird.birdaddon.utils.M4State.onCgm4
-import com.barefootbird.birdaddon.utils.M4State.onM4Miku
-import com.barefootbird.birdaddon.utils.M4State.overkill
-import com.barefootbird.birdaddon.utils.M4State.overkillBats
-import com.barefootbird.birdaddon.utils.M4State.overkillChickens
-import com.barefootbird.birdaddon.utils.M4State.overkillCows
-import com.barefootbird.birdaddon.utils.M4State.overkillRabbits
-import com.barefootbird.birdaddon.utils.M4State.overkillSheep
-import com.barefootbird.birdaddon.utils.M4State.overkillWolves
-import com.barefootbird.birdaddon.utils.M4State.timer
-import com.barefootbird.birdaddon.utils.M4State.updateKills
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
@@ -28,14 +10,12 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.Vec2
-import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.world.entity.Entity
 
-import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.skeleton.Skeleton
 import net.minecraft.world.entity.monster.skeleton.WitherSkeleton
 import net.minecraft.world.entity.monster.zombie.Zombie

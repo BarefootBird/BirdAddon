@@ -1,8 +1,8 @@
 package com.barefootbird.birdaddon.commands
 
 import com.barefootbird.birdaddon.features.impl.m4.Replay
-import com.barefootbird.birdaddon.utils.M4State.onCgm4
-import com.barefootbird.birdaddon.utils.M4State.onM4Miku
+import com.barefootbird.birdaddon.utils.Islands.onCgm4
+import com.barefootbird.birdaddon.utils.Islands.onM4Miku
 import com.barefootbird.birdaddon.utils.modMessage
 import com.github.stivais.commodore.Commodore
 
