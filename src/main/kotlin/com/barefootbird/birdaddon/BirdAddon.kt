@@ -1,8 +1,6 @@
 package com.barefootbird.birdaddon
 
 import com.barefootbird.birdaddon.commands.replayCommand
-import com.barefootbird.birdaddon.commands.startWebserverCommand
-import com.barefootbird.birdaddon.commands.stopWebserverCommand
 import com.barefootbird.birdaddon.commands.waypointCommand
 import com.barefootbird.birdaddon.features.impl.m4.Decoy
 import com.barefootbird.birdaddon.features.impl.m4.Titles
@@ -56,7 +54,7 @@ object BirdAddon : ClientModInitializer {
 
         // Register commands by adding to the array
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-            arrayOf(startWebserverCommand, stopWebserverCommand, waypointCommand, replayCommand).forEach { commodore -> commodore.register(dispatcher) }
+            arrayOf(waypointCommand, replayCommand).forEach { commodore -> commodore.register(dispatcher) }
         }
 
         // Register objects to event bus by adding to the list

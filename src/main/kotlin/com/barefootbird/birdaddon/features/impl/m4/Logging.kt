@@ -29,10 +29,6 @@ object Logging: Module(
     private var ended = false // prevents logging multiple times
     private var pendingEnd = false
 
-    //private val startWebserver by ActionSetting("Start Webserver", "Starts the m4 webserver website thingy") {
-    //    startWebserver()
-    //}
-
     val eventBuffer = ArrayList<Event>(256)
 
     var trackedById = HashMap<Int, TrackedMob>()
