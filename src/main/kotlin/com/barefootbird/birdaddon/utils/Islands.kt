@@ -74,9 +74,6 @@ object Islands {
             if (onCgm4 || onM4Miku) return@on
             if (checkPattern(BlockPos(7, 68, 7), mikupattern)) onM4Miku = true
             if (checkPattern(BlockPos(9, 109, 9), cgm4pattern)) onCgm4 = true
-            if (onM4Miku) {
-                modMessage(onM4Miku)
-            }
         }
 
         onReceive<ClientboundPlayerInfoUpdatePacket> { event ->
