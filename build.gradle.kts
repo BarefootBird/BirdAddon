@@ -61,6 +61,12 @@ afterEvaluate {
 }
 
 tasks {
+    remapJar {
+        archiveFileName.set(
+            "${project.name}-${version}-${project.property("minecraft_version")}.jar"
+        )
+    }
+
     processResources {
         filesMatching("fabric.mod.json") {
             expand(getProperties())
