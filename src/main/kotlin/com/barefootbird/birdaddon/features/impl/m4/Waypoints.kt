@@ -24,7 +24,12 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.utils.setClipboardContent
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
+import kotlin.io.encoding.Base64
 
 
 object Waypoints: Module(
@@ -32,20 +37,60 @@ object Waypoints: Module(
     description = "Waypoints for m4",
     category = Category.M4
 ) {
-    private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
+    private val renderStyle by SelectorSetting(
+        "Render Style",
+        "Outline",
+        listOf("Filled", "Outline", "Filled Outline"),
+        desc = "Style of the box."
+    )
     private val depth by BooleanSetting("depth", true, "depth")
     private val showOnCgm4 by BooleanSetting("Show on cgm4", true, "Shows the waypoints on cgm4's is")
     private val showOnM4Miku by BooleanSetting("Show on m4miku", true, "Shows the waypoints on m4miku's is")
-    private val loadCommand by ActionSetting("Load Waypoints from file", "Load Waypoints from .minecraft/config/odin/addons/m4waypoints.json") { loadWaypoints() }
+    private val loadCommand by ActionSetting(
+        "Load Waypoints from file",
+        "Load Waypoints from .minecraft/config/odin/addons/m4waypoints.json"
+    ) { loadWaypoints() }
 
     private val bearSpawn by BooleanSetting("Bear Spawn Waypoint", true, "Shows the waypoint for bear spawn")
-    private val bearSpawnOnMage by BooleanSetting("Bear wp only on Mage", true, "Shows the waypoint for bear spawn").withDependency { bearSpawn }
-    private val bearSpawnOnlyWhenBearIsSpawning by BooleanSetting("Bear wp only when spawning", false, "Only shows the waypoint when the bear is spawning").withDependency { bearSpawn }
-    private val bearSpawnColors by BooleanSetting("Bear wp change colors", true, "Changes colors: red when bear is spawning, green when its spawning and you're looking at it, orange when you're too close to it").withDependency { bearSpawn }
-    private val defaultColor by ColorSetting("Default", Colors.MINECRAFT_BLUE, true, desc = "Color when bear isnt spawning").withDependency { bearSpawnColors }
-    private val lookingAtColor by ColorSetting("Looking at", Colors.MINECRAFT_GREEN, true, desc = "Color when bear is spawning and you're looking at it").withDependency { bearSpawnColors }
-    private val notLookingAtColor by ColorSetting("Not looking at", Colors.MINECRAFT_RED, true, desc = "Color when bear is spawning you're not looking at it").withDependency { bearSpawnColors }
-    private val tooCloseColor by ColorSetting("Too close", Colors.MINECRAFT_GOLD, true, desc = "Color when you're too close that you'd do a vanilla melee hit").withDependency { bearSpawnColors }
+    private val bearSpawnOnMage by BooleanSetting(
+        "Bear wp only on Mage",
+        true,
+        "Shows the waypoint for bear spawn"
+    ).withDependency { bearSpawn }
+    private val bearSpawnOnlyWhenBearIsSpawning by BooleanSetting(
+        "Bear wp only when spawning",
+        false,
+        "Only shows the waypoint when the bear is spawning"
+    ).withDependency { bearSpawn }
+    private val bearSpawnColors by BooleanSetting(
+        "Bear wp change colors",
+        true,
+        "Changes colors: red when bear is spawning, green when its spawning and you're looking at it, orange when you're too close to it"
+    ).withDependency { bearSpawn }
+    private val defaultColor by ColorSetting(
+        "Default",
+        Colors.MINECRAFT_BLUE,
+        true,
+        desc = "Color when bear isnt spawning"
+    ).withDependency { bearSpawnColors }
+    private val lookingAtColor by ColorSetting(
+        "Looking at",
+        Colors.MINECRAFT_GREEN,
+        true,
+        desc = "Color when bear is spawning and you're looking at it"
+    ).withDependency { bearSpawnColors }
+    private val notLookingAtColor by ColorSetting(
+        "Not looking at",
+        Colors.MINECRAFT_RED,
+        true,
+        desc = "Color when bear is spawning you're not looking at it"
+    ).withDependency { bearSpawnColors }
+    private val tooCloseColor by ColorSetting(
+        "Too close",
+        Colors.MINECRAFT_GOLD,
+        true,
+        desc = "Color when you're too close that you'd do a vanilla melee hit"
+    ).withDependency { bearSpawnColors }
 
 
     val wpConfig = File(mc.gameDirectory, "config/odin/addons/m4waypoints.json")
@@ -62,12 +107,72 @@ object Waypoints: Module(
 
     val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 
+    fun exportWaypoints() {
+        val exported: String? = try {
+            Base64.encode(compress(gson.toJson(waypoints)))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+        if (exported == null) {
+            modMessage("Waypoints failed to export")
+            return
+        }
+
+        setClipboardContent(exported)
+        modMessage("Waypoints exported to clipboard")
+    }
+
+    private fun compress(input: String): ByteArray {
+        ByteArrayOutputStream().use { byteArrayOutputStream ->
+            GZIPOutputStream(byteArrayOutputStream).use { gzipOutputStream ->
+                gzipOutputStream.write(input.toByteArray())
+            }
+            return byteArrayOutputStream.toByteArray()
+        }
+    }
+
+    fun importWaypoints() {
+        val clipboard = mc.keyboardHandler.clipboard.trim().trim { it == '\n' }
+        val imported: List<Waypoint>? = try {
+            gson.fromJson(
+                decompress(Base64.decode(clipboard)),
+                object : TypeToken<List<Waypoint>>() {}.type
+            )
+        } catch (_: Exception) {
+            null
+        }
+        if (imported != null) {
+            waypoints.clear()
+            waypoints.addAll(imported)
+            modMessage("Waypoints imported")
+        } else {
+            modMessage("Waypoints failed to import")
+        }
+    }
+
+    private fun decompress(compressed: ByteArray): String {
+        GZIPInputStream(compressed.inputStream()).use { gzipInputStream ->
+            return gzipInputStream.bufferedReader().use { it.readText() }
+        }
+    }
+
     fun saveWaypoints() {
         if (!wpConfig.parentFile.exists()) {
             wpConfig.parentFile.mkdirs()
         }
 
         wpConfig.writeText(gson.toJson(waypoints))
+    }
+
+    fun loadWaypoints() {
+        if (!wpConfig.exists()) return
+
+        val type = object : TypeToken<MutableList<Waypoint>>() {}.type
+        val loaded: MutableList<Waypoint> = gson.fromJson(wpConfig.readText(), type)
+
+        waypoints.clear()
+        waypoints.addAll(loaded)
     }
 
     fun removeWaypoint(pos: BlockPos) {
@@ -125,16 +230,6 @@ object Waypoints: Module(
         saveWaypoints()
 
         modMessage("Waypoint added at ${pos.x}, ${pos.y}, ${pos.z}")
-    }
-
-    fun loadWaypoints() {
-        if (!wpConfig.exists()) return
-
-        val type = object : TypeToken<MutableList<Waypoint>>() {}.type
-        val loaded: MutableList<Waypoint> = gson.fromJson(wpConfig.readText(), type)
-
-        waypoints.clear()
-        waypoints.addAll(loaded)
     }
 
     fun shouldRenderNow(start: String, end: String): Boolean {
@@ -211,8 +306,6 @@ object Waypoints: Module(
     }
 
     private fun RenderEvent.Extract.renderBearSpawn () {
-        if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return
-
         if (bearSpawnOnlyWhenBearIsSpawning && (M4State.bearTimer == -1 || M4State.bearTimer == 0)) return
 
         val spawnSpot = M4State.bearSpawnSpot

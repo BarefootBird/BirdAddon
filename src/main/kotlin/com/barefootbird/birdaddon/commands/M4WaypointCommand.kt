@@ -1,10 +1,12 @@
 package com.barefootbird.birdaddon.commands
 
 import com.barefootbird.birdaddon.features.impl.m4.Waypoints.addWaypoint
+import com.barefootbird.birdaddon.features.impl.m4.Waypoints.exportWaypoints
+import com.barefootbird.birdaddon.features.impl.m4.Waypoints.importWaypoints
 import com.barefootbird.birdaddon.features.impl.m4.Waypoints.removeWaypoint
+import com.barefootbird.birdaddon.utils.modMessage
 import com.github.stivais.commodore.Commodore
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.utils.modMessage
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.HitResult
 
@@ -78,4 +80,13 @@ val waypointCommand = Commodore("m4wp") {
         val pos = (hit as BlockHitResult).blockPos
         removeWaypoint(pos)
     }
+
+    literal("export").runs {
+        exportWaypoints()
+    }
+
+    literal("import").runs {
+        importWaypoints()
+    }
+
 }
