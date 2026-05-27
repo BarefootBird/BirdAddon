@@ -306,7 +306,7 @@ object Waypoints: Module(
     }
 
     private fun RenderEvent.Extract.renderBearSpawn () {
-        if (bearSpawnOnlyWhenBearIsSpawning && (M4State.bearTimer == -1 || M4State.bearTimer == 0)) return
+        if (!(onCgm4 && showOnCgm4) && !(onM4Miku && showOnM4Miku) && bearSpawnOnlyWhenBearIsSpawning && (M4State.bearTimer == -1 || M4State.bearTimer == 0)) return
 
         val spawnSpot = M4State.bearSpawnSpot
         var bearSpawn = AABB(spawnSpot.x - 0.3, 70.4, spawnSpot.z - 0.3, spawnSpot.x + 0.3, 71.5, spawnSpot.z + 0.3)

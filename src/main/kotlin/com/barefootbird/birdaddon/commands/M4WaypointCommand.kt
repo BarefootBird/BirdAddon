@@ -25,8 +25,9 @@ val classMap = mapOf(
     "tank" to "Tank",
     "t" to "Tank"
 )
-
-var patternStartEnd = Regex("^b\\d(spawnstart|spawn|kill)$|^\\d+s$|^bossstart$|^bossend$")
+var patternStartEnd = Regex(
+    "^b\\d(spawnstart|spawn|kill)$|^(\\d+(\\.\\d+)?|\\.\\d+)s$|^bossstart$|^bossend$"
+)
 
 val waypointCommand = Commodore("m4wp") {
     literal("add").runs { clazz: String?, start: String?, end: String? ->
@@ -43,7 +44,7 @@ val waypointCommand = Commodore("m4wp") {
             return@runs
         }
 
-        if (!classMap.keys.contains(clazz)) {
+        if (!classMap.keys.contains(clazz.lowercase())) {
             modMessage("invalid class")
             return@runs
         }
