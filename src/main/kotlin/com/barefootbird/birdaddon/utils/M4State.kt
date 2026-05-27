@@ -11,7 +11,6 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -132,7 +131,7 @@ object M4State {
                         )
                     }
                 }
-                if (Tac.printTacTime && Tac.lastBearTaccedOn == bearKillTimes.size - 1) {
+                if (Tac.printTacTime && Tac.lastBearTaccedOn == bearKillTimes.size) {
                     GlobalScope.launch {
                         delay(1000)
                         modMessage(

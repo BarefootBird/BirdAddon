@@ -53,14 +53,14 @@ object Tac: Module(
         onSend<ServerboundUseItemPacket> { event ->
             val item = mc.player?.getItemInHand(InteractionHand.MAIN_HAND)
             if (item?.displayName?.string?.lowercase()?.contains("tactical insertion") == true) {
-                if (tacTimer) {
+                if (tacTimer && tacTime == -1) {
                     tacTime = 60
                 }
                 if (printTacTime && bearTimer != -1) {
                     if (DungeonUtils.inBoss && DungeonUtils.isFloor(4)) {
                         if (DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.Tank || !printTimeOnlyOnTank) {
                             lastBearTacTime = bearTimer
-                            lastBearTaccedOn = bearSpawnStartTimes.size + 1
+                            lastBearTaccedOn = bearSpawnStartTimes.size
                         }
                     }
                 }
