@@ -74,6 +74,7 @@ object Highlight: Module(
 
     @JvmStatic
     fun shouldHideEntity(entity: Entity): Boolean {
+        if (!enabled) return false
         if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return false
         if (hideNameTags) {
             if (entity is ArmorStand && entity.name.string.contains("❤")) return true
