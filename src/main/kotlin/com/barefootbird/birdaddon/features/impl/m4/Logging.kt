@@ -324,7 +324,6 @@ object Logging: Module(
                     modMessage("Logged boss")
                 }
             } catch (e: ConcurrentModificationException) {
-                modMessage("concurrency error at ${M4State.timer}")
                 print(e.message)
                 eventBuffer.clear()
             }
