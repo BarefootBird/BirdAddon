@@ -3,6 +3,7 @@ package com.barefootbird.birdaddon
 import com.barefootbird.birdaddon.commands.replayCommand
 import com.barefootbird.birdaddon.commands.waypointCommand
 import com.barefootbird.birdaddon.features.impl.m4.Decoy
+import com.barefootbird.birdaddon.features.impl.m4.HideMessages
 import com.barefootbird.birdaddon.features.impl.m4.Titles
 import com.odtheking.odin.config.ModuleConfig
 import com.odtheking.odin.events.core.EventBus
@@ -61,8 +62,9 @@ object BirdAddon : ClientModInitializer {
         listOf(this, M4State, M4Mobs, Islands).forEach { EventBus.subscribe(it) }
 
         // Register modules by adding to the list
-        ModuleManager.registerModules(ModuleConfig("BirdAddon.json"), SpiritBearTimer, Highlight,
-            Waypoints, Timer, Logging, ThornStunTimer, OverkillDisplay, Titles, Replay, MobCounters, Decoy, Tac
+        ModuleManager.registerModules(ModuleConfig("BirdAddon.json"),
+            SpiritBearTimer, Highlight, Waypoints, Timer, Logging, ThornStunTimer, OverkillDisplay,
+            Titles, Replay, MobCounters, Decoy, Tac, HideMessages
         )
     }
 }
