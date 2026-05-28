@@ -12,6 +12,7 @@ import net.minecraft.world.entity.monster.Ghast
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.AABB
 
+// Keeps track of how many of each mob are alive at any given time, and the total that are alive over the course of the boss
 object M4Mobs {
     val totalSheep = mutableSetOf<Sheep>()
     val totalWolves = mutableSetOf<Wolf>()
@@ -80,6 +81,9 @@ object M4Mobs {
                         is Bat -> {
                             if (M4State.timer >= 15 * 20) // try stop spirit scepter messing with data
                                 if (entity.isInvisible) {
+                                    // When the bow spawns it spawns invisible bats with it, don't count these
+                                    // Also the packet that makes them invisible is sent after the packet that spawns them
+                                    // so for a little bit they are visible and do get added to total bats
                                     totalBats.remove(entity)
                                 } else {
                                     bats.add(entity)

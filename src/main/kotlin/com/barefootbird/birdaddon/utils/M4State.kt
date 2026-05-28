@@ -18,14 +18,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket
-import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.ambient.Bat
 import net.minecraft.world.entity.animal.sheep.Sheep
 import net.minecraft.world.entity.animal.wolf.Wolf
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.phys.Vec3
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -33,28 +30,29 @@ import kotlin.math.sin
 
 @OptIn(DelicateCoroutinesApi::class)
 object M4State {
-    private inline val blockLocations get() = if (DungeonUtils.floor?.isMM == true) m4BlockLocations else f4BlockLocations
+
+    private inline val blockLocations get() = if (DungeonUtils.floor?.isMM == true) m4BlockLocations else f4BlockLocations // coal/sea lantern blocks
     inline val maxKills get() = if (DungeonUtils.floor?.isMM == true) 30 else 25
-    private val lastBlockLocation = BlockPos(7, 77, 34)
+    private val lastBlockLocation = BlockPos(7, 77, 34) // Last sea lantern/coal block
+
     var bearTimer = -1 // state: -1=NotSpawned, 0=Alive, 1+=Spawning
     var kills = 0
-    var timer = 0
+    var timer = 0 // Times ticks from the start of boss
+
     val bearSpawnRegex = Regex("^A Spirit Bear has appeared!$")
     val bearKillRegex = Regex("^The Spirit Bow has dropped!$")
+    val enteredRegex = Regex("^\\[BOSS] Thorn: Welcome Adventurers! I am Thorn, the Spirit! And host of the Vegan Trials!$")
+    val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
+
+    // These track times in ticks for the events
     val bearSpawnTimes = mutableListOf<Int>()
     val bearKillTimes = mutableListOf<Int>()
     val bearSpawnStartTimes = mutableListOf<Int>()
+
+    // Usually I just use odin's DungeonUtils for this, but odin's tick timer uses a different system, so I use this
+    // to make sure that the odin timer and my timer match exactly
     var inThornBoss = false
 
-    val enteredRegex = Regex("^\\[BOSS] Thorn: Welcome Adventurers! I am Thorn, the Spirit! And host of the Vegan Trials!$")
-
-    class DamagePacket (
-        var time: Long = 0,
-        var pos: Vec3? = null
-    )
-
-    var damagePackets = mutableListOf<DamagePacket>()
-    var lastServerTick: Long = 0
     var overkill = 0
     var overkillBats = 0
     var overkillChickens = 0
@@ -62,15 +60,19 @@ object M4State {
     var overkillSheep = 0
     var overkillRabbits = 0
     var overkillWolves = 0
-    val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
+
     var ended = false
-    var bearSpawnSpot = Vec3(5.5, 6.0, 5.5)
+
+    // Default spot in the middle, bear can't ever actually spawn here, but this is the average of all bear spawns if you let thorn move freely
+    var bearSpawnSpot: Vec2 = Vec2(5.5,5.5)
 
     fun updateBearSpawnSpot () {
         if (bearTimer == -1) {
             if (M4Mobs.ghasts.isEmpty()) return
             val thorn = M4Mobs.ghasts.find { true }!!
 
+            // Bear spawns roughly on a circle around (5.5, 5.5) with a radius of 0.7,
+            // and spawns on the closest point to where thorn was when the bear started spawning
             val dx = thorn.x - 5.5
             val dz = thorn.z - 5.5
 
@@ -80,10 +82,11 @@ object M4State {
             val newX = 5.5 + r * cos(angle)
             val newZ = 5.5 + r * sin(angle)
 
-            bearSpawnSpot = Vec3(newX, 6.0, newZ)
+            bearSpawnSpot = Vec2(newX, newZ)
         }
     }
 
+    // updates and logs the kills
     fun updateKills (kills: Int) {
         this.kills = kills
         if (inThornBoss) {
@@ -91,26 +94,45 @@ object M4State {
         }
     }
 
+    fun handleBearSpawn () {
+        bearSpawnTimes.add(timer)
+        Titles.handleBearSpawn()
+    }
 
-    // The whole idea of this timer is to use events that are processed earlier in the tick than the block updates
+    fun handleBearSpawnStart () {
+        if (bearTimer == -1) {
+            bearTimer = 70
+            bearSpawnStartTimes.add(timer)
+            Titles.handleBearSpawnStart()
+        }
+    }
+
+    fun handleBearKill () {
+        if (bearTimer != -1) {
+            bearKillTimes.add(timer)
+            bearTimer = -1
+            updateKills(0)
+            Titles.handleBearKill()
+        }
+    }
+
     init {
         on<ChatPacketEvent> {
+            // Boss checks
             if (enteredRegex.matches(value)) {
                 inThornBoss = true
             }
             if (!inThornBoss) return@on
+
+            // Bear kill/spawn handling
             if (bearSpawnRegex.matches(value)) {
-                bearSpawnTimes.add(timer)
-                Titles.handleBearSpawn()
+                handleBearSpawn()
             }
             if (bearKillRegex.matches(value)) {
-                bearKillTimes.add(timer)
-                if (bearTimer != -1) {
-                    bearTimer = -1
-                    updateKills(0)
-                    Titles.handleBearKill()
-                }
+                handleBearKill()
             }
+
+            // End stats
             if (endRegex.matches(value) && !ended) {
                 ended = true
                 if (Timer.printToChat) {
@@ -142,41 +164,31 @@ object M4State {
             }
         }
 
+        // Update timer based on sea lantern/coal blocks
         on<BlockUpdateEvent> {
             if (!inThornBoss || !blockLocations.contains(pos)) return@on
 
             when (updated.block) {
                 Blocks.SEA_LANTERN if old.block == Blocks.COAL_BLOCK -> {
+                    // Kill detected from sea lantern, update kills if they aren't already updated from entity kill packets
                     if (kills < maxKills) {
                         val newKills = blockLocations.indexOf(pos) + 1
                         if (newKills > kills) {
                             updateKills(newKills)
                         }
                     }
-                    if (pos == lastBlockLocation && bearTimer == -1) {
-                        bearTimer = 69
-                        bearSpawnStartTimes.add(timer)
-                        Titles.handleBearSpawnStart()
+                    // Final sea lantern is on, bear is starting to spawn
+                    if (pos == lastBlockLocation) {
+                        handleBearSpawnStart()
                     }
                 }
             }
         }
 
-        onReceive<ClientboundAddEntityPacket> {
-            val now = System.nanoTime()
-            if (type == EntityType.ARMOR_STAND) {
-                damagePackets.add(DamagePacket(now, Vec3(x, y, z)))
-                // Just assume that every armor stand is a dmg splash
-                // The ones that aren't dmg splashes probably aren't relevant anyway
-            }
-            runCatching {
-                damagePackets.removeIf { now - it.time > 125_000_000 } // 125 ms
-            }
-        }
-
+        // The Entity Event Packet is processed ~10ms before the block update packet
         onReceive<ClientboundEntityEventPacket> {
             if (!inThornBoss) return@onReceive
-            if (this.eventId.toInt() == 3) {
+            if (this.eventId.toInt() == 3) { // Event ID 3 is death
                 val entity = this.getEntity(mc.level!!)
 
                 // living entity death
@@ -185,24 +197,9 @@ object M4State {
                 ) {
                     if (bearTimer == -1) {
 
-                        updateKills(kills + 1) // temporarily updates the kills before the block update event is processed
+                        updateKills(kills + 1)
                         if (kills >= maxKills) {
-                            bearTimer = 70
-                            bearSpawnStartTimes.add(timer)
-                            Titles.handleBearSpawnStart()
-                            val damagePacket = damagePackets.find {
-                                it.pos?.distanceTo(entity.position())!! < 2.0
-                            }
-                            if (damagePacket != null) {
-
-                                if (damagePacket.time < lastServerTick) {
-                                    // The damage splash appeared before the last tick
-                                    // Therefore the mob was counted as killed before the last tick
-                                    // So 1 tick has already passed since the kill
-                                    // This doesn't seem to work that well, or at least it needs further testing
-                                    bearTimer--
-                                }
-                            }
+                            handleBearSpawnStart()
                         }
                     } else {
                         overkill++
@@ -222,12 +219,11 @@ object M4State {
             if (ended) return@on
             if (bearTimer > 0) bearTimer--
             timer++
-            val now = System.nanoTime()
-            lastServerTick = now
             updateBearSpawnSpot()
         }
 
         on<WorldEvent.Load> {
+            // Reset state on world load
             updateKills(0)
             bearTimer = -1
             timer = 0
@@ -246,7 +242,8 @@ object M4State {
         }
     }
 
-
+    // Locations for sea lantern/coal ring
+    // Not every block on the ring is in here. Each kill updates like 4 blocks ish (different between m4 and f4) so its just 1 of those blocks per entry
     private val f4BlockLocations = listOf(
         BlockPos(-3, 77, 33), BlockPos(-9, 77, 31), BlockPos(-16, 77, 26), BlockPos(-20, 77, 20), BlockPos(-23, 77, 13),
         BlockPos(-24, 77, 6), BlockPos(-24, 77, 0), BlockPos(-22, 77, -7), BlockPos(-18, 77, -13), BlockPos(-12, 77, -19),
