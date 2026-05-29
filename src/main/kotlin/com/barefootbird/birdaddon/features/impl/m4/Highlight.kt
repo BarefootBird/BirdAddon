@@ -25,8 +25,11 @@ import com.barefootbird.birdaddon.utils.M4Mobs.sheep
 import com.barefootbird.birdaddon.utils.M4Mobs.wolves
 import com.barefootbird.birdaddon.utils.M4Mobs.bears
 import com.barefootbird.birdaddon.utils.Rabbit
+import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
+import net.minecraft.network.protocol.game.ClientboundHurtAnimationPacket
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.ambient.Bat
 import net.minecraft.world.entity.animal.sheep.Sheep
@@ -48,6 +51,8 @@ object Highlight: Module(
     private val hideMobs by BooleanSetting("Hide highlighted mobs", false, desc = "Hides mobs")
 
     private val highlightThorn by BooleanSetting("Thorn Highlight", true, desc = "Highlights thorn")
+    private val thornDmgFlash by BooleanSetting("Thorn Damage Flash", true, desc = "Makes thorn change color when damaged").withDependency { highlightThorn }
+    private val dmgFlashDuration by NumberSetting("Damage duration ticks", 10, 1, 80, 1, "How long thorn changes color when damaged in ticks").withDependency { thornDmgFlash }
 
     private val highlightBear by BooleanSetting("Bear Highlight", true, desc = "Highlights bears")
     private val onlyShowBearOnMage by BooleanSetting("Only Show Bear On Mage", false, desc = "Only shows the bear on mage class").withDependency { highlightBear }
@@ -62,6 +67,8 @@ object Highlight: Module(
     private val highlightRabbit by BooleanSetting("Rabbit Highlight", true, desc = "Highlights rabbits")
 
     val thornColor by ColorSetting("Thorn Color", Colors.WHITE, true, desc = "Color of thorn highlight").withDependency { highlightThorn }
+    val thornDamagedColor by ColorSetting("Thorn Damaged Color", Colors.MINECRAFT_RED, true, desc = "Color of thorn highlight when thorn is damaged").withDependency { thornDmgFlash }
+
     val wolfColor by ColorSetting("Wolf Color", Colors.MINECRAFT_GOLD, true, desc = "Color of wolf highlight").withDependency { highlightWolves }
     val batColor by ColorSetting("Bat Color", Colors.MINECRAFT_DARK_BLUE, true, desc = "Color of bat highlight").withDependency { highlightBats }
     val sheepColor by ColorSetting("Sheep Color", Colors.MINECRAFT_YELLOW, true, desc = "Color of sheep highlight").withDependency { highlightSheep }
@@ -90,6 +97,7 @@ object Highlight: Module(
         }
         return false
     }
+    private var damaged = 0
 
     init {
 
@@ -106,6 +114,17 @@ object Highlight: Module(
                     }
                 }
             }
+            if (damaged > -1) {
+                damaged--
+            }
+        }
+
+        onReceive<ClientboundHurtAnimationPacket> {
+            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
+            val entity = OdinMod.mc.level!!.getEntity(this.id)
+            if (entity is Ghast) {
+                damaged = dmgFlashDuration
+            }
         }
 
         on<RenderEvent.Extract> {
@@ -113,7 +132,7 @@ object Highlight: Module(
             runCatching {
                 val style = renderStyle
 
-                val entities = mutableListOf<Pair<List<net.minecraft.world.entity.Entity>, Color>>()
+                val entities = mutableListOf<Pair<List<Entity>, Color>>()
 
 
                 if (highlightSheep) entities.add(sheep.toList() to sheepColor)
@@ -122,11 +141,22 @@ object Highlight: Module(
                 if (highlightChicken) entities.add(chickens.toList() to chickenColor)
                 if (highlightRabbit) entities.add(rabbits.toList() to rabbitColor)
                 if (highlightCow) entities.add(cows.toList() to cowColor)
-                if (highlightThorn) entities.add(ghasts.toList() to thornColor)
 
                 entities.forEach { (entities, color) ->
-                    entities.toList().forEach { entity ->
+                    entities.forEach { entity ->
                         drawStyledBox(entity.renderBoundingBox, color, style, true)
+                    }
+                }
+
+                if (highlightThorn) {
+                    if (thornDmgFlash && damaged >= 0) {
+                        ghasts.toList().forEach { entity ->
+                            drawStyledBox(entity.renderBoundingBox, thornDamagedColor, style, true)
+                        }
+                    } else {
+                        ghasts.toList().forEach { entity ->
+                            drawStyledBox(entity.renderBoundingBox, thornColor, style, true)
+                        }
                     }
                 }
 
