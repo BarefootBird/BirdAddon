@@ -4,6 +4,7 @@ import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.Zombie
 import com.barefootbird.birdaddon.utils.Skeleton
 import com.barefootbird.birdaddon.utils.WitherSkeleton
+import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
@@ -21,6 +22,8 @@ import net.minecraft.world.entity.Entity
 
 
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 
@@ -34,6 +37,7 @@ object Decoy: Module(
     private val highlightBestDecoySpot by BooleanSetting("Show best decoy spot", true, desc = "Highlights the best available decoy spot")
     private val npcVisibility by SelectorSetting("NPC visibility", "All", listOf("All", "Relevant only", "None"), "hides/shows npcs")
     private val npcHighlight by SelectorSetting("NPC highlight", "None", listOf("None", "Relevant only", "All"), "highlights npcs")
+    private val hidePlants by BooleanSetting("Hide Plants", false, "Hides plants (You might need to reload your textures)")
 
     // x + z coords of the spots in order of best to worst
     private val bestSpots = listOf(
@@ -56,9 +60,20 @@ object Decoy: Module(
         return entity.x > 17 && entity.z > 17
     }
 
+    // These 2 functions called from the mixins to hide them
+    @JvmStatic
+    fun shouldHideBlock (blockState: BlockState): Boolean {
+        if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss || !enabled) return false
+        if (hidePlants) {
+            if (blockState.block == Blocks.JUNGLE_SAPLING) return true
+            if (blockState.block == Blocks.SUNFLOWER) return true
+        }
+        return false
+    }
+
     @JvmStatic
     fun shouldHideEntity (entity: Entity): Boolean {
-        if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return false
+        if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss || !enabled) return false
         if (!npcs.contains(entity)) return false
         return npcVisibility == 2 || (npcVisibility == 1 && !isRelevant(entity))
     }
