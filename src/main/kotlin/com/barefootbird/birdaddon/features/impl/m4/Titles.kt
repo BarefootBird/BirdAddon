@@ -2,7 +2,6 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.ChatPacketEvent
@@ -115,7 +114,7 @@ object Titles: Module(
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> { event ->
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss || DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) return@onReceive
+            //if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss || DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) return@onReceive
             val packet = event.packet
             if (packet is ClientboundSetPlayerTeamPacket) {
 
@@ -130,13 +129,14 @@ object Titles: Module(
 
                 // Use it to check tank's hp
                 if (!message.contains("[T]")) return@onReceive
-                val health = Regex("""([\d,]+)\s*❤""")
+                val health = Regex("""^\[T\]\s+\S+\s+([\d,]+(?:\.\d+)?)""")
                     .find(message)
                     ?.groupValues
                     ?.get(1)
                     ?.replace(",", "")
                     ?.toIntOrNull()
                     ?: return@onReceive
+
                 tankInMastiff = health >= wishThreshold
             }
         }
