@@ -7,15 +7,15 @@ import com.github.stivais.commodore.Commodore
 
 val extraStatsCommand = Commodore("bearstats") {
 
-    runs { bear: String? ->
+    runs { runId: String?, bear: String? ->
 
         val bearId = bear?.toIntOrNull()
 
-        if (bearId == null || bearId !in 1..M4State.bearKillTimes.size) {
-            modMessage("Invalid bear number")
+        if (bearId == null || runId == null) {
+            modMessage("bearId or runId missing")
             return@runs
         }
 
-        ExtraStats.showBearStats(bearId)
+        ExtraStats.showBearStats(runId, bearId)
     }
 }

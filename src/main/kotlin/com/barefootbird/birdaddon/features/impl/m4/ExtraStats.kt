@@ -16,6 +16,7 @@ import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
+import java.util.UUID
 
 @OptIn(DelicateCoroutinesApi::class)
 object ExtraStats: Module(
@@ -25,16 +26,30 @@ object ExtraStats: Module(
 ) {
     private var ended = false
 
+
+    data class M4RunSnapshot(
+        val runId: UUID,
+        val bearSpawnStartTimes: List<Int>,
+        val bearSpawnTimes: List<Int>,
+        val bearKillTimes: List<Int>
+    )
+
+    val completedRuns = mutableMapOf<UUID, M4RunSnapshot>()
+
     // shows stats for a specified bear
-    fun showBearStats(bearId: Int) {
+    fun showBearStats(runId: String, bearId: Int) {
+        val run = completedRuns[UUID.fromString(runId)] ?: return
         val id = bearId - 1 // change from 1 indexed to 0 indexed
-        modMessage("Spawn Start: ${M4State.bearSpawnStartTimes[id] * 20}s")
-        modMessage("Bear spawned: ${M4State.bearSpawnTimes[id] * 20}s")
-        modMessage("Bear Killed: ${M4State.bearKillTimes[id] * 20}s (took ${(M4State.bearKillTimes[id] - M4State.bearSpawnTimes[id]) * 20}s)")
+        modMessage("Bear $bearId Stats:")
+        modMessage("Spawn Start: ${run.bearSpawnStartTimes[id] / 20.0}s")
+        modMessage("Bear spawned: ${run.bearSpawnTimes[id] / 20.0}s")
+        modMessage("Bear Killed: ${run.bearKillTimes[id] / 20.0}s (took ${(run.bearKillTimes[id] - run.bearSpawnTimes[id]) / 20.0}s)")
     }
 
+
     // The menu that's sent after the run
-    fun sendBearStatsMenu() {
+    fun sendBearStatsMenu(runId: UUID) {
+
         val message = Component.literal("Click to view stats: ")
             .withStyle(ChatFormatting.YELLOW)
 
@@ -43,7 +58,7 @@ object ExtraStats: Module(
                 .withStyle {
                     it.withColor(ChatFormatting.GOLD)
                         .withClickEvent(
-                            ClickEvent.RunCommand("/bearstats $i")
+                            ClickEvent.RunCommand("/bearstats $runId $i")
                         )
                         .withHoverEvent(
                             HoverEvent.ShowText(
@@ -72,10 +87,19 @@ object ExtraStats: Module(
         on<ChatPacketEvent> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
             if (M4State.endRegex.matches(value) && !ended) {
+                val runId = UUID.randomUUID()
                 ended = true
+                val snapshot = M4RunSnapshot(
+                    runId = runId,
+                    bearSpawnStartTimes = M4State.bearSpawnStartTimes.toList(),
+                    bearSpawnTimes = M4State.bearSpawnTimes.toList(),
+                    bearKillTimes = M4State.bearKillTimes.toList()
+                )
+
+                completedRuns[runId] = snapshot
                 GlobalScope.launch {
                     delay(1000)
-                    sendBearStatsMenu()
+                    sendBearStatsMenu(runId)
                 }
             }
         }
