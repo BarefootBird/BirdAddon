@@ -13,6 +13,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.Islands.onCgm4
 import com.barefootbird.birdaddon.utils.Islands.onM4Miku
+import com.barefootbird.birdaddon.utils.M4Mobs
 import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.core.BlockPos
@@ -24,12 +25,16 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.setClipboardContent
+import net.minecraft.world.phys.Vec3
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import kotlin.io.encoding.Base64
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 object Waypoints: Module(
@@ -92,6 +97,16 @@ object Waypoints: Module(
         desc = "Color when you're too close that you'd do a vanilla melee hit"
     ).withDependency { bearSpawnColors }
 
+    private val bowPickupWaypoint by BooleanSetting(
+        "Bow Pickup Waypoint",
+        true,
+        "Dynamic bow pickup waypoint that updates based on bear position"
+    )
+    private val bowPickupWaypointOnlyOnTank by BooleanSetting(
+        "Bow wp only on tank",
+        true,
+        "Only shows the bow pickup waypoint when you're on tank class"
+    ).withDependency { bowPickupWaypoint }
 
     val wpConfig = File(mc.gameDirectory, "config/odin/addons/m4waypoints.json")
 
@@ -332,12 +347,61 @@ object Waypoints: Module(
         }
     }
 
+    private fun getBowSpawnSpot (): Vec3 {
+        if (M4State.bearTimer == -1 || M4Mobs.bears.isEmpty()) {
+            return Vec3(5.0, 69.0, 4.0)
+        }
+        val bear = M4Mobs.bears.find { true } ?: return Vec3(5.0, 69.0, 4.0)
+
+        val x = bear.x
+        val z = bear.z
+
+        return bowSpots.minBy { spot ->
+            val dx = spot.x - x
+            val dz = spot.z - z
+            dx * dx + dz * dz
+        }
+    }
+
+    private fun RenderEvent.Extract.renderBowPickup () {
+        if (!(onCgm4 && showOnCgm4) && !(onM4Miku && showOnM4Miku) && !DungeonUtils.inDungeons) return
+
+        val closestSpot = getBowSpawnSpot()
+
+        val points = 64
+        val radius = 1.5
+
+        val circlePoints = (0..points).map { i ->
+            val angle = 2.0 * Math.PI * i / points
+
+            Vec3(
+                closestSpot.x + radius * cos(angle),
+                closestSpot.y,
+                closestSpot.z + radius * sin(angle)
+            )
+        }
+
+        drawLine(circlePoints, Colors.MINECRAFT_GREEN, depth)
+
+    }
+
     init {
         on<RenderEvent.Extract> {
             renderCustomWaypoints()
             if ((DungeonUtils.inBoss && DungeonUtils.isFloor(4)) || onCgm4 || onM4Miku) {
-                if (bearSpawnOnMage && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Mage && !onCgm4 && !onM4Miku) return@on
-                renderBearSpawn()
+                if (bearSpawn && (!bearSpawnOnMage ||
+                    DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.Mage ||
+                    onCgm4 ||
+                    onM4Miku)) {
+                    renderBearSpawn()
+                }
+                if (bowPickupWaypoint && (!bowPickupWaypointOnlyOnTank ||
+                    DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.Tank ||
+                    onCgm4 ||
+                    onM4Miku
+                    )) {
+                    renderBowPickup()
+                }
             }
         }
 
@@ -349,4 +413,23 @@ object Waypoints: Module(
 
 
     }
+
+    private val bowSpots = listOf(
+        Vec3(5.0, 69.0, 4.0),
+        Vec3(9.0, 69.0, 14.0),
+        Vec3(16.0, 70.0, 7.0),
+        Vec3(-2.0, 69.0, 0.0),
+        Vec3(23.0, 69.0, 15.0),
+        Vec3(3.0, 69.0, 21.0),
+        Vec3(25.0, 69.0, 3.0),
+        Vec3(24.0, 69.0, 25.0),
+        Vec3(-2.0, 69.0, -6.0),
+        Vec3(5.0, 71.0, -11.0),
+        Vec3(12.0, 69.0, -4.0),
+        Vec3(-1.0, 69.0, 11.0),
+        Vec3(-18.0, 69.0, 6.0),
+        Vec3(-15.0, 69.0, 24.0),
+        Vec3(24.0, 69.0, -15.0),
+        Vec3(-15.0, 69.0, -16.0)
+    )
 }
