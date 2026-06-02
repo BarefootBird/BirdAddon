@@ -25,7 +25,7 @@ object Tac: Module(
     description = "Stuff for tactical insertion",
     category = Category.M4
 ) {
-    private val hud by HUD(name, "Displays how long thorn is stunned for", false) { example ->
+    private val hud by HUD(name, "Displays how much time is left on the Tactical Insertion ability", false) { example ->
         textDim(timerText(example), 0, 0, Colors.WHITE)
     }
     private val tacTimer by BooleanSetting("Tac Timer", true, "Timer for tac")
