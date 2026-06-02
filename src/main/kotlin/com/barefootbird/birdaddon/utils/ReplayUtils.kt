@@ -235,7 +235,7 @@ class LogListWidget(
     top: Int,
     bottom: Int,
     itemHeight: Int
-) : ObjectSelectionList<LogEntry>(client, width, bottom, top, itemHeight) {
+) : ObjectSelectionList<LogEntry>(client!!, width, bottom, top, itemHeight) {
     init {
         loadLogs()
     }
