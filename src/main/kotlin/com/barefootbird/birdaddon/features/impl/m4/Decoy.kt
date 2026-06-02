@@ -1,10 +1,6 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.Zombie
-import com.barefootbird.birdaddon.utils.Skeleton
-import com.barefootbird.birdaddon.utils.WitherSkeleton
-import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
@@ -19,6 +15,9 @@ import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.monster.skeleton.Skeleton
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton
+import net.minecraft.world.entity.monster.zombie.Zombie
 
 
 import net.minecraft.world.entity.player.Player

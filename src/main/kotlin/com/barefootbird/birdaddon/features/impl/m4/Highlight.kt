@@ -1,8 +1,6 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.Chicken
-import com.barefootbird.birdaddon.utils.Cow
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -24,7 +22,6 @@ import com.barefootbird.birdaddon.utils.M4Mobs.rabbits
 import com.barefootbird.birdaddon.utils.M4Mobs.sheep
 import com.barefootbird.birdaddon.utils.M4Mobs.wolves
 import com.barefootbird.birdaddon.utils.M4Mobs.bears
-import com.barefootbird.birdaddon.utils.Rabbit
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.Color
@@ -32,6 +29,9 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import net.minecraft.network.protocol.game.ClientboundHurtAnimationPacket
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.ambient.Bat
+import net.minecraft.world.entity.animal.chicken.Chicken
+import net.minecraft.world.entity.animal.cow.Cow
+import net.minecraft.world.entity.animal.rabbit.Rabbit
 import net.minecraft.world.entity.animal.sheep.Sheep
 import net.minecraft.world.entity.animal.wolf.Wolf
 
