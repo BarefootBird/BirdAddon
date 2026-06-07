@@ -2,12 +2,12 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4Mobs
+import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 
 object MobCounters: Module(
     name = "Mob Counter",
@@ -18,7 +18,7 @@ object MobCounters: Module(
         if (example) {
             return@HUD textDim("Total Mobs: 100", 0, 0, Colors.WHITE)
         }
-        if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(4)) {
+        if (!M4State.inBoss()) {
             return@HUD 0 to 0
         }
         val features = listOf(totalGUI, cowsGUI, sheepGUI, chickensGUI, batsGUI, wolvesGUI, rabbitsGUI, mobsUnderThornGui, rabbitsNotUnderThornGui)

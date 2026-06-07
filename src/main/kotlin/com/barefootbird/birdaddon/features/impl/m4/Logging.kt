@@ -226,7 +226,7 @@ object Logging: Module(
         on<TickEvent.Server> {
             try {
                 if (ended) return@on
-                if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(4)) return@on
+                if (!M4State.inBoss()) return@on
                 currentTick++
                 if (out == null) {
                     logFile = File(logsFolder, "${System.currentTimeMillis()}.m4replay")
@@ -345,7 +345,7 @@ object Logging: Module(
         }
 
         on<ChatPacketEvent> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
+            if (!M4State.inBoss()) return@on
             if (M4State.endRegex.matches(value) && !ended && !pendingEnd) {
                 pendingEnd = true
             }

@@ -1,6 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
+import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
@@ -13,7 +14,6 @@ import com.odtheking.odin.utils.Vec2
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.renderBoundingBox
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.monster.skeleton.Skeleton
 import net.minecraft.world.entity.monster.skeleton.WitherSkeleton
@@ -62,7 +62,7 @@ object Decoy: Module(
     // These 2 functions called from the mixins to hide them
     @JvmStatic
     fun shouldHideBlock (blockState: BlockState): Boolean {
-        if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss || !enabled) return false
+        if (!M4State.inBoss() || !enabled) return false
         if (hidePlants) {
             if (blockState.block == Blocks.JUNGLE_SAPLING) return true
             if (blockState.block == Blocks.SUNFLOWER) return true
@@ -72,7 +72,7 @@ object Decoy: Module(
 
     @JvmStatic
     fun shouldHideEntity (entity: Entity): Boolean {
-        if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss || !enabled) return false
+        if (!M4State.inBoss() || !enabled) return false
         if (!npcs.contains(entity)) return false
         return npcVisibility == 2 || (npcVisibility == 1 && !isRelevant(entity))
     }
@@ -96,7 +96,7 @@ object Decoy: Module(
     init {
 
         on<TickEvent.Server> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
+            if (!M4State.inBoss()) return@on
 
             runCatching {
                 val allEntities = mc.level?.getEntities(null, searchBox)?.toList() ?: emptyList()
@@ -115,7 +115,7 @@ object Decoy: Module(
         }
 
         on<RenderEvent.Extract> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
+            if (!M4State.inBoss()) return@on
             runCatching {
                 val style = renderStyle
 

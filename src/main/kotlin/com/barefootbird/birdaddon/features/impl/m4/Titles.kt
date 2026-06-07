@@ -2,6 +2,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 
 import com.barefootbird.birdaddon.utils.Category
+import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.ChatPacketEvent
@@ -81,23 +82,20 @@ object Titles: Module(
         }
 
         onReceive<ClientboundSetSubtitleTextPacket> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
-            if (!hideDefault) return@onReceive
+            if (!M4State.inBoss() || !hideDefault) return@onReceive
             it.cancel()
         }
         onReceive<ClientboundSetTitlesAnimationPacket> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
-            if (!hideDefault) return@onReceive
+            if (!M4State.inBoss() || !hideDefault) return@onReceive
             it.cancel()
         }
         onReceive<ClientboundSetTitleTextPacket> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
-            if (!hideDefault) return@onReceive
+            if (!M4State.inBoss() || !hideDefault) return@onReceive
             it.cancel()
         }
 
         on<ChatPacketEvent> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
+            if (!M4State.inBoss()) return@on
 
             if (value == bowPickup && pickupWarning != "" && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Tank) {
                 setTitle(pickupWarning)
@@ -114,7 +112,7 @@ object Titles: Module(
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> { event ->
-            //if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss || DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) return@onReceive
+            // if (!M4State.inBoss() || DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) return@onReceive
             val packet = event.packet
             if (packet is ClientboundSetPlayerTeamPacket) {
 

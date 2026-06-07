@@ -20,7 +20,7 @@ object Timer: Module(
     private val hud by HUD(name, "Displays the time on the hud", true) { example ->
         when {
             example -> "§c48.2"
-            !DungeonUtils.isFloor(4) || !DungeonUtils.inBoss -> null
+            !M4State.inBoss() -> null
             else -> "§c${(M4State.timer / 20f).toFixed()}s"
         }?.let { text ->
             textDim(text, 0, 0, Colors.WHITE)

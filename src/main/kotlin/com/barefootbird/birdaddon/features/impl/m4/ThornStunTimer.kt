@@ -1,6 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
+import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -29,7 +30,7 @@ object ThornStunTimer: Module(
 
     private fun timerText (example: Boolean): String {
         if (example) return "§cNot Stunned"
-        if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return ""
+        if (!M4State.inBoss()) return ""
         if (onlyShowOnHealer && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) return ""
         if (timer >= 0) {
             return "§5${(timer / 20.0).toFixed(2)}s"
@@ -40,7 +41,7 @@ object ThornStunTimer: Module(
 
     init {
         onReceive<ClientboundHurtAnimationPacket> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@onReceive
+            if (!M4State.inBoss()) return@onReceive
             val entity = OdinMod.mc.level!!.getEntity(this.id)
             if (entity is Ghast) {
                 timer = 82
@@ -48,7 +49,7 @@ object ThornStunTimer: Module(
         }
 
         on<TickEvent.Server> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
+            if (!M4State.inBoss()) return@on
             if (timer > -1) {
                 timer--
             }

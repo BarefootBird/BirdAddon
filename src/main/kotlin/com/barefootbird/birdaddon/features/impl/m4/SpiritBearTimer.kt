@@ -25,7 +25,7 @@ object SpiritBearTimer: Module(
 
     private fun timerText (example: Boolean): String {
         if (example) return "${prefix}§c48"
-        if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return ""
+        if (!M4State.inBoss()) return ""
         if (M4State.bearTimer < 0) return  "${prefix}§a${M4State.kills.toString().padStart(2, '0')}"
         if (M4State.bearTimer > 0) {
             val ticksLeft: Double = M4State.bearTimer.toDouble()

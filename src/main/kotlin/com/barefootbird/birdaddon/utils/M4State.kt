@@ -69,6 +69,11 @@ object M4State {
     // Default spot in the middle, bear can't ever actually spawn here, but this is the average of all bear spawns if you let thorn move freely
     var bearSpawnSpot: Vec2 = Vec2(5.5,5.5)
 
+    fun inBoss (): Boolean {
+        if (Debug.disableBossChecks) return false
+        return DungeonUtils.inBoss && DungeonUtils.isFloor(4)
+    }
+
     fun updateBearSpawnSpot () {
         if (bearTimer == -1) {
             if (M4Mobs.ghasts.isEmpty()) return
@@ -121,6 +126,7 @@ object M4State {
 
     init {
         on<ChatPacketEvent> {
+            debugMessage("test")
             // Boss checks
             if (enteredRegex.matches(value)) {
                 inThornBoss = true

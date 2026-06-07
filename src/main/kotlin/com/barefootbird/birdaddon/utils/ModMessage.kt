@@ -1,5 +1,6 @@
 package com.barefootbird.birdaddon.utils
 
+import com.barefootbird.birdaddon.utils.Debug
 import com.odtheking.odin.OdinMod.mc
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
@@ -14,4 +15,16 @@ fun modMessage(message: Any?, prefix: String = "§bBird Addon §8»§r ", chatSt
     val text = Component.literal("$prefix$message")
     chatStyle?.let { text.setStyle(chatStyle) }
     mc.execute { mc.gui.chat.addMessage(text) }
+}
+
+fun debugMessage(message: Component, prefix: String = "§bDebug §8»§r ", chatStyle: Style? = null) {
+    if (Debug.debugMessages) {
+        modMessage(message, prefix, chatStyle)
+    }
+}
+
+fun debugMessage(message: Any?, prefix: String = "§bBird Addon §8»§r ", chatStyle: Style? = null) {
+    if (Debug.debugMessages) {
+        modMessage(message, prefix, chatStyle)
+    }
 }

@@ -1,6 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
+import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.M4State.bearSpawnStartTimes
 import com.barefootbird.birdaddon.utils.M4State.bearTimer
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
@@ -37,7 +38,7 @@ object Tac: Module(
 
     private fun timerText (example: Boolean): String {
         if (example) return "${prefix}1.55s"
-        if ((!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) && !outsideOfM4) return ""
+        if (!M4State.inBoss() && !outsideOfM4) return ""
         if (tacTime >= 0) {
             return "$prefix${(tacTime / 20.0).toFixed(2)}s"
         }

@@ -7,7 +7,6 @@ import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -85,7 +84,7 @@ object ExtraStats: Module(
     init {
 
         on<ChatPacketEvent> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
+            if (!M4State.inBoss()) return@on
             if (M4State.endRegex.matches(value) && !ended) {
                 val runId = UUID.randomUUID()
                 ended = true

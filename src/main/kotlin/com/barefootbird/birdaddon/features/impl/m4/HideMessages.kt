@@ -1,12 +1,12 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
+import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.ChatManager.hideMessage
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 
 object HideMessages: Module(
     name = "Hide Messages",
@@ -38,7 +38,7 @@ object HideMessages: Module(
     init {
 
         on<ChatPacketEvent> {
-            if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
+            if (!M4State.inBoss()) return@on
 
             when {
                 chickenMine && chickenRegex.matches(value) -> hideMessage()
