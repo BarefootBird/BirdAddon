@@ -112,7 +112,7 @@ object Titles: Module(
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> { event ->
-            // if (!M4State.inBoss() || DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) return@onReceive
+            if (!M4State.inBoss() || DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) return@onReceive
             val packet = event.packet
             if (packet is ClientboundSetPlayerTeamPacket) {
 
