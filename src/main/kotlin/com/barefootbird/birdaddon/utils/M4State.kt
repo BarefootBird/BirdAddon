@@ -126,7 +126,6 @@ object M4State {
 
     init {
         on<ChatPacketEvent> {
-            debugMessage("test")
             // Boss checks
             if (enteredRegex.matches(value)) {
                 inThornBoss = true
