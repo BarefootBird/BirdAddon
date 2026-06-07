@@ -13,7 +13,7 @@ object Sounds: Module(
 ) {
     private val muteAnimalSounds by BooleanSetting("Mute animals", true, desc = "Mutes the sounds of m4 animals")
     private val muteThorn by BooleanSetting("Mute Thorn", true, desc = "Mutes thorn")
-    private val muteMiscSounds by BooleanSetting("Mute Misc Sounds", true, desc = "Mutes stepping noises, bat/chicken spawning noises, and the zombie/skeleton hurt sounds")
+    private val muteMiscSounds by BooleanSetting("Mute Misc Sounds", true, desc = "Mutes stepping noises, bat/chicken spawning noises, thunder, explosion, zombie/skeleton hurt")
 
 
     private val animalSounds = setOf(
@@ -74,7 +74,9 @@ object Sounds: Module(
         "minecraft:block.wool.step",
         "minecraft:entity.skeleton.hurt",
         "minecraft:entity.zombie.hurt",
-        "minecraft:entity.zombie.infect"
+        "minecraft:entity.zombie.infect",
+        "minecraft:entity.lightning_bolt.thunder",
+        "minecraft:entity.generic.explode",
     )
 
     @JvmStatic
