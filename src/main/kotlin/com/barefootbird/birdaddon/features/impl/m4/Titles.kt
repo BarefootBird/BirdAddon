@@ -1,6 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 
+import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -53,23 +54,17 @@ object Titles: Module(
         mc.gui.setTitle(Component.literal(title))
     }
 
-    fun handleBearSpawnStart() {
-        if (enabled) {
+    init {
+        on<M4Event.BearSpawnStart> {
             setTitle(bearTimerStarted)
         }
-    }
-    fun handleBearSpawn() {
-        if (enabled) {
+        on<M4Event.BearSpawn> {
             setTitle(bearSpawned)
         }
-    }
-    fun handleBearKill() {
-        if (enabled) {
+        on<M4Event.BearKill> {
             setTitle(bearKilled)
         }
-    }
 
-    init {
         on<TickEvent.Server> {
             if (tankInMastiff && !wished && wishTitle != "") {
                 setTitle(wishTitle)

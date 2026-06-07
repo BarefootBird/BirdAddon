@@ -1,5 +1,6 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
+import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.modMessage
@@ -344,11 +345,8 @@ object Logging: Module(
             logFile?.delete()
         }
 
-        on<ChatPacketEvent> {
-            if (!M4State.inBoss()) return@on
-            if (M4State.endRegex.matches(value) && !ended && !pendingEnd) {
-                pendingEnd = true
-            }
+        on<M4Event.End> {
+            pendingEnd = true
         }
     }
 }

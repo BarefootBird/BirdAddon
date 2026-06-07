@@ -4,6 +4,7 @@ import com.barefootbird.birdaddon.commands.debugCommand
 import com.barefootbird.birdaddon.commands.extraStatsCommand
 import com.barefootbird.birdaddon.commands.replayCommand
 import com.barefootbird.birdaddon.commands.waypointCommand
+import com.barefootbird.birdaddon.events.EventDispatcher
 import com.barefootbird.birdaddon.features.impl.m4.Decoy
 import com.barefootbird.birdaddon.features.impl.m4.ExtraStats
 import com.barefootbird.birdaddon.features.impl.m4.HideMessages
@@ -63,7 +64,7 @@ object BirdAddon : ClientModInitializer {
         }
 
         // Register objects to event bus by adding to the list
-        listOf(this, M4State, M4Mobs, Islands).forEach { EventBus.subscribe(it) }
+        listOf(this, M4State, M4Mobs, Islands, EventDispatcher).forEach { EventBus.subscribe(it) }
 
         // Register modules by adding to the list
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"),

@@ -1,5 +1,6 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
+import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.modMessage
@@ -83,28 +84,20 @@ object ExtraStats: Module(
 
     init {
 
-        on<ChatPacketEvent> {
-            if (!M4State.inBoss()) return@on
-            if (M4State.endRegex.matches(value) && !ended) {
-                val runId = UUID.randomUUID()
-                ended = true
-                val snapshot = M4RunSnapshot(
-                    runId = runId,
-                    bearSpawnStartTimes = M4State.bearSpawnStartTimes.toList(),
-                    bearSpawnTimes = M4State.bearSpawnTimes.toList(),
-                    bearKillTimes = M4State.bearKillTimes.toList()
-                )
+        on<M4Event.End> {
+            val runId = UUID.randomUUID()
+            val snapshot = M4RunSnapshot(
+                runId = runId,
+                bearSpawnStartTimes = M4State.bearSpawnStartTimes.toList(),
+                bearSpawnTimes = M4State.bearSpawnTimes.toList(),
+                bearKillTimes = M4State.bearKillTimes.toList()
+            )
 
-                completedRuns[runId] = snapshot
-                GlobalScope.launch {
-                    delay(1000)
-                    sendBearStatsMenu(runId)
-                }
+            completedRuns[runId] = snapshot
+            GlobalScope.launch {
+                delay(1000)
+                sendBearStatsMenu(runId)
             }
-        }
-
-        on<WorldEvent.Load> {
-            ended = false
         }
     }
 }

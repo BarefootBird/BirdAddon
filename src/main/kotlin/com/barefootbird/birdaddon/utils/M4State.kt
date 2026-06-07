@@ -1,9 +1,8 @@
 package com.barefootbird.birdaddon.utils
 
+import com.barefootbird.birdaddon.events.EventDispatcher
+import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.features.impl.m4.Logging.writeKills
-import com.barefootbird.birdaddon.features.impl.m4.Tac
-import com.barefootbird.birdaddon.features.impl.m4.Timer
-import com.barefootbird.birdaddon.features.impl.m4.Titles
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.ChatPacketEvent
@@ -12,11 +11,7 @@ import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.toFixed
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket
 import net.minecraft.world.entity.ambient.Bat
@@ -42,8 +37,6 @@ object M4State {
     var kills = 0
     var timer = 0 // Times ticks from the start of boss
 
-    val bearSpawnRegex = Regex("^A Spirit Bear has appeared!$")
-    val bearKillRegex = Regex("^The Spirit Bow has dropped!$")
     val enteredRegex = Regex("^\\[BOSS] Thorn: Welcome Adventurers! I am Thorn, the Spirit! And host of the Vegan Trials!$")
     val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
 
@@ -102,74 +95,28 @@ object M4State {
         }
     }
 
-    fun handleBearSpawn () {
-        bearSpawnTimes.add(timer)
-        Titles.handleBearSpawn()
-    }
-
-    fun handleBearSpawnStart () {
-        if (bearTimer == -1) {
-            bearTimer = 70
-            bearSpawnStartTimes.add(timer)
-            Titles.handleBearSpawnStart()
+    init {
+        on<M4Event.BearSpawn> {
+            bearSpawnTimes.add(timer)
         }
-    }
 
-    fun handleBearKill () {
-        if (bearTimer != -1) {
+        on<M4Event.BearKill> {
             bearKillTimes.add(timer)
             bearTimer = -1
             updateKills(0)
-            Titles.handleBearKill()
         }
-    }
 
-    init {
+        on<M4Event.BearSpawnStart> {
+            bearTimer = 70
+            bearSpawnStartTimes.add(timer)
+        }
+
         on<ChatPacketEvent> {
             // Boss checks
             if (enteredRegex.matches(value)) {
                 inThornBoss = true
             }
             if (!inThornBoss) return@on
-
-            // Bear kill/spawn handling
-            if (bearSpawnRegex.matches(value)) {
-                handleBearSpawn()
-            }
-            if (bearKillRegex.matches(value)) {
-                handleBearKill()
-            }
-
-            // End stats
-            if (endRegex.matches(value) && !ended) {
-                ended = true
-                if (Timer.printToChat) {
-                    GlobalScope.launch {
-                        delay(1000)
-                        modMessage("Thorn Defeated in ${(timer / 20.0).toFixed(2)}s")
-                    }
-                }
-                if (Timer.printLastBowTime) {
-                    GlobalScope.launch {
-                        delay(1000)
-                        modMessage(
-                            "Last Bow Shot In ${
-                                ((timer - bearKillTimes[bearKillTimes.size - 1]) / 20.0).toFixed(
-                                    2
-                                )
-                            }s"
-                        )
-                    }
-                }
-                if (Tac.printTacTime && Tac.lastBearTaccedOn == bearKillTimes.size) {
-                    GlobalScope.launch {
-                        delay(1000)
-                        modMessage(
-                            "Tacced at ${((Tac.lastBearTacTime / 20.0).toFixed(2))}s"
-                        )
-                    }
-                }
-            }
         }
 
         // Update timer based on sea lantern/coal blocks
@@ -187,7 +134,7 @@ object M4State {
                     }
                     // Final sea lantern is on, bear is starting to spawn
                     if (pos == lastBlockLocation) {
-                        handleBearSpawnStart()
+                        EventDispatcher.triggerBearSpawnStart()
                     }
                 }
             }
@@ -207,7 +154,7 @@ object M4State {
 
                         updateKills(kills + 1)
                         if (kills >= maxKills) {
-                            handleBearSpawnStart()
+                            EventDispatcher.triggerBearSpawnStart()
                         }
                     } else {
                         overkill++
@@ -228,6 +175,10 @@ object M4State {
             if (bearTimer > 0) bearTimer--
             timer++
             updateBearSpawnSpot()
+        }
+
+        on<M4Event.End> {
+            ended = true
         }
 
         on<WorldEvent.Load> {

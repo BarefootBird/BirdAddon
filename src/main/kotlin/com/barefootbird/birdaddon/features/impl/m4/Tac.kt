@@ -1,9 +1,9 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
+import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
-import com.barefootbird.birdaddon.utils.M4State.bearSpawnStartTimes
-import com.barefootbird.birdaddon.utils.M4State.bearTimer
+import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
@@ -17,10 +17,15 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket
 import net.minecraft.world.InteractionHand
 
 
+@OptIn(DelicateCoroutinesApi::class)
 object Tac: Module(
     name = "Tac",
     description = "Stuff for tactical insertion",
@@ -57,11 +62,11 @@ object Tac: Module(
                 if (tacTimer && tacTime == -1) {
                     tacTime = 60
                 }
-                if (printTacTime && bearTimer != -1) {
+                if (printTacTime && M4State.bearTimer != -1) {
                     if (DungeonUtils.inBoss && DungeonUtils.isFloor(4)) {
                         if (DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.Tank || !printTimeOnlyOnTank) {
-                            lastBearTacTime = bearTimer
-                            lastBearTaccedOn = bearSpawnStartTimes.size
+                            lastBearTacTime = M4State.bearTimer
+                            lastBearTaccedOn = M4State.bearSpawnStartTimes.size
                         }
                     }
                 }
@@ -71,6 +76,17 @@ object Tac: Module(
         on<TickEvent.Server> {
             if (tacTime >= 0) {
                 tacTime--
+            }
+        }
+
+        on<M4Event.End> {
+            if (printTacTime && lastBearTaccedOn == M4State.bearKillTimes.size) {
+                GlobalScope.launch {
+                    delay(1000)
+                    modMessage(
+                        "Tacced at ${((lastBearTacTime / 20.0).toFixed(2))}s"
+                    )
+                }
             }
         }
 
