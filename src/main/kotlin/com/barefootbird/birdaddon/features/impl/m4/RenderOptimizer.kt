@@ -15,7 +15,6 @@ import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
-import net.minecraft.world.entity.projectile.arrow.Arrow
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 
@@ -66,7 +65,7 @@ object RenderOptimizer: Module(
     fun shouldHideEntity (entity: Entity): Boolean {
         if (!M4State.inBoss() || !enabled) return false
         // Hide invis armorstands, but keep the ones that are holding items (bow and tribal spear)
-        if (hideInvisArmorStands && entity is ArmorStand && entity.isInvisible && entity.isHolding { it.isEmpty }) return true
+        if (hideInvisArmorStands && entity is ArmorStand && entity.isInvisible && entity.mainHandItem.isEmpty) return true
         if (!npcs.contains(entity)) return false
         return npcVisibility == 2 || (npcVisibility == 1 && !isRelevant(entity))
     }

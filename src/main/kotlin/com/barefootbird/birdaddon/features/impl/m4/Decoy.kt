@@ -3,7 +3,6 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
@@ -12,8 +11,6 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.Vec2
 import com.odtheking.odin.utils.render.drawFilledBox
-import com.odtheking.odin.utils.render.drawStyledBox
-import com.odtheking.odin.utils.renderBoundingBox
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.monster.skeleton.Skeleton
 import net.minecraft.world.entity.monster.skeleton.WitherSkeleton
@@ -21,8 +18,6 @@ import net.minecraft.world.entity.monster.zombie.Zombie
 
 
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 
@@ -32,7 +27,6 @@ object Decoy: Module(
     description = "Thing for m4 decoys",
     category = Category.M4
 ) {
-    private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val highlightBestDecoySpot by BooleanSetting("Show best decoy spot", true, desc = "Highlights the best available decoy spot")
     // x + z coords of the spots in order of best to worst
     private val bestSpots = listOf(
