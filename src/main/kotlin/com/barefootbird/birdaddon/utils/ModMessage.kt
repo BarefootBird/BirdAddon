@@ -1,6 +1,5 @@
 package com.barefootbird.birdaddon.utils
 
-import com.barefootbird.birdaddon.utils.Debug
 import com.odtheking.odin.OdinMod.mc
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
@@ -27,4 +26,8 @@ fun debugMessage(message: Any?, prefix: String = "§bBird Addon §8»§r ", chat
     if (Debug.debugMessages) {
         modMessage(message, prefix, chatStyle)
     }
+}
+
+fun sendCommand(command: String) {
+    mc.execute { mc.player?.connection?.sendCommand(command) }
 }
