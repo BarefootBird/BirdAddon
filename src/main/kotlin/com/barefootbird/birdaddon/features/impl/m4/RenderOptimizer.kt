@@ -24,7 +24,7 @@ object RenderOptimizer: Module(
     description = "Improves performance by not rendering certain things",
     category = Category.M4
 ) {
-    private val hideParticles by BooleanSetting("Hide All", true, desc = "Hides all the particles")
+    private val hideParticles by BooleanSetting("Hide Particles", true, desc = "Hides all the particles")
     private val healerCircle by BooleanSetting("Except Healer Circle", true, desc = "Shows healer circle particles even when hide particles is on") // HAPPY_VILLAGER
     private val mageBeam by BooleanSetting("Except Mage Beam", true, desc = "Shows mage beam particles even when hide particles is on") // FIREWORK
 
