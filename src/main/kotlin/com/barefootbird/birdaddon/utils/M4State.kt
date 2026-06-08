@@ -63,7 +63,7 @@ object M4State {
     var bearSpawnSpot: Vec2 = Vec2(5.5,5.5)
 
     fun inBoss (): Boolean {
-        if (Debug.disableBossChecks) return false
+        if (Debug.disableBossChecks) return true
         return DungeonUtils.inBoss && DungeonUtils.isFloor(4)
     }
 
