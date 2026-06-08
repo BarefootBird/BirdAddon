@@ -34,10 +34,6 @@ object Decoy: Module(
 ) {
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val highlightBestDecoySpot by BooleanSetting("Show best decoy spot", true, desc = "Highlights the best available decoy spot")
-    private val npcVisibility by SelectorSetting("NPC visibility", "All", listOf("All", "Relevant only", "None"), "hides/shows npcs")
-    private val npcHighlight by SelectorSetting("NPC highlight", "None", listOf("None", "Relevant only", "All"), "highlights npcs")
-    private val hidePlants by BooleanSetting("Hide Plants", false, "Hides plants (You might need to reload your textures)")
-
     // x + z coords of the spots in order of best to worst
     private val bestSpots = listOf(
         Vec2(26, 29), Vec2(29, 26), Vec2(31, 28), Vec2(27, 32), // front 4
@@ -53,29 +49,7 @@ object Decoy: Module(
 
     private val searchBox = AABB(-36.0, 77.0, -36.0, 47.0, 83.0, 47.0)
 
-    private val npcs: MutableSet<Entity> = mutableSetOf()
-
-    private fun isRelevant(entity: Entity): Boolean {
-        return entity.x > 17 && entity.z > 17
-    }
-
-    // These 2 functions called from the mixins to hide them
-    @JvmStatic
-    fun shouldHideBlock (blockState: BlockState): Boolean {
-        if (!M4State.inBoss() || !enabled) return false
-        if (hidePlants) {
-            if (blockState.block == Blocks.JUNGLE_SAPLING) return true
-            if (blockState.block == Blocks.SUNFLOWER) return true
-        }
-        return false
-    }
-
-    @JvmStatic
-    fun shouldHideEntity (entity: Entity): Boolean {
-        if (!M4State.inBoss() || !enabled) return false
-        if (!npcs.contains(entity)) return false
-        return npcVisibility == 2 || (npcVisibility == 1 && !isRelevant(entity))
-    }
+    val npcs: MutableSet<Entity> = mutableSetOf()
 
     private fun addNpc(entity: Entity) {
         npcs.add(entity)
@@ -116,19 +90,6 @@ object Decoy: Module(
 
         on<RenderEvent.Extract> {
             if (!M4State.inBoss()) return@on
-            runCatching {
-                val style = renderStyle
-
-                if (npcHighlight != 0) {
-                    npcs.toList().forEach { entity ->
-                        if (npcHighlight == 1 && isRelevant(entity)) {
-                            drawStyledBox(entity.renderBoundingBox, Colors.MINECRAFT_GRAY, style, true)
-                        } else if (npcHighlight == 2) {
-                            drawStyledBox(entity.renderBoundingBox, Colors.MINECRAFT_GRAY, style, true)
-                        }
-                    }
-                }
-            }
             if (bestSpot != null) {
                 val box = AABB(bestSpot!!.x - 0.5, bestSpot!!.y, bestSpot!!.z - 0.5, bestSpot!!.x + 0.5, bestSpot!!.y, bestSpot!!.z + 0.5)
                 drawFilledBox(box, Colors.MINECRAFT_RED, true)
