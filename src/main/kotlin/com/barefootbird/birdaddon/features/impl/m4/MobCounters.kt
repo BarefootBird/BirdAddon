@@ -44,15 +44,18 @@ object MobCounters: Module(
             features.forEachIndexed { index, enabled ->
                 if (!enabled) return@forEachIndexed
                 enabledFeatures++
-                val displayText = when (index) {
-                    0 -> totalMobsPrefix + allMobs.sumOf { it.size }
 
-                    1 -> cowsPrefix + M4Mobs.cows.size
-                    2 -> sheepPrefix + M4Mobs.sheep.size
-                    3 -> chickensPrefix + M4Mobs.chickens.size
-                    4 -> batsPrefix + M4Mobs.bats.size
-                    5 -> wolvesPrefix + M4Mobs.wolves.size
-                    6 -> rabbitsPrefix + M4Mobs.rabbits.size
+                fun overkill(value: Int) = if (showOverkill) "($value)" else ""
+
+                val displayText = when (index) {
+                    0 -> totalMobsPrefix + allMobs.sumOf { it.size } + overkill(M4State.overkill)
+
+                    1 -> cowsPrefix + M4Mobs.cows.size + overkill(M4State.overkillCows)
+                    2 -> sheepPrefix + M4Mobs.sheep.size + overkill(M4State.overkillSheep)
+                    3 -> chickensPrefix + M4Mobs.chickens.size + overkill(M4State.overkillChickens)
+                    4 -> batsPrefix + M4Mobs.bats.size + overkill(M4State.overkillBats)
+                    5 -> wolvesPrefix + M4Mobs.wolves.size + overkill(M4State.overkillWolves)
+                    6 -> rabbitsPrefix + M4Mobs.rabbits.size + overkill(M4State.overkillRabbits)
                     7 -> mobsUnderThornPrefix + allMobs.sumOf { mobList ->
                         mobList.count { mob ->
                             isUnderThorn(mob.x, mob.y, mob.z)
@@ -68,6 +71,8 @@ object MobCounters: Module(
         }
         "Rabbits Under Thorn: 00".length to 9 * enabledFeatures
     }
+
+    private val showOverkill by BooleanSetting("Show Overkill", true, "Shows overkill in brackets for each mob")
 
     private val totalGUI by BooleanSetting("Total Mobs", true, desc = "Show Total Mobs")
     private val cowsGUI by BooleanSetting("Cows", true, desc = "Shows alive cows")
