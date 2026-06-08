@@ -3,8 +3,6 @@
   "minVersion": "0.8",
   "package": "com.barefootbird.birdaddon.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [
-  ],
   "verbose": true,
   "injectors": {
     "defaultRequire": 1
@@ -15,7 +13,7 @@
   "client": [
     "EntityRendererMixin",
     "MixinAbstractSoundInstance",
-    "ModelBlockRendererMixin",
-    "ParticleEngineMixin"
+    "ParticleEngineMixin",
+    "BlockBehaviourMixin"
   ]
 }
