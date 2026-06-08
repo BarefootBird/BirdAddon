@@ -9,7 +9,7 @@ import net.minecraft.core.particles.ParticleTypes
 
 
 object Particles: Module(
-    name = "Particle hider",
+    name = "Particle Hider",
     description = "hides annoying particles in m4 boss",
     category = Category.M4
 ) {
