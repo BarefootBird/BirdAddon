@@ -14,56 +14,83 @@ import com.barefootbird.birdaddon.utils.M4State.overkillRabbits
 import com.barefootbird.birdaddon.utils.M4State.overkillSheep
 import com.barefootbird.birdaddon.utils.M4State.overkillWolves
 
-object OverkillDisplay: Module(
+object OverkillDisplay : Module(
     name = "Overkill Display",
     description = "Shows how much overkill in m4",
     category = Category.M4
 ) {
+
+    private data class Counter(
+        val color: com.odtheking.odin.utils.Color,
+        val prefix: String,
+        val amount: Int
+    )
+
     private val hud by HUD(name, "Displays the overkill", false) { example ->
-        textDim(text(example), 0, 0, Colors.WHITE)
-    }
-    private val showPrefix by BooleanSetting("Show Prefix", true, desc = "Shows 'Overkill: ' prefix")
-    private val showMobType by BooleanSetting("Show Mob Type", true, desc = "Shows which mobs were overkilled")
 
+        fun renderCounters(counters: List<Counter>): Int {
+            var y = 0
 
-    private fun pluralize(count: Int, mob: String): String {
-        val plural = when (mob) {
-            "bat" -> "bats"
-            "chicken" -> "chickens"
-            "sheep" -> "sheep"
-            "cow" -> "cows"
-            "rabbit" -> "rabbits"
-            "wolf" -> "wolves"
-            else -> mob + "s"
+            counters
+                .filter { !hideZero || it.amount != 0 || it.prefix == "Overkill: " }
+                .forEach { counter ->
+
+                    val text = if (showPrefixes) {
+                        counter.prefix + counter.amount
+                    } else {
+                        counter.amount.toString()
+                    }
+
+                    textDim(text, 0, y, counter.color)
+                    y += 9
+                }
+
+            return y
         }
 
-        val name = if (count == 1) mob else plural
-        return "$count $name"
-    }
-
-    private fun text (example: Boolean): String {
-        if (example) return "Overkill: 5 (1 bat, 2 cows)"
-        if (!M4State.inBoss()) return ""
-
-        var overkillString = "$overkill"
-
-        if (showMobType) {
-            val parts = listOfNotNull(
-                overkillBats.takeIf { it > 0 }?.let { pluralize(it, "bat") },
-                overkillChickens.takeIf { it > 0 }?.let { pluralize(it, "chicken") },
-                overkillSheep.takeIf { it > 0 }?.let { pluralize(it, "sheep") },
-                overkillCows.takeIf { it > 0 }?.let { pluralize(it, "cow") },
-                overkillRabbits.takeIf { it > 0 }?.let { pluralize(it, "rabbit") },
-                overkillWolves.takeIf { it > 0 }?.let { pluralize(it, "wolf") },
+        if (example) {
+            val examples = listOf(
+                Counter(Colors.WHITE, "Overkill: ", 0),
+                Counter(Highlight.cowColor, "Cows: ", 0),
+                Counter(Highlight.sheepColor, "Sheep: ", 0),
+                Counter(Highlight.chickenColor, "Chickens: ", 0),
+                Counter(Highlight.batColor, "Bats: ", 0),
+                Counter(Highlight.wolfColor, "Wolves: ", 0),
+                Counter(Highlight.rabbitColor, "Rabbits: ", 0)
             )
-            if (parts.isNotEmpty()) {
-                overkillString += " (${parts.joinToString(", ")})"
-            }
+
+            val y = renderCounters(examples)
+            return@HUD "Overkill: 00".length to y
         }
 
-        if (showPrefix) {
-            return "Overkill: $overkillString"
+        if (!M4State.inBoss()) {
+            return@HUD 0 to 0
         }
-        return overkillString
+
+        val counters = listOf(
+            Counter(Colors.WHITE, "Overkill: ", overkill),
+            Counter(Highlight.cowColor, "Cows: ", overkillCows),
+            Counter(Highlight.sheepColor, "Sheep: ", overkillSheep),
+            Counter(Highlight.chickenColor, "Chickens: ", overkillChickens),
+            Counter(Highlight.batColor, "Bats: ", overkillBats),
+            Counter(Highlight.wolfColor, "Wolves: ", overkillWolves),
+            Counter(Highlight.rabbitColor, "Rabbits: ", overkillRabbits)
+        )
+
+        val y = renderCounters(counters)
+
+        return@HUD "Overkill: 00".length to y
     }
+
+    private val hideZero by BooleanSetting(
+        "Hide Zero",
+        false,
+        desc = "Hides counters that are 0"
+    )
+
+    private val showPrefixes by BooleanSetting(
+        "Prefixes",
+        true,
+        desc = "Adds a prefix for each overkill type"
+    )
 }
