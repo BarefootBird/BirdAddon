@@ -2,6 +2,7 @@ package com.barefootbird.birdaddon
 
 import com.barefootbird.birdaddon.commands.debugCommand
 import com.barefootbird.birdaddon.commands.extraStatsCommand
+import com.barefootbird.birdaddon.commands.mainCommand
 import com.barefootbird.birdaddon.commands.replayCommand
 import com.barefootbird.birdaddon.commands.waypointCommand
 import com.barefootbird.birdaddon.events.EventDispatcher
@@ -61,7 +62,7 @@ object BirdAddon : ClientModInitializer {
 
         // Register commands by adding to the array
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-            arrayOf(waypointCommand, replayCommand, extraStatsCommand, debugCommand).forEach { commodore -> commodore.register(dispatcher) }
+            arrayOf(waypointCommand, replayCommand, extraStatsCommand, debugCommand, mainCommand).forEach { commodore -> commodore.register(dispatcher) }
         }
 
         // Register objects to event bus by adding to the list
