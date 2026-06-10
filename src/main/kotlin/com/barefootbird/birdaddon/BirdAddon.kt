@@ -71,7 +71,7 @@ object BirdAddon : ClientModInitializer {
 
         // Register modules by adding to the list
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"),
-            SpiritBearTimer, Highlight, Waypoints, Timer, Logging, ThornStunTimer, OverkillDisplay
+            SpiritBearTimer, Highlight, Waypoints, Timer, Logging, ThornStunTimer, OverkillDisplay,
             Titles, Replay, MobCounters, Decoy, Tac, HideMessages, ExtraStats, Sounds, RenderOptimizer, Trajectories
         )
     }
