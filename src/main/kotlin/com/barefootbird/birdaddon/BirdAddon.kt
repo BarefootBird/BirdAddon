@@ -16,6 +16,7 @@ import com.odtheking.odin.features.ModuleManager
 import com.barefootbird.birdaddon.features.impl.m4.Highlight
 import com.barefootbird.birdaddon.features.impl.m4.Logging
 import com.barefootbird.birdaddon.features.impl.m4.MobCounters
+import com.barefootbird.birdaddon.features.impl.m4.OverkillDisplay
 import com.barefootbird.birdaddon.features.impl.m4.Timer
 import com.barefootbird.birdaddon.features.impl.m4.RenderOptimizer
 import com.barefootbird.birdaddon.features.impl.m4.Replay
@@ -70,7 +71,7 @@ object BirdAddon : ClientModInitializer {
 
         // Register modules by adding to the list
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"),
-            SpiritBearTimer, Highlight, Waypoints, Timer, Logging, ThornStunTimer,
+            SpiritBearTimer, Highlight, Waypoints, Timer, Logging, ThornStunTimer, OverkillDisplay
             Titles, Replay, MobCounters, Decoy, Tac, HideMessages, ExtraStats, Sounds, RenderOptimizer, Trajectories
         )
     }
