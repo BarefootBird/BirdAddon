@@ -69,21 +69,20 @@ object M4State {
 
     fun updateBearSpawnSpot () {
         if (bearTimer == -1) {
-            if (M4Mobs.ghasts.isEmpty()) return
-            val thorn = M4Mobs.ghasts.find { true }!!
+            M4Mobs.thorn?.let {
+                // Bear spawns roughly on a circle around (5.5, 5.5) with a radius of 0.7,
+                // and spawns on the closest point to where thorn was when the bear started spawning
+                val dx = it.x - 5.5
+                val dz = it.z - 5.5
 
-            // Bear spawns roughly on a circle around (5.5, 5.5) with a radius of 0.7,
-            // and spawns on the closest point to where thorn was when the bear started spawning
-            val dx = thorn.x - 5.5
-            val dz = thorn.z - 5.5
+                val angle = atan2(dz, dx)
 
-            val angle = atan2(dz, dx)
+                val r = 0.7
+                val newX = 5.5 + r * cos(angle)
+                val newZ = 5.5 + r * sin(angle)
 
-            val r = 0.7
-            val newX = 5.5 + r * cos(angle)
-            val newZ = 5.5 + r * sin(angle)
-
-            bearSpawnSpot = Vec2(newX, newZ)
+                bearSpawnSpot = Vec2(newX, newZ)
+            }
         }
     }
 

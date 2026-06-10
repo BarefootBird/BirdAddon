@@ -15,116 +15,85 @@ import net.minecraft.world.entity.monster.Ghast
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.AABB
 
-// Keeps track of how many of each mob are alive at any given time, and the total that are alive over the course of the boss
 object M4Mobs {
-    val totalSheep = mutableSetOf<Sheep>()
-    val totalWolves = mutableSetOf<Wolf>()
-    val totalBats = mutableSetOf<Bat>()
-    val totalChickens = mutableSetOf<Chicken>()
-    val totalRabbits = mutableSetOf<Rabbit>()
-    val totalCows = mutableSetOf<Cow>()
-    val sheep = mutableSetOf<Sheep>()
-    val wolves = mutableSetOf<Wolf>()
-    val bats = mutableSetOf<Bat>()
-    val chickens = mutableSetOf<Chicken>()
-    val rabbits = mutableSetOf<Rabbit>()
-    val cows = mutableSetOf<Cow>()
-    val ghasts = mutableSetOf<Ghast>()
-    val bears = mutableSetOf<Player>()
-    private val searchBox = AABB(-36.0, 68.0, -36.0, 47.0, 110.0, 47.0) // m4 arena size
 
+    private var _sheep = emptySet<Sheep>()
+    private var _wolves = emptySet<Wolf>()
+    private var _bats = emptySet<Bat>()
+    private var _chickens = emptySet<Chicken>()
+    private var _rabbits = emptySet<Rabbit>()
+    private var _cows = emptySet<Cow>()
+
+    val sheep get() = _sheep
+    val wolves get() = _wolves
+    val bats get() = _bats
+    val chickens get() = _chickens
+    val rabbits get() = _rabbits
+    val cows get() = _cows
+
+    private var _thorn: Ghast? = null
+    private var _bear: Player? = null
+    val thorn: Ghast? get() = _thorn
+    val bear: Player? get() = _bear
+    private val searchBox = AABB(-36.0, 68.0, -36.0, 47.0, 110.0, 47.0) // m4 arena size
 
     init {
 
         on<WorldEvent.Load> {
-            sheep.clear()
-            wolves.clear()
-            bats.clear()
-            chickens.clear()
-            rabbits.clear()
-            cows.clear()
-            ghasts.clear()
-            bears.clear()
+            _sheep = emptySet()
+            _wolves = emptySet()
+            _bats = emptySet()
+            _chickens = emptySet()
+            _rabbits = emptySet()
+            _cows = emptySet()
+            _thorn = null
+            _bear = null
         }
 
         on<TickEvent.Server> {
             if (!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) return@on
 
             runCatching {
-                val allEntities = OdinMod.mc.level?.getEntities(null, searchBox)?.toList() ?: emptyList()
 
-                sheep.clear()
-                wolves.clear()
-                bats.clear()
-                chickens.clear()
-                rabbits.clear()
-                cows.clear()
-                ghasts.clear()
-                bears.clear()
+                val sheepNew = mutableSetOf<Sheep>()
+                val wolvesNew = mutableSetOf<Wolf>()
+                val batsNew = mutableSetOf<Bat>()
+                val chickensNew = mutableSetOf<Chicken>()
+                val rabbitsNew = mutableSetOf<Rabbit>()
+                val cowsNew = mutableSetOf<Cow>()
+                var thornNew: Ghast? = null
+                var bearNew: Player? = null
+
+                val allEntities = OdinMod.mc.level
+                    ?.getEntities(null, searchBox)
+                    ?: return@runCatching
 
                 allEntities.forEach { entity ->
                     if (!entity.isAlive) return@forEach
-                    val id = entity.id
+
                     when (entity) {
-                        is Sheep -> {
-                            if (M4State.timer >= 55 * 20) // try stop explo sheep messing with data
-                                sheep.add(entity)
-                            if (totalSheep.find { it.id == id } == null) {
-                                totalSheep.add(entity)
-                            }
-                        }
+                        is Sheep -> sheepNew.add(entity)
+                        is Wolf -> wolvesNew.add(entity)
+                        is Chicken -> chickensNew.add(entity)
+                        is Rabbit -> rabbitsNew.add(entity)
+                        is Cow -> cowsNew.add(entity)
 
-                        is Wolf -> {
-                            wolves.add(entity)
-                            if (totalWolves.find { it.id == id } == null) {
-                                totalWolves.add(entity)
-                            }
-                        }
+                        is Ghast -> thornNew = entity
 
-                        is Bat -> {
-                            if (M4State.timer >= 15 * 20) // try stop spirit scepter messing with data
-                                if (entity.isInvisible) {
-                                    // When the bow spawns it spawns invisible bats with it, don't count these
-                                    // Also the packet that makes them invisible is sent after the packet that spawns them
-                                    // so for a little bit they are visible and do get added to total bats
-                                    totalBats.remove(entity)
-                                } else {
-                                    bats.add(entity)
-                                    if (totalBats.find { it.id == id } == null) {
-                                        totalBats.add(entity)
-                                    }
-                                }
-                        }
+                        is Bat -> if (!entity.isInvisible) batsNew.add(entity)
 
-                        is Chicken -> {
-                            chickens.add(entity)
-                            if (totalChickens.find { it.id == id } == null) {
-                                totalChickens.add(entity)
-                            }
-                        }
-
-                        is Rabbit -> {
-                            rabbits.add(entity)
-                            if (totalRabbits.find { it.id == id } == null) {
-                                totalRabbits.add(entity)
-                            }
-                        }
-
-                        is Cow -> {
-                            cows.add(entity)
-                            if (totalCows.find { it.id == id } == null) {
-                                totalCows.add(entity)
-                            }
-                        }
-
-                        is Ghast -> ghasts.add(entity)
-                    }
-                    if (entity is Player) {
-                        if (entity.gameProfile.name.lowercase().startsWith("spirit bear")) {
-                            bears.add(entity)
-                        }
+                        is Player -> if (entity.gameProfile.name.equals("Spirit Bear")) bearNew = entity
                     }
                 }
+
+                _sheep = sheepNew
+                _wolves = wolvesNew
+                _bats = batsNew
+                _chickens = chickensNew
+                _rabbits = rabbitsNew
+                _cows = cowsNew
+                _thorn = thornNew
+                _bear = bearNew
             }
         }
     }

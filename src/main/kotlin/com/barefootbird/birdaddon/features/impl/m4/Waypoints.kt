@@ -347,20 +347,23 @@ object Waypoints: Module(
         }
     }
 
-    private fun getBowSpawnSpot (): Vec3 {
-        if (M4State.bearTimer == -1 || M4Mobs.bears.isEmpty()) {
-            return Vec3(5.0, 69.0, 4.0)
-        }
-        val bear = M4Mobs.bears.find { true } ?: return Vec3(5.0, 69.0, 4.0)
+
+
+    private fun getBowSpawnSpot(): Vec3 {
+        val defaultSpawn = Vec3(5.0, 69.0, 4.0)
+
+        val bear = M4Mobs.bear ?: return defaultSpawn
+
+        if (M4State.bearTimer != 0) return defaultSpawn
 
         val x = bear.x
         val z = bear.z
 
-        return bowSpots.minBy { spot ->
+        return bowSpots.minByOrNull { spot ->
             val dx = spot.x - x
             val dz = spot.z - z
             dx * dx + dz * dz
-        }
+        } ?: defaultSpawn
     }
 
     private fun RenderEvent.Extract.renderBowPickup () {

@@ -17,11 +17,11 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.barefootbird.birdaddon.utils.M4Mobs.bats
 import com.barefootbird.birdaddon.utils.M4Mobs.chickens
 import com.barefootbird.birdaddon.utils.M4Mobs.cows
-import com.barefootbird.birdaddon.utils.M4Mobs.ghasts
+import com.barefootbird.birdaddon.utils.M4Mobs.thorn
 import com.barefootbird.birdaddon.utils.M4Mobs.rabbits
 import com.barefootbird.birdaddon.utils.M4Mobs.sheep
 import com.barefootbird.birdaddon.utils.M4Mobs.wolves
-import com.barefootbird.birdaddon.utils.M4Mobs.bears
+import com.barefootbird.birdaddon.utils.M4Mobs.bear
 import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.core.onReceive
@@ -293,17 +293,6 @@ object Highlight: Module(
 
         on<TickEvent.Server> {
             if (!M4State.inBoss()) return@on
-
-            if (hideNameTags) {
-                runCatching {
-                    val allEntities = OdinMod.mc.level?.getEntities(null, searchBox)?.toList() ?: emptyList()
-                    allEntities.filterIsInstance<ArmorStand>().forEach {
-                        if (it.name.string.contains("❤")) {
-                            it.isInvisible = true
-                        }
-                    }
-                }
-            }
             if (damaged > -1) {
                 damaged--
             }
@@ -322,47 +311,35 @@ object Highlight: Module(
             runCatching {
                 val style = renderStyle
 
-                val entities = mutableListOf<Pair<List<Entity>, Color>>()
-
-
-                if (highlightSheep) entities.add(sheep.toList() to sheepColor)
-                if (highlightWolves) entities.add(wolves.toList() to wolfColor)
-                if (highlightBats) entities.add(bats.toList() to batColor)
-                if (highlightChicken) entities.add(chickens.toList() to chickenColor)
-                if (highlightRabbit) entities.add(rabbits.toList() to rabbitColor)
-                if (highlightCow) entities.add(cows.toList() to cowColor)
-
-                entities.forEach { (entities, color) ->
-                    entities.forEach { entity ->
-                        drawStyledBox(entity.renderBoundingBox, color, style, true)
-                    }
+                fun draw(list: Set<Entity>, color: Color) {
+                    list.forEach { drawStyledBox(it.renderBoundingBox, color, style, true) }
                 }
 
+                if (highlightSheep) draw(sheep, sheepColor)
+                if (highlightWolves) draw(wolves, wolfColor)
+                if (highlightBats) draw(bats, batColor)
+                if (highlightChicken) draw(chickens, chickenColor)
+                if (highlightRabbit) draw(rabbits, rabbitColor)
+                if (highlightCow) draw(cows, cowColor)
+
                 if (highlightThorn) {
-                    if (thornDmgFlash && damaged >= 0) {
-                        ghasts.toList().forEach { entity ->
-                            drawStyledBox(entity.renderBoundingBox, thornDamagedColor, style, true)
-                        }
-                    } else {
-                        if (transThorn) {
-                            ghasts.toList().forEach { entity ->
-                                drawTransBox(entity.renderBoundingBox, style, true)
-                            }
-                        } else {
-                            ghasts.toList().forEach { entity ->
-                                drawStyledBox(entity.renderBoundingBox, thornColor, style, true)
-                            }
+                    thorn?.let {
+                        when {
+                            thornDmgFlash && damaged >= 0 -> drawStyledBox(it.renderBoundingBox, thornDamagedColor, style, true)
+                            transThorn -> drawTransBox(it.renderBoundingBox, style, true)
+                            else -> drawStyledBox(it.renderBoundingBox, thornColor, style, true)
                         }
                     }
                 }
 
                 if (highlightBear && !(onlyShowBearOnMage && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Mage)) {
-                    bears.forEach { bear ->
-                        if (noInterpolateBear) {
-                            drawStyledBox(bear.boundingBox, bearColor, style, true)
-                        } else {
-                            drawStyledBox(bear.renderBoundingBox, bearColor, style, true)
-                        }
+                    bear?.let {
+                        drawStyledBox(
+                            if (noInterpolateBear) it.boundingBox else it.renderBoundingBox,
+                            bearColor,
+                            renderStyle,
+                            true
+                        )
                     }
                 }
             }
