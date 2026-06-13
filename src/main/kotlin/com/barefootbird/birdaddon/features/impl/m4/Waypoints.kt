@@ -296,7 +296,7 @@ object Waypoints: Module(
         return AABB(x + 0.0, y + 0.0, z + 0.0, x+1.0, y+1.0, z+1.0)
     }
 
-    private fun RenderEvent.Extract.renderWaypoint (x: Int, y: Int, z: Int, clazz: DungeonClass) {
+    private fun RenderEvent.Extract.renderWaypoint (pos: BlockPos, clazz: DungeonClass) {
         val color = when (clazz) {
             DungeonClass.Healer -> Colors.MINECRAFT_LIGHT_PURPLE
             DungeonClass.Tank -> Colors.MINECRAFT_GREEN
@@ -305,15 +305,10 @@ object Waypoints: Module(
             DungeonClass.Mage -> Colors.MINECRAFT_BLUE
             else -> return
         }
-        drawStyledBox(box1x1(x, y, z), color, renderStyle, depth)
-    }
-
-    private fun RenderEvent.Extract.renderWaypoint (pos: BlockPos, clazz: DungeonClass) {
-        renderWaypoint(pos.x, pos.y, pos.z, clazz)
+        drawStyledBox(box1x1(pos.x, pos.y, pos.z), color, renderStyle, depth)
     }
 
     private fun lookingAt (box: AABB, range: Double): Boolean {
-
         val eyePos = mc.player?.eyePosition ?: return false
         val lookVec = mc.player?.getViewVector(1.0F) ?: return false
         val end = eyePos.add(lookVec.scale(range))
@@ -343,10 +338,9 @@ object Waypoints: Module(
 
         }
         if ((onCgm4 && showOnCgm4) || (onM4Miku && showOnM4Miku) || (DungeonUtils.inBoss && DungeonUtils.isFloor(4))) {
-            drawStyledBox(bearSpawn, bearSpawnColor, renderStyle, false) // bear spawn
+            drawStyledBox(bearSpawn, bearSpawnColor, renderStyle, depth) // bear spawn
         }
     }
-
 
 
     private fun getBowSpawnSpot(): Vec3 {
