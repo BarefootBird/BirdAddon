@@ -14,6 +14,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket
+import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.ambient.Bat
 import net.minecraft.world.entity.animal.chicken.Chicken
 import net.minecraft.world.entity.animal.cow.Cow
@@ -38,7 +39,6 @@ object M4State {
     var timer = 0 // Times ticks from the start of boss
 
     val enteredRegex = Regex("^\\[BOSS] Thorn: Welcome Adventurers! I am Thorn, the Spirit! And host of the Vegan Trials!$")
-    val endRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
 
     // These track times in ticks for the events
     val bearSpawnTimes = mutableListOf<Int>()
@@ -48,6 +48,11 @@ object M4State {
     // Usually I just use odin's DungeonUtils for this, but odin's tick timer uses a different system, so I use this
     // to make sure that the odin timer and my timer match exactly
     var inThornBoss = false
+
+    var lastSpiritBowHoldStart = -1
+    private var lastSpiritBowHold = -1
+    var lastSpiritBowRelease = -1
+    var lastSpiritBowPickup = -1
 
     var overkill = 0
     var overkillBats = 0
@@ -65,6 +70,19 @@ object M4State {
     fun inBoss (): Boolean {
         if (Debug.disableBossChecks) return true
         return DungeonUtils.inBoss && DungeonUtils.isFloor(4)
+    }
+
+    fun updateSpiritBowData () {
+        if (mc.level!!.players().any { it.getItemInHand(InteractionHand.MAIN_HAND).displayName.string == "[Spirit Bow]" && it.isUsingItem }) {
+            if (lastSpiritBowHold != timer - 1) {
+                lastSpiritBowHoldStart = timer
+            }
+            lastSpiritBowHold = timer
+        } else {
+            if (lastSpiritBowHold == timer - 1) {
+                lastSpiritBowRelease = timer - 1
+            }
+        }
     }
 
     fun updateBearSpawnSpot () {
@@ -108,6 +126,10 @@ object M4State {
         on<M4Event.BearSpawnStart> {
             bearTimer = 70
             bearSpawnStartTimes.add(timer)
+        }
+
+        on<M4Event.BowPickup> {
+            lastSpiritBowPickup = timer
         }
 
         on<ChatPacketEvent> {
@@ -174,6 +196,7 @@ object M4State {
             if (bearTimer > 0) bearTimer--
             timer++
             updateBearSpawnSpot()
+            updateSpiritBowData()
         }
 
         on<M4Event.End> {
@@ -197,6 +220,10 @@ object M4State {
             overkillWolves = 0
             ended = false
             inThornBoss = false
+            lastSpiritBowHoldStart = -1
+            lastSpiritBowHold = -1
+            lastSpiritBowRelease = -1
+            lastSpiritBowPickup = -1
         }
     }
 

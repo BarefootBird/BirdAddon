@@ -1,14 +1,20 @@
 package com.barefootbird.birdaddon.events
 
 import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.debugMessage
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
+import com.odtheking.odin.events.core.onReceive
+import com.odtheking.odin.utils.noControlCodes
+import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket
+import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket
 
 object EventDispatcher {
 
     val bearSpawnRegex = Regex("^A Spirit Bear has appeared!$")
     val bearKillRegex = Regex("^The Spirit Bow has dropped!$")
+    val bowPickupRegex = Regex("^.* picked up the Spirit Bow!$")
     val endRegex = Regex("^\\s*☠ Defeated Thorn in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
     var ended = false
 
@@ -34,6 +40,17 @@ object EventDispatcher {
             if (endRegex.matches(value) && !ended) {
                 ended = true
                 M4Event.End().postAndCatch()
+            }
+        }
+
+        onReceive<ClientboundSetSubtitleTextPacket> {
+            val packet = it.packet
+            if (packet is ClientboundSetSubtitleTextPacket) {
+                debugMessage(packet.text.string)
+                if (packet.text.string.noControlCodes.matches(bowPickupRegex)) {
+                    M4Event.BowPickup().postAndCatch()
+                    debugMessage("match")
+                }
             }
         }
 

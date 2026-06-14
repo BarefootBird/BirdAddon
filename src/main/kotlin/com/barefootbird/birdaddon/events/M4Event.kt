@@ -8,4 +8,5 @@ abstract class M4Event() : Event {
     class BearSpawn : M4Event()
     class BearSpawnStart : M4Event()
     class End: M4Event()
+    class BowPickup : M4Event()
 }
