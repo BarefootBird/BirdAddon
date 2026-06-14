@@ -73,7 +73,10 @@ object M4State {
     }
 
     fun updateSpiritBowData () {
-        if (mc.level!!.players().any { it.getItemInHand(InteractionHand.MAIN_HAND).displayName.string == "[Spirit Bow]" && it.isUsingItem }) {
+
+        val playersSnapshot = mc.level!!.players().toList()
+
+        if (playersSnapshot.any { it.getItemInHand(InteractionHand.MAIN_HAND).displayName.string == "[Spirit Bow]" && it.isUsingItem }) {
             if (lastSpiritBowHold != timer - 1) {
                 lastSpiritBowHoldStart = timer
             }
