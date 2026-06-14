@@ -115,17 +115,17 @@ object Trajectories : Module (
             runCatching {
                 cowLandingSpots.forEach {
                     val box = AABB(it.x - 0.2, it.y, it.z - 0.2, it.x + 0.2, it.y, it.z + 0.2)
-                    drawStyledBox(box, Highlight.cowColor,renderStyle, false)
+                    drawStyledBox(box, Highlight.cowColor,renderStyle, true)
                 }
                 sheepLandingSpots.forEach {
                     val box = AABB(it.x - 0.2, it.y, it.z - 0.2, it.x + 0.2, it.y, it.z + 0.2)
-                    drawStyledBox(box, Highlight.sheepColor,renderStyle, false)
+                    drawStyledBox(box, Highlight.sheepColor,renderStyle, true)
                 }
                 if (chicken) {
                     M4Mobs.chickens.forEach {
                         val y = getGroundY(it.x, it.z)
                         val box = AABB(it.x - 0.2, y, it.z - 0.2, it.x + 0.2, y, it.z + 0.2)
-                        drawStyledBox(box, Highlight.chickenColor, renderStyle, false)
+                        drawStyledBox(box, Highlight.chickenColor, renderStyle, true)
                     }
                 }
             }
