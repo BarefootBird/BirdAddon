@@ -132,7 +132,7 @@ object ExtraStats: Module(
                         spawnTime / 20.0
                     }s → Kill +${
                             (killTime - spawnTime) / 20.0
-                    }s → Pickup → +${
+                    }s → Pickup +${
                         (M4State.lastSpiritBowPickup - killTime) / 20.0
                     }s → Hold +${
                         (M4State.lastSpiritBowHoldStart - M4State.lastSpiritBowPickup) / 20.0
