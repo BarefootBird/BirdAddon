@@ -1,11 +1,13 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
+import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.features.impl.m4.Decoy.npcs
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -41,6 +43,8 @@ object RenderOptimizer: Module(
         return entity.x > 17 && entity.z > 17
     }
 
+    var ended = false
+
     @JvmStatic
     fun shouldHideParticle(particleOptions: ParticleOptions): Boolean {
         if (!enabled || !M4State.inBoss() || !hideParticles) return false
@@ -65,12 +69,20 @@ object RenderOptimizer: Module(
     fun shouldHideEntity (entity: Entity): Boolean {
         if (!M4State.inBoss() || !enabled) return false
         // Hide invis armorstands, but keep the ones that are holding items (bow and tribal spear)
-        if (hideInvisArmorStands && entity is ArmorStand && entity.isInvisible && entity.mainHandItem.isEmpty) return true
+        if (hideInvisArmorStands && entity is ArmorStand && entity.isInvisible && entity.mainHandItem.isEmpty && !ended) return true
         if (!npcs.contains(entity)) return false
         return npcVisibility == 2 || (npcVisibility == 1 && !isRelevant(entity))
     }
 
     init {
+        on<M4Event.End> {
+            ended = true
+        }
+
+        on<WorldEvent.Load> {
+            ended = false
+        }
+
         on<RenderEvent.Extract> {
             if (!M4State.inBoss()) return@on
             runCatching {
