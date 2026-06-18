@@ -8,6 +8,7 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import com.barefootbird.birdaddon.utils.M4State
+import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 
 object SpiritBearTimer: Module(
@@ -38,6 +39,8 @@ object SpiritBearTimer: Module(
     }
     private val showTicks by BooleanSetting("Show Timer in Ticks", true, desc = "Changes the timer to be in ticks instead of seconds")
 
+    private val decimals by NumberSetting("Decimals", 2, 1, 2, 1, "How many decimals to show")
+
 
     private fun timerText(example: Boolean): String {
 
@@ -61,7 +64,7 @@ object SpiritBearTimer: Module(
                 if (showTicks) {
                     "§c${ticksLeft.toFixed(0).padStart(2, '0')}"
                 } else {
-                    "§c${(ticksLeft / 20.0).toFixed()}s"
+                    "§c${(ticksLeft / 20.0).toFixed(decimals)}s"
                 }
             }
             else -> "n/a"

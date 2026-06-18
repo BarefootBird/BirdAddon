@@ -9,6 +9,7 @@ import com.odtheking.odin.utils.toFixed
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
+import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.core.on
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -21,7 +22,6 @@ object Timer: Module(
     description = "Shows how long the boss has gone on for",
     category = Category.M4
 ) {
-
     private val hud by HUD(name, "Displays the time on the hud", true) { example ->
         when {
             example -> "§c48.2"
