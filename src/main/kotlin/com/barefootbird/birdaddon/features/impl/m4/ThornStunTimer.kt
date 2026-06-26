@@ -11,7 +11,7 @@ import com.odtheking.odin.utils.toFixed
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
@@ -33,7 +33,7 @@ object ThornStunTimer: Module(
     private fun timerText (example: Boolean): String {
         if (example) return "§cNot Stunned"
         if (!M4State.inBoss()) return ""
-        if (onlyShowOnHealer && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) return ""
+        if (onlyShowOnHealer && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) return ""
         if (timer >= 0) {
             return "§5${(timer / 20.0).toFixed(decimals)}s"
         }
@@ -57,7 +57,7 @@ object ThornStunTimer: Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             timer = 310
         }
     }

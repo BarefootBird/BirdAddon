@@ -24,7 +24,7 @@ import com.google.gson.reflect.TypeToken
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.setClipboardContent
 import net.minecraft.world.phys.Vec3
@@ -298,11 +298,11 @@ object Waypoints: Module(
 
     private fun RenderEvent.Extract.renderWaypoint (pos: BlockPos, clazz: DungeonClass) {
         val color = when (clazz) {
-            DungeonClass.Healer -> Colors.MINECRAFT_LIGHT_PURPLE
-            DungeonClass.Tank -> Colors.MINECRAFT_GREEN
-            DungeonClass.Berserk -> Colors.MINECRAFT_DARK_RED
-            DungeonClass.Archer -> Colors.MINECRAFT_GOLD
-            DungeonClass.Mage -> Colors.MINECRAFT_BLUE
+            DungeonClass.HEALER -> Colors.MINECRAFT_LIGHT_PURPLE
+            DungeonClass.TANK -> Colors.MINECRAFT_GREEN
+            DungeonClass.BERSERK -> Colors.MINECRAFT_DARK_RED
+            DungeonClass.ARCHER -> Colors.MINECRAFT_GOLD
+            DungeonClass.MAGE -> Colors.MINECRAFT_BLUE
             else -> return
         }
         drawStyledBox(box1x1(pos.x, pos.y, pos.z), color, renderStyle, depth)
@@ -387,13 +387,13 @@ object Waypoints: Module(
             renderCustomWaypoints()
             if ((DungeonUtils.inBoss && DungeonUtils.isFloor(4)) || onCgm4 || onM4Miku) {
                 if (bearSpawn && (!bearSpawnOnMage ||
-                    DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.Mage ||
+                    DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.MAGE ||
                     onCgm4 ||
                     onM4Miku)) {
                     renderBearSpawn()
                 }
                 if (bowPickupWaypoint && (!bowPickupWaypointOnlyOnTank ||
-                    DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.Tank ||
+                    DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK ||
                     onCgm4 ||
                     onM4Miku
                     )) {
@@ -402,7 +402,7 @@ object Waypoints: Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             if (waypoints.isEmpty()) {
                 loadWaypoints()
             }

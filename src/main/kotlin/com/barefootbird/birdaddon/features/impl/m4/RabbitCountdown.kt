@@ -71,14 +71,14 @@ object RabbitCountdown: Module(
 
         val lines = mutableListOf<String>()
         val ticksUntilRabbitSpawn = RABBIT_SPAWN_TIME - M4State.timer
-        if (ticksUntilRabbitSpawn >= 0) {
-            val shouldShow = dontShowAlways || ticksUntilRabbitSpawn <= secondsBefore * 20
-            if (shouldShow) {
-                lines.add("§b${"$displayText"} ${(ticksUntilRabbitSpawn / 20.0).toFixed(decimals)}s")
-            }
+        val shouldShowTimer = ticksUntilRabbitSpawn >= 0 && (dontShowAlways || ticksUntilRabbitSpawn <= secondsBefore * 20)
+        if (!shouldShowTimer) {
+            return emptyList()
         }
 
-        if (showArenaMobs && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) {
+        lines.add("§b${"$displayText"} ${(ticksUntilRabbitSpawn / 20.0).toFixed(decimals)}s")
+
+        if (showArenaMobs && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) {
             lines.add("§dGround: ${M4Mobs.cows.size +
                     M4Mobs.sheep.size +
                     M4Mobs.chickens.size +
@@ -86,7 +86,7 @@ object RabbitCountdown: Module(
                     M4Mobs.rabbits.size}")
         }
 
-        if (showBats && DungeonUtils.currentDungeonPlayer.clazz in setOf(DungeonClass.Berserk, DungeonClass.Mage)) {
+        if (showBats && DungeonUtils.currentDungeonPlayer.clazz in setOf(DungeonClass.BERSERK, DungeonClass.MAGE)) {
             lines.add("§fBats: ${M4Mobs.bats.size}")
         }
 

@@ -332,7 +332,7 @@ object Highlight: Module(
                     }
                 }
 
-                if (highlightBear && !(onlyShowBearOnMage && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Mage)) {
+                if (highlightBear && !(onlyShowBearOnMage && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.MAGE)) {
                     bear?.let {
                         drawStyledBox(
                             if (noInterpolateBear) it.boundingBox else it.renderBoundingBox,

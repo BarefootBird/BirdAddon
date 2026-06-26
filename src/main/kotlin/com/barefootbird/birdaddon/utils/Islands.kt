@@ -2,7 +2,7 @@ package com.barefootbird.birdaddon.utils
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import net.minecraft.core.BlockPos
@@ -63,7 +63,7 @@ object Islands {
     }
 
     init {
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             onCgm4 = false
             onM4Miku = false
             onPrivateIs = false

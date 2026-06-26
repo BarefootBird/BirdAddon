@@ -5,11 +5,11 @@ import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.Vec2
+import com.barefootbird.birdaddon.utils.Vec2
 import com.odtheking.odin.utils.render.drawFilledBox
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.monster.skeleton.Skeleton
@@ -90,7 +90,7 @@ object Decoy: Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             bestSpotIndex = 100
             bestSpot = null // placeholder value
             npcs.clear()

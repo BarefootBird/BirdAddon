@@ -7,7 +7,7 @@ import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
@@ -147,11 +147,11 @@ object Logging: Module(
         EntityType.COW to 4,
         EntityType.WOLF to 5,
         EntityType.GHAST to 6,
-        DungeonClass.Berserk to 7,
-        DungeonClass.Mage to 8,
-        DungeonClass.Archer to 9,
-        DungeonClass.Healer to 10,
-        DungeonClass.Tank to 11,
+        DungeonClass.BERSERK to 7,
+        DungeonClass.MAGE to 8,
+        DungeonClass.ARCHER to 9,
+        DungeonClass.HEALER to 10,
+        DungeonClass.TANK to 11,
         "Spirit Bear" to 12
     )
 
@@ -330,7 +330,7 @@ object Logging: Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             trackedById.clear()
             uuidToId.clear()
             nextId = 0

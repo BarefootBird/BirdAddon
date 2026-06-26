@@ -7,7 +7,7 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -206,7 +206,7 @@ object M4State {
             ended = true
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             // Reset state on world load
             updateKills(0)
             bearTimer = -1
