@@ -4,6 +4,7 @@ import com.odtheking.odin.config.ModuleConfig;
 import com.odtheking.odin.features.Module;
 import com.odtheking.odin.features.ModuleManager;
 import com.odtheking.odin.features.impl.boss.SpiritBear;
+import com.odtheking.odin.features.impl.dungeon.BetterPartyFinder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -15,7 +16,7 @@ public class ModuleOverwriteMixin {
     @ModifyVariable(method = "registerModules", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private static Module[] filterModules(Module[] modules, ModuleConfig config) {
         return Arrays.stream(modules)
-                .filter(module -> !(module instanceof SpiritBear))
+                .filter(module -> !(module instanceof SpiritBear) && !(module instanceof BetterPartyFinder))
                 .toArray(Module[]::new);
     }
 }

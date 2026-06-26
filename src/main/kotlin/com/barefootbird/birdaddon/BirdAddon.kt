@@ -6,6 +6,7 @@ import com.barefootbird.birdaddon.commands.mainCommand
 import com.barefootbird.birdaddon.commands.replayCommand
 import com.barefootbird.birdaddon.commands.waypointCommand
 import com.barefootbird.birdaddon.events.EventDispatcher
+import com.barefootbird.birdaddon.features.impl.dungeon.BetterPartyFinder
 import com.barefootbird.birdaddon.features.impl.m4.Decoy
 import com.barefootbird.birdaddon.features.impl.m4.ExtraStats
 import com.barefootbird.birdaddon.features.impl.m4.HideMessages
@@ -74,7 +75,7 @@ object BirdAddon : ClientModInitializer {
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"),
             SpiritBearTimer, Highlight, Waypoints, Timer, Logging, ThornStunTimer, OverkillDisplay,
             Titles, Replay, MobCounters, Decoy, Tac, HideMessages, ExtraStats, Sounds, RenderOptimizer, Trajectories,
-            RabbitCountdown,
+            RabbitCountdown, BetterPartyFinder,
         )
     }
 }
