@@ -35,4 +35,3 @@ Use /od to open the config
 - waypoint file is stored at .minecraft/config/odin/addons/m4waypoints.json if you want to share waypoints with other people, just put their waypoint file there and reload your game
 
 ---
-If you have bugs to report, feature requests or anything else, feel free to send me a dm on discord, my disc is fredward_
