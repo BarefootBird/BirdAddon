@@ -159,6 +159,7 @@ object Highlight: Module(
         if (hideNameTags) {
             if (entity is ArmorStand && entity.name.string.contains("❤")) return true
         }
+        if (highlightThorn && transThorn && entity == thorn) return true
         if (hideMobs) {
             if (entity is Bat && highlightBats) return true
             if (entity is Chicken && highlightChicken) return true
