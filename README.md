@@ -1,8 +1,8 @@
 # Bird Addon
 
-Fork by kraks.
+Mod made by BarefootBird
 
-**This is an odin addon. It requires odin 0.2.2 for MC 26.1.2**
+**This is an odin addon. It requires odin 0.1.6 for 1.21.10 or odin 0.1.9 for 1.21.11**
 
 [Odin](https://github.com/odtheking/Odin)
 
@@ -18,7 +18,6 @@ Use /od to open the config
 - Boss Timer (Just a timer that shows how long boss has gone on for)
 - Custom Titles that trigger on: bow miss, bow pickup, bear kill, bear spawn, bear spawn start
 - Custom boss waypoints that dynamically update depending on where in the boss you are
-- Customizable rabbit spawn timer
 
 ## Commands
 
@@ -35,3 +34,4 @@ Use /od to open the config
 - waypoint file is stored at .minecraft/config/odin/addons/m4waypoints.json if you want to share waypoints with other people, just put their waypoint file there and reload your game
 
 ---
+If you have bugs to report, feature requests or anything else, feel free to send me a dm on discord, my disc is fredward_
