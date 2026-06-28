@@ -7,7 +7,7 @@ import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -79,7 +79,7 @@ object RenderOptimizer: Module(
             ended = true
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             ended = false
         }
 
