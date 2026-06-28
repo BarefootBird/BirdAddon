@@ -212,6 +212,8 @@ object SpiritBear: Module(
             .replace($$"$death", death)
             .replace($$"$total", total)
             .replace($$"+$kill", kill)
+            .replace($$"$kill", kill)
+
     }
 
     private fun formatSeconds(ticks: Int): String {
