@@ -24,7 +24,7 @@ import com.google.gson.reflect.TypeToken
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.setClipboardContent
 import net.minecraft.world.phys.Vec3
@@ -122,6 +122,17 @@ object Waypoints: Module(
 
     val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 
+    private fun dungeonClassFromName(name: String): DungeonClass? {
+        return when (name.trim().lowercase()) {
+            "berserk", "bers", "b" -> DungeonClass.BERSERK
+            "healer", "heal", "h" -> DungeonClass.HEALER
+            "archer", "arch", "a" -> DungeonClass.ARCHER
+            "mage", "m" -> DungeonClass.MAGE
+            "tank", "t" -> DungeonClass.TANK
+            else -> null
+        }
+    }
+
     fun exportWaypoints() {
         val exported: String? = try {
             Base64.encode(compress(gson.toJson(waypoints)))
@@ -215,23 +226,7 @@ object Waypoints: Module(
             }
         }
 
-        val classMap = mapOf(
-            "berserk" to "Berserk",
-            "bers" to "Berserk",
-            "b" to "Berserk",
-            "healer" to "Healer",
-            "heal" to "Healer",
-            "h" to "Healer",
-            "archer" to "Archer",
-            "arch" to "Archer",
-            "a" to "Archer",
-            "mage" to "Mage",
-            "m" to "Mage",
-            "tank" to "Tank",
-            "t" to "Tank"
-        )
-
-        val actualClass = classMap[clazz.lowercase()] ?: clazz
+        val actualClass = dungeonClassFromName(clazz)?.name ?: clazz
 
         val waypoint = Waypoint(
             pos = newPos,
@@ -277,8 +272,8 @@ object Waypoints: Module(
     fun RenderEvent.Extract.renderCustomWaypoints() {
         if (!onCgm4 && !onM4Miku && !(DungeonUtils.inBoss && DungeonUtils.isFloor(4))) return
         waypoints.forEach {
-            if (it.clazz == DungeonUtils.currentDungeonPlayer.clazz.toString() || onCgm4 || onM4Miku) {
-                val clazz = enumValueOf<DungeonClass>(it.clazz)
+            val clazz = dungeonClassFromName(it.clazz) ?: return@forEach
+            if (onCgm4 || onM4Miku || clazz == DungeonUtils.currentDungeonPlayer.clazz) {
                 if (onCgm4 && showOnCgm4) {
                     renderWaypoint(BlockPos(it.pos.x + 2, it.pos.y + 41, it.pos.z + 2), clazz)
                 } else if (onM4Miku && showOnM4Miku) {
@@ -298,11 +293,11 @@ object Waypoints: Module(
 
     private fun RenderEvent.Extract.renderWaypoint (pos: BlockPos, clazz: DungeonClass) {
         val color = when (clazz) {
-            DungeonClass.Healer -> Colors.MINECRAFT_LIGHT_PURPLE
-            DungeonClass.Tank -> Colors.MINECRAFT_GREEN
-            DungeonClass.Berserk -> Colors.MINECRAFT_DARK_RED
-            DungeonClass.Archer -> Colors.MINECRAFT_GOLD
-            DungeonClass.Mage -> Colors.MINECRAFT_BLUE
+            DungeonClass.HEALER -> Colors.MINECRAFT_LIGHT_PURPLE
+            DungeonClass.TANK -> Colors.MINECRAFT_GREEN
+            DungeonClass.BERSERK -> Colors.MINECRAFT_DARK_RED
+            DungeonClass.ARCHER -> Colors.MINECRAFT_GOLD
+            DungeonClass.MAGE -> Colors.MINECRAFT_BLUE
             else -> return
         }
         drawStyledBox(box1x1(pos.x, pos.y, pos.z), color, renderStyle, depth)
@@ -387,22 +382,22 @@ object Waypoints: Module(
             renderCustomWaypoints()
             if ((DungeonUtils.inBoss && DungeonUtils.isFloor(4)) || onCgm4 || onM4Miku) {
                 if (bearSpawn && (!bearSpawnOnMage ||
-                    DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.Mage ||
                     onCgm4 ||
-                    onM4Miku)) {
+                    onM4Miku ||
+                    DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.MAGE)) {
                     renderBearSpawn()
                 }
                 if (bowPickupWaypoint && (!bowPickupWaypointOnlyOnTank ||
-                    DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.Tank ||
                     onCgm4 ||
-                    onM4Miku
+                    onM4Miku ||
+                    DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK
                     )) {
                     renderBowPickup()
                 }
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             if (waypoints.isEmpty()) {
                 loadWaypoints()
             }

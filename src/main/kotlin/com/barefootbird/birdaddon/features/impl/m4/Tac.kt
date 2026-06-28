@@ -9,7 +9,7 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
@@ -64,7 +64,7 @@ object Tac: Module(
                 }
                 if (printTacTime && M4State.bearTimer != -1) {
                     if (DungeonUtils.inBoss && DungeonUtils.isFloor(4)) {
-                        if (DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.Tank || !printTimeOnlyOnTank) {
+                        if (DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK || !printTimeOnlyOnTank) {
                             if (printTacToPartyChat) {
                                 sendCommand("pc BirdAddon > Tacced at ${((M4State.bearTimer / 20.0).toFixed(2))}s")
                             } else {

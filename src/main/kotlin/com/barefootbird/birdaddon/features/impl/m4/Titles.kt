@@ -12,7 +12,7 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket
@@ -71,7 +71,7 @@ object Titles: Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             wished = false
             tankInMastiff = false
         }
@@ -92,11 +92,11 @@ object Titles: Module(
         on<ChatPacketEvent> {
             if (!M4State.inBoss()) return@on
 
-            if (value == bowPickup && pickupWarning != "" && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Tank) {
+            if (value == bowPickup && pickupWarning != "" && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.TANK) {
                 setTitle(pickupWarning)
             }
 
-            if (value == bowPickup && tankPickup != "" && DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.Tank) {
+            if (value == bowPickup && tankPickup != "" && DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK) {
                 setTitle(pickupWarning)
             }
 
@@ -107,7 +107,7 @@ object Titles: Module(
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> { event ->
-            if (!M4State.inBoss() || DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.Healer) return@onReceive
+            if (!M4State.inBoss() || DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) return@onReceive
             val packet = event.packet
             if (packet is ClientboundSetPlayerTeamPacket) {
 

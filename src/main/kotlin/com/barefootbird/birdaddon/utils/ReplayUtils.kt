@@ -3,7 +3,7 @@ package com.barefootbird.birdaddon.utils
 import java.util.zip.GZIPInputStream
 import com.odtheking.odin.OdinMod.mc
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.components.ObjectSelectionList
@@ -205,14 +205,14 @@ class ReplayDecoder(file: File) {
 
 class LogEntry(val file: File) : ObjectSelectionList.Entry<LogEntry>() {
 
-    override fun renderContent(
-        graphics: GuiGraphics,
+    override fun extractContent(
+        graphics: GuiGraphicsExtractor,
         i: Int,
         j: Int,
         bl: Boolean,
         f: Float
     ) {
-        graphics.drawString(
+        graphics.text(
             mc.font,
             file.nameWithoutExtension,
             x + 5,
@@ -313,8 +313,8 @@ class LogSelectScreen(
 
     }
 
-    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        super.render(guiGraphics, mouseX, mouseY, delta)
+    override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, delta)
     }
 }
 

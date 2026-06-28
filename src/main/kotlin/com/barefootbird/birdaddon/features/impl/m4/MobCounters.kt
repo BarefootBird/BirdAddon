@@ -18,46 +18,73 @@ object MobCounters : Module(
         val enabled: Boolean,
         val color: com.odtheking.odin.utils.Color,
         val prefix: String,
+        val compactPrefix: String,
+        val compactSeparate: Boolean,
         val amount: Int
     )
 
     private val hud by HUD(name, "Mob Counter Hud", false) { example ->
 
-        fun renderCounters(counters: List<Counter>): Int {
-            var y = 0
+        fun renderCounters(counters: List<Counter>): Pair<Int, Int> {
+            val visibleCounters = counters.filter { it.enabled }
 
-            counters
-                .filter { it.enabled }
-                .forEach { counter ->
+            if (compactMode) {
+                val compactCounters = visibleCounters.filter { !it.compactSeparate }
+                val separateCounters = visibleCounters.filter { it.compactSeparate }
+                var width = 0
+                var height = if (compactCounters.isEmpty()) 0 else 9
+                var x = 0
+
+                compactCounters.forEach { counter ->
+                    val text = "${counter.compactPrefix}: ${counter.amount}"
+                    val (textWidth, _) = textDim(text, x, 0, counter.color)
+                    x += textWidth + 4
+                }
+
+                width = maxOf(width, x)
+
+                separateCounters.forEach { counter ->
                     val text = if (prefixes) {
                         counter.prefix + counter.amount
                     } else {
                         counter.amount.toString()
                     }
-
-                    textDim(text, 0, y, counter.color)
-                    y += 9
+                    val (lineWidth, lineHeight) = textDim(text, 0, height, counter.color)
+                    width = maxOf(width, lineWidth)
+                    height += lineHeight
                 }
 
-            return y
+                return width to height
+            }
+
+            var width = 0
+            visibleCounters.forEachIndexed { index, counter ->
+                val text = if (prefixes) {
+                    counter.prefix + counter.amount
+                } else {
+                    counter.amount.toString()
+                }
+                val (lineWidth, _) = textDim(text, 0, index * 9, counter.color)
+                width = maxOf(width, lineWidth)
+            }
+
+            return width to visibleCounters.size * 9
         }
 
         if (example) {
             val examples = listOf(
-                Counter(totalGUI, Colors.WHITE, "Mobs: ", 0),
-                Counter(cowsGUI, Highlight.cowColor, "Cows: ", 0),
-                Counter(sheepGUI, Highlight.sheepColor, "Sheep: ", 0),
-                Counter(chickensGUI, Highlight.chickenColor, "Chickens: ", 0),
-                Counter(batsGUI, Highlight.batColor, "Bats: ", 0),
-                Counter(wolvesGUI, Highlight.wolfColor, "Wolves: ", 0),
-                Counter(rabbitsGUI, Highlight.rabbitColor, "Rabbits: ", 0),
-                Counter(mobsUnderThornGui, Highlight.thornColor, "Under Thorn: ", 0),
-                Counter(rabbitsNotUnderThornGui, Highlight.rabbitColor, "Rabbits in Mid: ", 0)
+                Counter(totalGUI, Colors.WHITE, "Mobs: ", "M", false, 0),
+                Counter(cowsGUI, Highlight.cowColor, "Cows: ", "C", false, 0),
+                Counter(sheepGUI, Highlight.sheepColor, "Sheep: ", "S", false, 0),
+                Counter(chickensGUI, Highlight.chickenColor, "Chickens: ", "Ch", false, 0),
+                Counter(batsGUI, Highlight.batColor, "Bats: ", "B", false, 0),
+                Counter(wolvesGUI, Highlight.wolfColor, "Wolves: ", "W", false, 0),
+                Counter(rabbitsGUI, Highlight.rabbitColor, "Rabbits: ", "R", false, 0),
+                Counter(mobsUnderThornGui, Highlight.thornColor, "Under Thorn: ", "UT", true, 0),
+                Counter(rabbitsNotUnderThornGui, Highlight.rabbitColor, "Rabbits in Mid: ", "RM", true, 0)
             )
 
-            var y = renderCounters(examples)
-
-            return@HUD "Rabbits Under Thorn: 00".length to y
+            return@HUD renderCounters(examples)
         }
 
         if (!M4State.inBoss()) {
@@ -82,19 +109,18 @@ object MobCounters : Module(
         }
 
         val counters = listOf(
-            Counter(totalGUI, Colors.WHITE, "Mobs: ", allMobs.sumOf { it.size }),
-            Counter(cowsGUI, Highlight.cowColor, "Cows: ", M4Mobs.cows.size),
-            Counter(sheepGUI, Highlight.sheepColor, "Sheep: ", M4Mobs.sheep.size),
-            Counter(chickensGUI, Highlight.chickenColor, "Chickens: ", M4Mobs.chickens.size),
-            Counter(batsGUI, Highlight.batColor, "Bats: ", M4Mobs.bats.size),
-            Counter(wolvesGUI, Highlight.wolfColor, "Wolves: ", M4Mobs.wolves.size),
-            Counter(rabbitsGUI, Highlight.rabbitColor, "Rabbits: ", M4Mobs.rabbits.size),
-            Counter(mobsUnderThornGui, Highlight.thornColor, "Under Thorn: ", mobsUnderThorn),
-            Counter(rabbitsNotUnderThornGui, Highlight.rabbitColor, "Rabbits in Mid: ", rabbitsInMid)
+            Counter(totalGUI, Colors.WHITE, "Mobs: ", "M", false, allMobs.sumOf { it.size }),
+            Counter(cowsGUI, Highlight.cowColor, "Cows: ", "C", false, M4Mobs.cows.size),
+            Counter(sheepGUI, Highlight.sheepColor, "Sheep: ", "S", false, M4Mobs.sheep.size),
+            Counter(chickensGUI, Highlight.chickenColor, "Chickens: ", "Ch", false, M4Mobs.chickens.size),
+            Counter(batsGUI, Highlight.batColor, "Bats: ", "B", false, M4Mobs.bats.size),
+            Counter(wolvesGUI, Highlight.wolfColor, "Wolves: ", "W", false, M4Mobs.wolves.size),
+            Counter(rabbitsGUI, Highlight.rabbitColor, "Rabbits: ", "R", false, M4Mobs.rabbits.size),
+            Counter(mobsUnderThornGui, Highlight.thornColor, "Under Thorn: ", "UT", true, mobsUnderThorn),
+            Counter(rabbitsNotUnderThornGui, Highlight.rabbitColor, "Rabbits in Mid: ", "RM", true, rabbitsInMid)
         )
 
-        val y = renderCounters(counters)
-        return@HUD "Rabbits Under Thorn: 00".length to y
+        return@HUD renderCounters(counters)
     }
 
     private fun isUnderThorn(x: Double, y: Double, z: Double): Boolean {
@@ -123,5 +149,11 @@ object MobCounters : Module(
         "Prefixes",
         true,
         desc = "Adds a prefix for each of the mob types"
+    )
+
+    private val compactMode by BooleanSetting(
+        "Compact Mode",
+        false,
+        desc = "Renders mob counters on one line with short mob names"
     )
 }

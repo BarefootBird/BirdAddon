@@ -2,7 +2,7 @@ package com.barefootbird.birdaddon.utils
 
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.world.entity.ambient.Bat
@@ -39,7 +39,7 @@ object M4Mobs {
 
     init {
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             _sheep = emptySet()
             _wolves = emptySet()
             _bats = emptySet()

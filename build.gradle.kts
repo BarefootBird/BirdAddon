@@ -13,17 +13,34 @@ repositories {
     mavenCentral()
     maven("https://jitpack.io")
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
+    exclusiveContent {
+        forRepository {
+            ivy("https://github.com/odtheking/Odin/releases/download/") {
+                patternLayout {
+                    artifact("[revision]/Odin-[revision].[ext]")
+                }
+                metadataSources {
+                    artifact()
+                }
+            }
+        }
+        filter {
+            includeGroup("com.odtheking")
+        }
+    }
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:${property("minecraft_version")}")
-    mappings(loom.officialMojangMappings())
+    mappings(loom.layered {
+        mappings(file("mappings/identity.tiny"))
+    })
     modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_api_version")}")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
-    modImplementation("com.github.odtheking:odinfabric:${property("odin_version")}")
+    modImplementation("com.odtheking:Odin:${property("odin_version")}")
 
     modImplementation("com.github.stivais:Commodore:${property("commodore_version")}")
 
@@ -37,6 +54,8 @@ dependencies {
 }
 
 loom {
+    noIntermediateMappings()
+
     runConfigs.named("client") {
         isIdeConfigGenerated = true
         vmArgs.addAll(
@@ -67,6 +86,10 @@ tasks {
         )
     }
 
+    remapSourcesJar {
+        enabled = false
+    }
+
     processResources {
         filesMatching("fabric.mod.json") {
             expand(getProperties())
@@ -75,14 +98,14 @@ tasks {
 
     compileKotlin {
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_21
+            jvmTarget = JvmTarget.JVM_25
             freeCompilerArgs.add("-Xlambdas=class") //Commodore
         }
     }
 
     compileJava {
-        sourceCompatibility = "21"
-        targetCompatibility = "21"
+        sourceCompatibility = "25"
+        targetCompatibility = "25"
         options.encoding = "UTF-8"
         options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:unchecked"))
     }
@@ -92,11 +115,9 @@ base {
     archivesName.set(project.property("archives_base_name") as String)
 }
 
-val targetJavaVersion = 21
+val targetJavaVersion = 26
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-
-    withSourcesJar()
 }
 
 fabricApi {
