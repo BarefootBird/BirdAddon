@@ -122,7 +122,7 @@ object Titles: Module(
 
                 // Use it to check tank's hp
                 if (!message.contains("[T]")) return@onReceive
-                val health = Regex("""^\[T\]\s+\S+\s+([\d,]+(?:\.\d+)?)""")
+                val health = Regex("""^\[T]\s+\S+\s+([\d,]+(?:\.\d+)?)""")
                     .find(message)
                     ?.groupValues
                     ?.get(1)

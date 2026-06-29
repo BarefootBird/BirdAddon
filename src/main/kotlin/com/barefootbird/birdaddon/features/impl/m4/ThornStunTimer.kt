@@ -109,7 +109,7 @@ object ThornStunTimer: Module(
                 the timer is based on when thorn moves past 0 in to the positive direction
                 */
                 if (angle > 0 && !secondTimerStarted) {
-                    secondTimer = 40 + secondTimerVariable
+                    secondTimer = 33 + secondTimerVariable
                     secondTimerStarted = true
                 }
             }
@@ -117,7 +117,7 @@ object ThornStunTimer: Module(
 
         on<LevelEvent.Load> {
             timer = 310
-            firstTimer = 310
+            firstTimer = 300
             secondTimer = -1
             secondTimerStarted = false
         }
