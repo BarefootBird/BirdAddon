@@ -49,7 +49,6 @@ object EventDispatcher {
                 debugMessage(packet.text.string)
                 if (packet.text.string.noControlCodes.matches(bowPickupRegex)) {
                     M4Event.BowPickup().postAndCatch()
-                    debugMessage("match")
                 }
             }
         }
