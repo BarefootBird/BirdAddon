@@ -111,9 +111,9 @@ object SpiritBear: Module(
             M4State.bearTimer > 0 -> {
                 val ticksLeft = M4State.bearTimer.toDouble()
                 if (showTicks) {
-                    "§c${ticksLeft.toFixed(0).padStart(2, '0')}"
+                    ticksLeft.toFixed(0).padStart(2, '0')
                 } else {
-                    "§c${(ticksLeft / 20.0).toFixed(decimals)}s"
+                    "${(ticksLeft / 20.0).toFixed(decimals)}s"
                 }
             }
             else -> "n/a"
