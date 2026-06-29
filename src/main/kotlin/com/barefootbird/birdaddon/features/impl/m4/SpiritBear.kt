@@ -16,6 +16,7 @@ import com.odtheking.odin.utils.toFixed
 import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
+import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import java.io.File
 
 object SpiritBear: Module(
@@ -259,7 +260,8 @@ object SpiritBear: Module(
     }
 
     private fun reportBearPersonalBest(bearIndex: Int, ticks: Int) {
-        val key = "Bear $bearIndex"
+        val floor = if (DungeonUtils.floor!!.isMM) "M4" else "F4"
+        val key = "$floor Bear $bearIndex"
         val seconds = ticks / 20f
         val oldPb = personalBests[key] ?: 9999f
 
@@ -280,7 +282,6 @@ object SpiritBear: Module(
         on<M4Event.BearSpawnStart> {
             val bearIndex = M4State.bearSpawnStartTimes.size
             if (bearIndex < 1) return@on
-
             reportBearPersonalBest(bearIndex, M4State.timer)
         }
 
