@@ -67,7 +67,7 @@ object RabbitCountdown: Module(
             )
         }
 
-        if (!M4State.inBoss()) return emptyList()
+        if (!M4State.inBoss() || DungeonUtils.floor?.isMM != true) return emptyList()
 
         val lines = mutableListOf<String>()
         val ticksUntilRabbitSpawn = RABBIT_SPAWN_TIME - M4State.timer
