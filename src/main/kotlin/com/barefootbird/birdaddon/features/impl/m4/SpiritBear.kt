@@ -44,7 +44,7 @@ object SpiritBear: Module(
 
     private val splitText by StringSetting(
         "Split Text",
-        $$"§6Bear $bear: §b$death Kill: $kill",
+        $$"§6Bear $bear: §b$spawn Kill: $kill",
         96,
         desc = $$"HUD format for each bear split. Options: $bear, $spawnStart, $spawn, $death, $kill, $total"
     )
@@ -279,7 +279,7 @@ object SpiritBear: Module(
     init {
         loadPersonalBests()
 
-        on<M4Event.BearSpawnStart> {
+        on<M4Event.BearSpawn> {
             val bearIndex = M4State.bearSpawnStartTimes.size
             if (bearIndex < 1) return@on
             reportBearPersonalBest(bearIndex, M4State.timer)
