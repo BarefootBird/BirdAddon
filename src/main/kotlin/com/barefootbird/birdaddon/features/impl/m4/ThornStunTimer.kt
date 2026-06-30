@@ -109,7 +109,7 @@ object ThornStunTimer: Module(
                 the timer is based on when thorn moves past 0 in to the positive direction
                 */
                 if (angle > 0 && !secondTimerStarted) {
-                    secondTimer = 33 + secondTimerVariable
+                    secondTimer = 28 + secondTimerVariable
                     secondTimerStarted = true
                 }
             }
