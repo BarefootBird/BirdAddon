@@ -24,6 +24,25 @@ object SpiritBear: Module(
     description = "Shows the state of the spirit bear spawns",
     category = Category.M4
 ) {
+
+    private val hud by HUD(name, "Displays the current state of Spirit Bear in the HUD.", true) { example ->
+        textDim(timerText(example), 0, 0, Colors.WHITE)
+    }
+
+    private val splitsHud by HUD("Spirit Bear Splits", "Displays Spirit Bear split times in the HUD.", true) { example ->
+        val lines = splitLines(example)
+        var width = 0
+        var height = 0
+
+        lines.forEachIndexed { index, line ->
+            val (lineWidth, lineHeight) = textDim(line, 0, index * 9, Colors.WHITE)
+            width = maxOf(width, lineWidth)
+            height = (index * 9) + lineHeight
+        }
+
+        width to height
+    }
+
     private val killPhaseText by StringSetting(
         "Kill Phase Text",
         $$"§6Bear $bear: §a$kills/$cap",
@@ -55,24 +74,6 @@ object SpiritBear: Module(
         96,
         desc = $$"HUD format for the total boss time at the end of the splits. Options: $bear, $spawnStart, $spawn, $death, $kill, $total"
     )
-
-    private val hud by HUD(name, "Displays the current state of Spirit Bear in the HUD.", false) { example ->
-        textDim(timerText(example), 0, 0, Colors.WHITE)
-    }
-
-    private val splitsHud by HUD("Spirit Bear Splits", "Displays Spirit Bear split times in the HUD.", false) { example ->
-        val lines = splitLines(example)
-        var width = 0
-        var height = 0
-
-        lines.forEachIndexed { index, line ->
-            val (lineWidth, lineHeight) = textDim(line, 0, index * 9, Colors.WHITE)
-            width = maxOf(width, lineWidth)
-            height = (index * 9) + lineHeight
-        }
-
-        width to height
-    }
 
     private val showTicks by BooleanSetting("Show Timer in Ticks", true, desc = "Changes the timer to be in ticks instead of seconds")
 
