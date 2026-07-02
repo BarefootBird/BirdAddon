@@ -1,37 +1,78 @@
+
 # Bird Addon
 
-Mod made by BarefootBird
+A general-purpose M4 mod aimed at helping players get faster runs!
 
-**This is an odin addon. It requires odin 0.1.6 for 1.21.10 or odin 0.1.9 for 1.21.11**
+[![Discord](https://img.shields.io/discord/1206694833931157514?style=flat-square&label=Discord&color=%235865F2)](https://discord.gg/QyXwYvdch6)
 
-[Odin](https://github.com/odtheking/Odin)
+This mod is an addon for **Odin**:
 
-Use /od to open the config
+👉 https://github.com/odtheking/Odin
 
-## Features
+- Odin must be installed to use Bird Addon
+- Latest version requires **Odin 0.2.2** and **Minecraft 26.1.2**
+- Use `/od` or `/birdaddon` to open the config
+
+# Features
 - Mob highlight
-- Logging & Replay (Logs your runs so you can play them back on catgirlm4's island)
-- Mob counters - Shows on the HUD how many of each mob there are, also has an option to show how many mobs are under thorn
+- Mob Counter Display
 - Overkill Display
+- Decoy helper to show you where the best spot to place decoys is
 - Customizable Spirit Bear Timer
-- Thorn Stun Timer - Shows how long thorn is stunned for
-- Boss Timer (Just a timer that shows how long boss has gone on for)
-- Custom Titles that trigger on: bow miss, bow pickup, bear kill, bear spawn, bear spawn start
-- Custom boss waypoints that dynamically update depending on where in the boss you are
+- Thorn Stun Timer
+- Trajectories - Shows where mobs will lands (sheeps/cows/chickens)
+- Sounds feature to quickly disable annoying sounds in m4 boss
+- Rabbit Countdown to when rabbits spawn
+- Render Optimizer - Reduces unnecessary entity and visual rendering in M4 boss fight for improved FPS
+- Custom Titles for: Wish, Missed bows, Bow pickups, Bear spawn start, Bear spawned, and Bear killed
+- Custom boss waypoints that dynamically update depending on what stage of boss you're on
+- Boss Timer
+- Logging & Replay (In Beta)
 
-## Commands
+# Commands
+
+## All features
+All features can be found under the M4 category in:
+- `/od`
+- `/odin`
+- `/birdaddon`
+
+## Waypoints
+Waypoints can be edited during or after a boss fight, or on the private islands of `catgirlm4` or `M4Miku`.
+
+Command:
+`/m4wp add <class> <start> <end>`
+Adds a waypoint at the block you are looking at, visible only for the specified class and time window.
+
+`<class>` The class to add the waypoint for.
+- Supports  `bers`, `arch`, `mage`, `tank`, and `heal`
+- Also supports aliases `b`, `a`, `m`, `t`, and `h`
+
+`<start>` and `<end>` The time window of when the waypoint should be displayed. Useful for creating pointers or locations to stand.
+- `b<number>spawn` When specified bear spawns. (example: `b2spawn`)
+- `b<number>kill` When specified bear dies. (example: `b3kill`)
+- `b<number>spawnstart` When the spawn timer for specified bear begins. (example: `b1spawnstart`)
+- `<number>s` Number of seconds into the boss fight. (example: `30s`)
+- `bossstart` The start of the boss
+- `bossend` The end of the boss
+
+`/m4wp remove` Removes the waypoint you are currently looking at.
+
+`/m4wp export` Exports your waypoint configuration for sharing.
+`/m4wp import` Imports a waypoint configuration.
 
 ### Replay
-- **/m4rp load** opens a menu to select a run to load
-- **/m4rp play** starts playing the run
-- **/m4rp pause** pauses the run
-- **/m4rp step** steps 1 tick forward in the run
-- **/m4rp goto <time>** goes to a specified point in the run, by default is in ticks, but you can do **/m4rp goto 15s** for example to go to 15s in
-
-### Waypoints (can be edited in boss, or on catgirlm4's island)
-- **/m4wp add <class> <start> <end>**  adds a waypoint where you're looking at, it will show up for the specified class and only show between the start and the end times. Start and end have the options: b<number>spawn, b<number>kill, b<number>spawnstart, <number of seconds>s, bossstart, bossend
-- **/m4wp remove** removes the waypoint that you're looking at
-- waypoint file is stored at .minecraft/config/odin/addons/m4waypoints.json if you want to share waypoints with other people, just put their waypoint file there and reload your game
+- `/m4rp load` – Open run selection menu
+- `/m4rp play` – Start replay playback
+- `/m4rp pause` – Pause playback
+- `/m4rp step` – Advance 1 tick
+- `/m4rp goto <time>` – Jump to a specific timestamp
+    - Default unit: ticks
+    - Example: `/m4rp goto 15s` & `/m4rp goto 300` both go to 15s
 
 ---
-If you have bugs to report, feature requests or anything else, feel free to send me a dm on discord, my disc is fredward_
+
+## Bug Reports & Feedback
+
+For bugs, feature requests, or discussion, join the M4 Newgens Discord:  
+[M4 Newgens Discord](discord.gg/QyXwYvdch6)
