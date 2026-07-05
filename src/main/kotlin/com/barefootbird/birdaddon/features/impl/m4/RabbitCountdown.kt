@@ -33,10 +33,13 @@ object RabbitCountdown: Module(
 
     private val decimals by NumberSetting("Decimals", 2, 1, 2, 1, "How many decimals to show")
 
-    private val dontShowAlways by BooleanSetting("Show on boss start", true, "Shows the timer from start of boss")
+    private val showFromStart by BooleanSetting("Show on boss start", true, "Shows the timer from start of boss")
+    private val showAfterB1 by BooleanSetting("Show after b1 start", true, "Shows the timer only after b1 starts spawning").withDependency { !showFromStart }
     private val secondsBefore by NumberSetting("Seconds before", 4, 2, 7, 1, "How many seconds before rabbits spawn to render the timer").withDependency {
-        !dontShowAlways
+        !showFromStart && !showAfterB1
     }
+
+    private val hideWhen0 by BooleanSetting("Hide counters when 0", true, "Hides the mob counters when there are 0 of that mob")
 
     private val displayText by StringSetting(
         "Display text:",
@@ -61,9 +64,9 @@ object RabbitCountdown: Module(
     private fun displayLines(example: Boolean): List<String> {
         if (example) {
             return listOf(
-                "§b${"$displayText"} 35.5s",
-                "§dGround: 0",
-                "§fBats: 0"
+                "§b$displayText 35.5s",
+                "§dGround: 3",
+                "§fBats: 1"
             )
         }
 
@@ -71,23 +74,33 @@ object RabbitCountdown: Module(
 
         val lines = mutableListOf<String>()
         val ticksUntilRabbitSpawn = RABBIT_SPAWN_TIME - M4State.timer
-        val shouldShowTimer = ticksUntilRabbitSpawn >= 0 && (dontShowAlways || ticksUntilRabbitSpawn <= secondsBefore * 20)
+        if (ticksUntilRabbitSpawn <= 0) return emptyList()
+
+        val shouldShowTimer = (showFromStart || (ticksUntilRabbitSpawn <= secondsBefore * 20 && !showAfterB1) || (showAfterB1 && M4State.bearSpawnStartTimes.isNotEmpty()))
         if (!shouldShowTimer) {
             return emptyList()
         }
 
-        lines.add("§b${"$displayText"} ${(ticksUntilRabbitSpawn / 20.0).toFixed(decimals)}s")
+        lines.add("§b$displayText ${(ticksUntilRabbitSpawn / 20.0).toFixed(decimals)}s")
 
         if (showArenaMobs && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) {
-            lines.add("§dGround: ${M4Mobs.cows.size +
+            val groundMobs = M4Mobs.cows.size +
                     M4Mobs.sheep.size +
                     M4Mobs.chickens.size +
                     M4Mobs.wolves.size +
-                    M4Mobs.rabbits.size}")
+                    M4Mobs.rabbits.size
+
+            if (groundMobs > 0 || !hideWhen0) {
+                lines.add("§dGround: $groundMobs")
+            }
         }
 
         if (showBats && DungeonUtils.currentDungeonPlayer.clazz in setOf(DungeonClass.BERSERK, DungeonClass.MAGE)) {
-            lines.add("§fBats: ${M4Mobs.bats.size}")
+            val bats = M4Mobs.bats.size
+            if (bats > 0 || !hideWhen0) {
+                lines.add("§fBats: $bats")
+            }
+
         }
 
         return lines
