@@ -14,7 +14,6 @@
     "EntityRendererMixin",
     "MixinAbstractSoundInstance",
     "ParticleEngineMixin",
-    "BlockBehaviourMixin",
     "ModuleOverwriteMixin"
   ]
 }

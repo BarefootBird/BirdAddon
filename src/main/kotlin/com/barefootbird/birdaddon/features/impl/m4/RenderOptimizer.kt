@@ -30,9 +30,6 @@ object RenderOptimizer: Module(
     private val healerCircle by BooleanSetting("Except Healer Circle", true, desc = "Shows healer circle particles even when hide particles is on") // HAPPY_VILLAGER
     private val mageBeam by BooleanSetting("Except Mage Beam", true, desc = "Shows mage beam particles even when hide particles is on") // FIREWORK
 
-    private val hidePlants by BooleanSetting("Hide Plants", true, "Hides plants (You might need to reload your textures)")
-    private val hideFire by BooleanSetting("Hide Fire Blocks", true, "Hides fire blocks (You might need to reload your textures)")
-
     private val npcVisibility by SelectorSetting("NPC Visibility", "Relevant only", listOf("All", "Relevant only", "None"), "hides/shows npcs")
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
     private val npcHighlight by SelectorSetting("NPC Highlight", "None", listOf("None", "Relevant only", "All"), "highlights npcs")
@@ -52,17 +49,6 @@ object RenderOptimizer: Module(
         if (type == ParticleTypes.HAPPY_VILLAGER && healerCircle) return false
         if (type == ParticleTypes.FIREWORK && mageBeam) return false
         return true
-    }
-
-    @JvmStatic
-    fun shouldHideBlock (blockState: BlockState): Boolean {
-        if (!M4State.inBoss() || !enabled) return false
-        if (hidePlants) {
-            if (blockState.block == Blocks.JUNGLE_SAPLING) return true
-            if (blockState.block == Blocks.SUNFLOWER) return true
-        }
-        if (hideFire && blockState.block == Blocks.FIRE) return true
-        return false
     }
 
     @JvmStatic
