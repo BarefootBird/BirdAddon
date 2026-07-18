@@ -171,6 +171,7 @@ object Waypoints: Module(
         if (imported != null) {
             waypoints.clear()
             waypoints.addAll(imported)
+            saveWaypoints()
             modMessage("Waypoints imported")
         } else {
             modMessage("Waypoints failed to import")
