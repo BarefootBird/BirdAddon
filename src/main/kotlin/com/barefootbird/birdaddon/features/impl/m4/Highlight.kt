@@ -99,6 +99,8 @@ object Highlight: Module(
     private val highlightChicken by BooleanSetting("Chicken Highlight", true, desc = "Highlights chickens")
     private val highlightRabbit by BooleanSetting("Rabbit Highlight", true, desc = "Highlights rabbits")
 
+    private val depth = true
+
     val thornColor by ColorSetting(
         "Thorn Color",
         Colors.WHITE,
@@ -313,7 +315,7 @@ object Highlight: Module(
                 val style = renderStyle
 
                 fun draw(list: Set<Entity>, color: Color) {
-                    list.forEach { drawStyledBox(it.renderBoundingBox, color, style, true) }
+                    list.forEach { drawStyledBox(it.renderBoundingBox, color, style, depth) }
                 }
 
                 if (highlightSheep) draw(sheep, sheepColor)
@@ -326,9 +328,9 @@ object Highlight: Module(
                 if (highlightThorn) {
                     thorn?.let {
                         when {
-                            thornDmgFlash && damaged >= 0 -> drawStyledBox(it.renderBoundingBox, thornDamagedColor, style, true)
-                            transThorn -> drawTransBox(it.renderBoundingBox, style, true)
-                            else -> drawStyledBox(it.renderBoundingBox, thornColor, style, true)
+                            thornDmgFlash && damaged >= 0 -> drawStyledBox(it.renderBoundingBox, thornDamagedColor, style, depth)
+                            transThorn -> drawTransBox(it.renderBoundingBox, style, depth)
+                            else -> drawStyledBox(it.renderBoundingBox, thornColor, style, depth)
                         }
                     }
                 }
@@ -339,7 +341,7 @@ object Highlight: Module(
                             if (noInterpolateBear) it.boundingBox else it.renderBoundingBox,
                             bearColor,
                             renderStyle,
-                            true
+                            depth
                         )
                     }
                 }

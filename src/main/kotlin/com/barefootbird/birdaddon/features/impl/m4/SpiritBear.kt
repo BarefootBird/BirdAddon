@@ -75,7 +75,7 @@ object SpiritBear: Module(
         desc = $$"HUD format for the total boss time at the end of the splits. Options: $bear, $spawnStart, $spawn, $death, $kill, $total"
     )
 
-    private val showTicks by BooleanSetting("Show Timer in Ticks", true, desc = "Changes the timer to be in ticks instead of seconds")
+    private val showTicks by BooleanSetting("Show Timer in Ticks", false, desc = "Changes the timer to be in ticks instead of seconds")
 
     private val decimals by NumberSetting("Decimals", 2, 1, 2, 1, "How many decimals to show")
 
