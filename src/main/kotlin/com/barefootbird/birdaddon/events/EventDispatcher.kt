@@ -46,7 +46,6 @@ object EventDispatcher {
         onReceive<ClientboundSetSubtitleTextPacket> {
             val packet = it.packet
             if (packet is ClientboundSetSubtitleTextPacket) {
-                debugMessage(packet.text.string)
                 if (packet.text.string.noControlCodes.matches(bowPickupRegex)) {
                     M4Event.BowPickup().postAndCatch()
                 }
