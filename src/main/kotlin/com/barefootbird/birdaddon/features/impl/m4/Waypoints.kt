@@ -322,9 +322,9 @@ object Waypoints: Module(
         }
 
         val spawnSpot = M4State.bearSpawnSpot
-        var bearSpawn = AABB(spawnSpot.x - 0.3, 70.4, spawnSpot.z - 0.3, spawnSpot.x + 0.3, 71.5, spawnSpot.z + 0.3)
+        var bearSpawn = AABB(spawnSpot.x - 0.3, spawnSpot.y, spawnSpot.z - 0.3, spawnSpot.x + 0.3, spawnSpot.y+1.8, spawnSpot.z + 0.3)
         if (onCgm4) {
-            bearSpawn = AABB(spawnSpot.x + 1.7, 111.4, spawnSpot.z + 1.7, spawnSpot.x + 2.3, 112.5, spawnSpot.z + 2.3)
+            bearSpawn = AABB(spawnSpot.x + 1.7, spawnSpot.y, spawnSpot.z + 1.7, spawnSpot.x + 2.3, spawnSpot.y+1.8, spawnSpot.z + 2.3)
         }
 
         val bearSpawnColor: Color = if (M4State.bearTimer == -1 || !bearSpawnColors) {

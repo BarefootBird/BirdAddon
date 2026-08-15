@@ -1,33 +1,16 @@
 package com.barefootbird.birdaddon.utils
 
-import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.render.drawFilledBox
 import net.minecraft.core.particles.DustParticleOptions
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
-import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import kotlin.math.floor
 
-object ParticleLogger: Module(
-    name = "Particle Logger",
-    description = "Particle Logging stuff",
-    category = Category.M4
-) {
-
-    private val renderStuff by BooleanSetting(
-        "Render Particle trails",
-        false,
-        desc = "Renders trails of particles"
-    )
+object ParticleTrails {
 
     data class TimedParticle(
         val pos: Vec3,
@@ -72,9 +55,7 @@ object ParticleLogger: Module(
     }
 
 
-    val particleBuffer = mutableListOf<TimedParticle>()
-
-    var particles: List<TimedParticle> = emptyList()
+    val particles = mutableListOf<TimedParticle>()
 
     var spawnPrediction = Vec3(0.0, 0.0, 0.0)
 
@@ -130,7 +111,7 @@ object ParticleLogger: Module(
 
             val spawnPrediction = Vec3(floor(last.x * 32) / 32, floor(last.y * 32) / 32, floor(last.z * 32) / 32)
 
-            ParticleLogger.spawnPrediction = spawnPrediction
+            ParticleTrails.spawnPrediction = spawnPrediction
 
             return predictions
         }
@@ -159,54 +140,15 @@ object ParticleLogger: Module(
 
     init {
         on<LevelEvent.Load> {
-            particles = emptyList()
             predictions = emptyList()
-            particleBuffer.clear()
-        }
-
-        on<RenderEvent.Extract> {
-            if (!renderStuff) return@on
-            predictions.forEach {
-                val p = it.pos
-
-                val size = 0.04
-
-                val aabb = AABB(
-                    p.x - size,
-                    p.y - size,
-                    p.z - size,
-                    p.x + size,
-                    p.y + size,
-                    p.z + size
-                )
-                drawFilledBox(aabb, Colors.MINECRAFT_GRAY, false)
-            }
-            particles.forEach {
-                val p = it.pos
-
-                val size = 0.05
-
-                val aabb = AABB(
-                    p.x - size,
-                    p.y - size,
-                    p.z - size,
-                    p.x + size,
-                    p.y + size,
-                    p.z + size
-                )
-                if (it.linearPortion) {
-                    drawFilledBox(aabb, Colors.MINECRAFT_DARK_RED, false)
-                }
-            }
+            particles.clear()
         }
 
         on<TickEvent.Server> {
             if (!M4State.inBoss()) return@on
             val cutoff = M4State.timer - 8
 
-            if (particleBuffer.removeIf { it.createdTick < cutoff }) {
-                particles = particleBuffer.toList()
-            }
+            particles.removeIf { it.createdTick < cutoff }
 
             if (!M4State.bearSpawnTimes.isEmpty()) {
                 if (M4State.timer == M4State.bearSpawnTimes.last() + 3) {
@@ -238,7 +180,7 @@ object ParticleLogger: Module(
                         M4State.timer
                     )
 
-                    for (existing in particleBuffer) {
+                    for (existing in particles) {
                         if (isInLinearPortion(existing.pos, newParticle.pos)) {
 
                             existing.linearPortion = true
@@ -260,9 +202,7 @@ object ParticleLogger: Module(
                         }
                     }
 
-                    particleBuffer += newParticle
-
-                    particles = particleBuffer.toList()
+                    particles += newParticle
 
                     if (predictions.isEmpty() && newParticle.linearPortion) {
                         predictions = generatePredictions()

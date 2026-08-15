@@ -22,6 +22,7 @@ import net.minecraft.world.entity.animal.rabbit.Rabbit
 import net.minecraft.world.entity.animal.sheep.Sheep
 import net.minecraft.world.entity.animal.wolf.Wolf
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.phys.Vec3
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -64,8 +65,8 @@ object M4State {
 
     var ended = false
 
-    // Default spot in the middle, bear can't ever actually spawn here, but this is the average of all bear spawns if you let thorn move freely
-    var bearSpawnSpot: Vec2 = Vec2(5.5,5.5)
+    // This spot is on the 0.85 blocks above the exact center of thorn, this is roughly the avg location of every bear spawn
+    var bearSpawnSpot = Vec3(5.5, 69.85, 5.5)
 
     fun inBoss (): Boolean {
         if (Debug.disableBossChecks) return true
@@ -90,9 +91,14 @@ object M4State {
 
     fun updateBearSpawnSpot () {
         if (bearTimer == -1) {
+            if (ParticleTrails.spawnPrediction.y != 0.0) {
+                bearSpawnSpot = ParticleTrails.spawnPrediction
+                return
+            }
             M4Mobs.thorn?.let {
                 // Bear spawns roughly on a circle around (5.5, 5.5) with a radius of 0.7,
                 // and spawns on the closest point to where thorn was when the bear started spawning
+                // also spawns roughly at 69.85y
                 val dx = it.x - 5.5
                 val dz = it.z - 5.5
 
@@ -102,7 +108,7 @@ object M4State {
                 val newX = 5.5 + r * cos(angle)
                 val newZ = 5.5 + r * sin(angle)
 
-                bearSpawnSpot = Vec2(newX, newZ)
+                bearSpawnSpot = Vec3(newX, 69.85, newZ)
             }
         }
     }
@@ -196,7 +202,17 @@ object M4State {
         on<TickEvent.Server> {
             if (!inThornBoss) return@on
             if (ended) return@on
-            if (bearTimer > 0) bearTimer--
+            if (bearTimer > 0) {
+                if (ParticleTrails.predictionsRemaining > 0) {
+                    bearTimer = ParticleTrails.predictionsRemaining - 1
+                } else {
+                    bearTimer--
+                }
+                if (!ParticleTrails.particleAddedThisTick && ParticleTrails.predictionsRemaining > -1) {
+                    ParticleTrails.predictionsRemaining--
+                }
+                ParticleTrails.particleAddedThisTick = false
+            }
             timer++
             updateBearSpawnSpot()
             updateSpiritBowData()
