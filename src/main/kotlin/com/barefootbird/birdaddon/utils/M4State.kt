@@ -200,12 +200,10 @@ object M4State {
             if (!inThornBoss) return@on
             if (ended) return@on
             if (bearTimer > 0) {
-                if (SpiritBear.experimental) {
-                    if (ParticleTrails.predictionsRemaining > 0) {
-                        bearTimer = ParticleTrails.predictionsRemaining - 1
-                    } else {
-                        bearTimer--
-                    }
+                if (SpiritBear.experimental && ParticleTrails.predictionsRemaining > 0) {
+                    bearTimer = ParticleTrails.predictionsRemaining - 1
+                } else {
+                    bearTimer--
                 }
                 if (!ParticleTrails.particleAddedThisTick && ParticleTrails.predictionsRemaining > -1) {
                     ParticleTrails.predictionsRemaining--
