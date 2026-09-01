@@ -27,7 +27,6 @@ This mod is an addon for **Odin**:
 - Custom Titles for: Wish, Missed bows, Bow pickups, Bear spawn start, Bear spawned, and Bear killed
 - Custom boss waypoints that dynamically update depending on what stage of boss you're on
 - Boss Timer
-- Logging & Replay (In Beta)
 
 # Commands
 
@@ -60,15 +59,6 @@ Adds a waypoint at the block you are looking at, visible only for the specified 
 
 `/m4wp export` Exports your waypoint configuration for sharing.
 `/m4wp import` Imports a waypoint configuration.
-
-### Replay
-- `/m4rp load` – Open run selection menu
-- `/m4rp play` – Start replay playback
-- `/m4rp pause` – Pause playback
-- `/m4rp step` – Advance 1 tick
-- `/m4rp goto <time>` – Jump to a specific timestamp
-    - Default unit: ticks
-    - Example: `/m4rp goto 15s` & `/m4rp goto 300` both go to 15s
 
 ---
 
