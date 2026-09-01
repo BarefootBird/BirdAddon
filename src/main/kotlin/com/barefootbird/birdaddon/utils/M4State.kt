@@ -3,6 +3,7 @@ package com.barefootbird.birdaddon.utils
 import com.barefootbird.birdaddon.events.EventDispatcher
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.features.impl.m4.Logging.writeKills
+import com.barefootbird.birdaddon.features.impl.m4.SpiritBear
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.ChatPacketEvent
@@ -91,7 +92,7 @@ object M4State {
 
     fun updateBearSpawnSpot () {
         if (bearTimer == -1) {
-            if (ParticleTrails.spawnPrediction.y != 0.0) {
+            if (ParticleTrails.spawnPrediction.y != 0.0 && SpiritBear.experimental) {
                 bearSpawnSpot = ParticleTrails.spawnPrediction
                 return
             }
@@ -203,10 +204,12 @@ object M4State {
             if (!inThornBoss) return@on
             if (ended) return@on
             if (bearTimer > 0) {
-                if (ParticleTrails.predictionsRemaining > 0) {
-                    bearTimer = ParticleTrails.predictionsRemaining - 1
-                } else {
-                    bearTimer--
+                if (SpiritBear.experimental) {
+                    if (ParticleTrails.predictionsRemaining > 0) {
+                        bearTimer = ParticleTrails.predictionsRemaining - 1
+                    } else {
+                        bearTimer--
+                    }
                 }
                 if (!ParticleTrails.particleAddedThisTick && ParticleTrails.predictionsRemaining > -1) {
                     ParticleTrails.predictionsRemaining--

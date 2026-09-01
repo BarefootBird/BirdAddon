@@ -28,6 +28,7 @@ object SpiritBear: Module(
     private val hud by HUD(name, "Displays the current state of Spirit Bear in the HUD.", true) { example ->
         textDim(timerText(example), 0, 0, Colors.WHITE)
     }
+    public val experimental by BooleanSetting("Experimental Bear Timer", false,"More accurate timer, but sometimes its really wrong")
 
     private val splitsHud by HUD("Spirit Bear Splits", "Displays Spirit Bear split times in the HUD.", true) { example ->
         val lines = splitLines(example)
