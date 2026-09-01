@@ -3,7 +3,6 @@ package com.barefootbird.birdaddon
 import com.barefootbird.birdaddon.commands.debugCommand
 import com.barefootbird.birdaddon.commands.extraStatsCommand
 import com.barefootbird.birdaddon.commands.mainCommand
-import com.barefootbird.birdaddon.commands.replayCommand
 import com.barefootbird.birdaddon.commands.waypointCommand
 import com.barefootbird.birdaddon.events.EventDispatcher
 import com.barefootbird.birdaddon.features.impl.m4.Decoy
@@ -14,13 +13,11 @@ import com.odtheking.odin.config.ModuleConfig
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.ModuleManager
 import com.barefootbird.birdaddon.features.impl.m4.Highlight
-import com.barefootbird.birdaddon.features.impl.m4.Logging
 import com.barefootbird.birdaddon.features.impl.m4.MobCounters
 import com.barefootbird.birdaddon.features.impl.m4.OverkillDisplay
 import com.barefootbird.birdaddon.features.impl.m4.RabbitCountdown
 import com.barefootbird.birdaddon.features.impl.m4.Timer
 import com.barefootbird.birdaddon.features.impl.m4.RenderOptimizer
-import com.barefootbird.birdaddon.features.impl.m4.Replay
 import com.barefootbird.birdaddon.features.impl.m4.Sounds
 import com.barefootbird.birdaddon.features.impl.m4.SpiritBear
 import com.barefootbird.birdaddon.features.impl.m4.Tac
@@ -40,32 +37,13 @@ import java.io.File
 object BirdAddon : ClientModInitializer {
     val logger = LogManager.getLogger(BirdAddon::class.java.name)
 
-    fun migrateLogs() {
-        val logsFolder = File(mc.gameDirectory, "m4logs/logs")
-        val oldLogsFolder = File(mc.gameDirectory, "m4logs")
-
-        if (!logsFolder.exists()) logsFolder.mkdirs()
-
-        val oldFiles = oldLogsFolder.listFiles { f ->
-            f.isFile && f.extension == "csv"
-        } ?: emptyArray()
-
-        for (file in oldFiles) {
-            logger.info("BirdAddon migrating logs")
-            val target = File(logsFolder, file.name)
-            if (!target.exists()) {
-                file.renameTo(target)
-            }
-        }
-    }
 
     override fun onInitializeClient() {
         logger.info("BirdAddon initialized")
-        migrateLogs()
 
         // Register commands by adding to the array
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-            arrayOf(waypointCommand, replayCommand, extraStatsCommand, debugCommand, mainCommand).forEach { commodore -> commodore.register(dispatcher) }
+            arrayOf(waypointCommand, extraStatsCommand, debugCommand, mainCommand).forEach { commodore -> commodore.register(dispatcher) }
         }
 
         // Register objects to event bus by adding to the list
@@ -73,8 +51,8 @@ object BirdAddon : ClientModInitializer {
 
         // Register modules by adding to the list
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"),
-            SpiritBear, Highlight, Waypoints, Timer, Logging, ThornStunTimer, OverkillDisplay,
-            Titles, Replay, MobCounters, Decoy, Tac, HideMessages, ExtraStats, Sounds, RenderOptimizer, Trajectories,
+            SpiritBear, Highlight, Waypoints, Timer, ThornStunTimer, OverkillDisplay,
+            Titles, MobCounters, Decoy, Tac, HideMessages, ExtraStats, Sounds, RenderOptimizer, Trajectories,
             RabbitCountdown
         )
     }
