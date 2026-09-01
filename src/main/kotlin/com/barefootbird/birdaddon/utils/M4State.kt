@@ -2,11 +2,10 @@ package com.barefootbird.birdaddon.utils
 
 import com.barefootbird.birdaddon.events.EventDispatcher
 import com.barefootbird.birdaddon.events.M4Event
-import com.barefootbird.birdaddon.features.impl.m4.Logging.writeKills
 import com.barefootbird.birdaddon.features.impl.m4.SpiritBear
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.BlockUpdateEvent
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
@@ -114,12 +113,9 @@ object M4State {
         }
     }
 
-    // updates and logs the kills
+    // updates the kills
     fun updateKills (kills: Int) {
         this.kills = kills
-        if (inThornBoss) {
-            writeKills(kills)
-        }
     }
 
     init {
@@ -142,7 +138,7 @@ object M4State {
             lastSpiritBowPickup = timer
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             // Boss checks
             if (enteredRegex.matches(value)) {
                 inThornBoss = true

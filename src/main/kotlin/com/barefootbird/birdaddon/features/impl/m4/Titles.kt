@@ -6,11 +6,11 @@ import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.onReceive
@@ -89,7 +89,7 @@ object Titles: Module(
             it.cancel()
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!M4State.inBoss()) return@on
 
             if (value == bowPickup && pickupWarning != "" && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.TANK) {

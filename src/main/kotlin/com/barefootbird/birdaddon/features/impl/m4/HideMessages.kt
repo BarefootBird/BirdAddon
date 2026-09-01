@@ -3,10 +3,9 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.ChatManager.hideMessage
 
 object HideMessages: Module(
     name = "Hide Messages",
@@ -37,19 +36,19 @@ object HideMessages: Module(
 
     init {
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!M4State.inBoss()) return@on
 
             when {
-                chickenMine && chickenRegex.matches(value) -> hideMessage()
-                crowd && crowdRegex.matches(value) -> hideMessage()
-                thorn && thornRegex.matches(value) -> hideMessage()
-                bearSpawn && bearSpawnRegex.matches(value) -> hideMessage()
-                bowDrop && bowDropRegex.matches(value) -> hideMessage()
-                bowPickup && bowPickupRegex.matches(value) -> hideMessage()
-                chickenLightning && chickenLightningRegex.matches(value) -> hideMessage()
-                exploSheep && exploSheepRegex.matches(value) -> hideMessage()
-                bowShot && bowShotRegex.matches(value) -> hideMessage()
+                chickenMine && chickenRegex.matches(value) -> cancel()
+                crowd && crowdRegex.matches(value) -> cancel()
+                thorn && thornRegex.matches(value) -> cancel()
+                bearSpawn && bearSpawnRegex.matches(value) -> cancel()
+                bowDrop && bowDropRegex.matches(value) -> cancel()
+                bowPickup && bowPickupRegex.matches(value) -> cancel()
+                chickenLightning && chickenLightningRegex.matches(value) -> cancel()
+                exploSheep && exploSheepRegex.matches(value) -> cancel()
+                bowShot && bowShotRegex.matches(value) -> cancel()
             }
         }
     }

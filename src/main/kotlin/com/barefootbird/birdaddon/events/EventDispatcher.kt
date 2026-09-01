@@ -2,7 +2,7 @@ package com.barefootbird.birdaddon.events
 
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.debugMessage
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -26,7 +26,7 @@ object EventDispatcher {
     }
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!M4State.inBoss()) return@on
 
             if (bearSpawnRegex.matches(value)) {
