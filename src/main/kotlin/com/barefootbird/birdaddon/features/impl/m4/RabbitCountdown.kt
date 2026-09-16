@@ -31,11 +31,11 @@ object RabbitCountdown: Module(
         width to height
     }
 
-    private val decimals by NumberSetting("Decimals", 2, 1, 2, 1, "How many decimals to show")
+    private val decimals by NumberSetting("Decimals", 2, 1..2, 1, "How many decimals to show")
 
     private val showFromStart by BooleanSetting("Show on boss start", true, "Shows the timer from start of boss")
     private val showAfterB1 by BooleanSetting("Show after b1 start", true, "Shows the timer only after b1 starts spawning").withDependency { !showFromStart }
-    private val secondsBefore by NumberSetting("Seconds before", 4, 2, 7, 1, "How many seconds before rabbits spawn to render the timer").withDependency {
+    private val secondsBefore by NumberSetting("Seconds before", 4, 2..7, 1, "How many seconds before rabbits spawn to render the timer").withDependency {
         !showFromStart && !showAfterB1
     }
 
@@ -44,7 +44,8 @@ object RabbitCountdown: Module(
     private val displayText by StringSetting(
         "Display text:",
         $$"Rabbits spawning in",
-        desc = $$"HUD format for when rabbits are about to spawn"
+        desc = $$"HUD format for when rabbits are about to spawn",
+        placeholder = $$"Rabbits spawning in"
     )
 
     private val showArenaMobs by BooleanSetting(

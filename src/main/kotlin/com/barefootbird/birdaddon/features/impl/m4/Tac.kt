@@ -37,7 +37,7 @@ object Tac: Module(
     }
     private val tacTimer by BooleanSetting("Tac Timer", true, "Timer for tac")
     private val outsideOfM4 by BooleanSetting("Show Tac Timer out of m4", false, "Shows tac timer outside of m4").withDependency { tacTimer }
-    private val prefix by StringSetting("Tac Timer Prefix", "§6Tac: ", desc="Prefix for the tac timer").withDependency { tacTimer }
+    private val prefix by StringSetting("Tac Timer Prefix", "§6Tac: ", desc = "Prefix for the tac timer", placeholder = "§6Tac: ").withDependency { tacTimer }
 
     private val printTacTime by BooleanSetting("Print Tac Time", true, "Print tac time")
     private val printTimeOnlyOnTank by BooleanSetting("Print Time Only On Tank", true, "Prints the tac time only when on tank")

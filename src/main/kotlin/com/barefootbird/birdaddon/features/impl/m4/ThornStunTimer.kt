@@ -8,7 +8,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -35,18 +35,20 @@ object ThornStunTimer: Module(
 
     private val onlyShowOnHealer by BooleanSetting("Only show on healer", true, "Only shows stun related features when you're on healer")
 
-    private val decimals by NumberSetting("Decimals", 2, 1, 2, 1, "How many decimals to show")
+    private val decimals by NumberSetting("Decimals", 2, 1..2, 1, "How many decimals to show")
 
     private val stunnedText by StringSetting(
         "Stunned Text",
         $$"§5Stunned for $timer",
-        desc = "HUD format for when thorn is stunned"
+        desc = "HUD format for when thorn is stunned",
+        placeholder = $$"§5Stunned for $timer"
     )
 
     private val notStunnedText by StringSetting(
         "Not Stunned Text",
         "§5Stunned for §cN/A",
-        desc = "HUD format for when thorn isn't stunned"
+        desc = "HUD format for when thorn isn't stunned",
+        placeholder = "§5Stunned for §cN/A"
     )
 
     private val stunHelper by BooleanSetting("Stun Helper", true, "Shows when to stun")
@@ -72,7 +74,7 @@ object ThornStunTimer: Module(
     private val firstStunPos = Vec3(1.5, 86.0, 28.5)
     private val secondStunPos = Vec3(25.5, 85.0, 20.5)
 
-    private val secondTimerVariable by NumberSetting("second stun offset", 5, 0, 10, 1, "lower values make stun further away, higher values make it closer")
+    private val secondTimerVariable by NumberSetting("second stun offset", 5, 0..10, 1, "lower values make stun further away, higher values make it closer")
 
     init {
         onReceive<ClientboundHurtAnimationPacket> {
@@ -83,7 +85,7 @@ object ThornStunTimer: Module(
             }
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!stunHelper || !M4State.inBoss()) return@on
             if (onlyShowOnHealer && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) return@on
 

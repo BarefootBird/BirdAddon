@@ -4,10 +4,11 @@ import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4Mobs
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
@@ -18,7 +19,11 @@ object Trajectories : Module (
         description = "Shows trajectories of sheeps/cows/chickens",
         category = Category.M4
 ) {
-    private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
+    private val renderStyle by SelectorSetting(
+        "Render Style",
+        BoxStyle.OUTLINE,
+        desc = "Style of the box."
+    )
     private val cows by BooleanSetting("Cows", true, desc = "Highlight where the cows will land")
     private val sheep by BooleanSetting("Sheep", true, desc = "Highlight where the sheep will land")
     private val chicken by BooleanSetting("Chicken", true, "Highlight where the chicken will land")
@@ -111,7 +116,7 @@ object Trajectories : Module (
             }
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             runCatching {
                 cowLandingSpots.forEach {
                     val box = AABB(it.x - 0.2, it.y, it.z - 0.2, it.x + 0.2, it.y, it.z + 0.2)

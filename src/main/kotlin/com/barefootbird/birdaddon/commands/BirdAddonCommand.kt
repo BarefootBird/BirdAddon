@@ -7,6 +7,6 @@ import com.odtheking.odin.OdinMod.mc
 
 val mainCommand = Commodore("birdaddon") {
     runs {
-        schedule(0) { mc.setScreen(ClickGUI) }
+        schedule(0) { mc.gui.setScreen(ClickGUI) }
     }
 }

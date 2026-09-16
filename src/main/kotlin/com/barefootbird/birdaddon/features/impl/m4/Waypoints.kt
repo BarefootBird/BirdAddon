@@ -3,7 +3,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
@@ -25,6 +25,7 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.setClipboardContent
 import net.minecraft.world.phys.Vec3
@@ -44,8 +45,7 @@ object Waypoints: Module(
 ) {
     private val renderStyle by SelectorSetting(
         "Render Style",
-        "Outline",
-        listOf("Filled", "Outline", "Filled Outline"),
+        BoxStyle.OUTLINE,
         desc = "Style of the box."
     )
     private val depth by BooleanSetting("depth", true, "depth")
@@ -270,7 +270,7 @@ object Waypoints: Module(
         return false
     }
 
-    fun RenderEvent.Extract.renderCustomWaypoints() {
+    fun RenderExtractEvent.renderCustomWaypoints() {
         if (!onCgm4 && !onM4Miku && !M4State.inBoss()) return
         waypoints.forEach {
             val clazz = dungeonClassFromName(it.clazz) ?: return@forEach
@@ -292,7 +292,7 @@ object Waypoints: Module(
         return AABB(x + 0.0, y + 0.0, z + 0.0, x+1.0, y+1.0, z+1.0)
     }
 
-    private fun RenderEvent.Extract.renderWaypoint (pos: BlockPos, clazz: DungeonClass) {
+    private fun RenderExtractEvent.renderWaypoint (pos: BlockPos, clazz: DungeonClass) {
         val color = when (clazz) {
             DungeonClass.HEALER -> Colors.MINECRAFT_LIGHT_PURPLE
             DungeonClass.TANK -> Colors.MINECRAFT_GREEN
@@ -311,7 +311,7 @@ object Waypoints: Module(
         return box.clip(eyePos, end).isPresent
     }
 
-    private fun RenderEvent.Extract.renderBearSpawn () {
+    private fun RenderExtractEvent.renderBearSpawn () {
         val shouldRender =
             (onCgm4 && showOnCgm4) ||
                     (onM4Miku && showOnM4Miku) ||
@@ -361,7 +361,7 @@ object Waypoints: Module(
         } ?: defaultSpawn
     }
 
-    private fun RenderEvent.Extract.renderBowPickup () {
+    private fun RenderExtractEvent.renderBowPickup () {
         if (!(onCgm4 && showOnCgm4) && !(onM4Miku && showOnM4Miku) && !M4State.inBoss()) return
 
         var closestSpot = getBowSpawnSpot()
@@ -389,7 +389,7 @@ object Waypoints: Module(
     }
 
     init {
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             renderCustomWaypoints()
             if ((M4State.inBoss()) || onCgm4 || onM4Miku) {
                 if (bearSpawn && (!bearSpawnOnMage ||

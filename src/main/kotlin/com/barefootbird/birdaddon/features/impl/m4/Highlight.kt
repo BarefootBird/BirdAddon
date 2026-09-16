@@ -6,7 +6,7 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -26,6 +26,7 @@ import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.Color
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import net.minecraft.network.protocol.game.ClientboundHurtAnimationPacket
@@ -50,8 +51,7 @@ object Highlight: Module(
 ) {
     private val renderStyle by SelectorSetting(
         "Render Style",
-        "Outline",
-        listOf("Filled", "Outline", "Filled Outline"),
+        BoxStyle.OUTLINE,
         desc = "Style of the box."
     )
 
@@ -68,8 +68,7 @@ object Highlight: Module(
     private val dmgFlashDuration by NumberSetting(
         "Damage duration ticks",
         10,
-        1,
-        80,
+        1..80,
         1,
         "How long thorn changes color when damaged in ticks"
     ).withDependency { thornDmgFlash }
@@ -176,9 +175,9 @@ object Highlight: Module(
 
     private var damaged = 0
 
-    fun RenderEvent.Extract.drawTransBox(
+    fun RenderExtractEvent.drawTransBox(
         bb: AABB,
-        style: Int,
+        style: BoxStyle,
         depth: Boolean,
     ) {
         val minX = bb.minX
@@ -200,7 +199,7 @@ object Highlight: Module(
             Color(91, 206, 250)
         )
 
-        if (style == 0 || style == 2) {
+        if (style == BoxStyle.FILLED || style == BoxStyle.FILLED_OUTLINE) {
             for (i in 0 until 5) {
                 val y0 = minY + stripeH * i
                 val y1 = minY + stripeH * (i + 1)
@@ -309,7 +308,7 @@ object Highlight: Module(
             }
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!M4State.inBoss()) return@on
             runCatching {
                 val style = renderStyle

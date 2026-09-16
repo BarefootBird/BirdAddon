@@ -6,11 +6,12 @@ import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.renderBoundingBox
 import net.minecraft.core.particles.ParticleOptions
@@ -30,9 +31,22 @@ object RenderOptimizer: Module(
     private val healerCircle by BooleanSetting("Except Healer Circle", true, desc = "Shows healer circle particles even when hide particles is on") // HAPPY_VILLAGER
     private val mageBeam by BooleanSetting("Except Mage Beam", true, desc = "Shows mage beam particles even when hide particles is on") // FIREWORK
 
-    private val npcVisibility by SelectorSetting("NPC Visibility", "Relevant only", listOf("All", "Relevant only", "None"), "hides/shows npcs")
-    private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
-    private val npcHighlight by SelectorSetting("NPC Highlight", "None", listOf("None", "Relevant only", "All"), "highlights npcs")
+    private val npcVisibility by SelectorSetting(
+        "NPC Visibility",
+        NpcVisibility.RELEVANT_ONLY,
+        desc = "hides/shows npcs"
+    )
+
+    private val npcHighlight by SelectorSetting(
+        "NPC Highlight",
+        NpcHighlight.NONE,
+        desc = "highlights npcs"
+    )
+    private val renderStyle by SelectorSetting(
+        "Render Style",
+        BoxStyle.OUTLINE,
+        desc = "Style of the box."
+    )
 
     private val hideInvisArmorStands by BooleanSetting("Hide Invis Armorstands", true, "Hides: Fairies, Bow Spirits, Grounded Chickens, Dialogue, Damage Splashes, and possibly more. Does not hide bow/tribal spear")
 
@@ -52,12 +66,18 @@ object RenderOptimizer: Module(
     }
 
     @JvmStatic
-    fun shouldHideEntity (entity: Entity): Boolean {
+    fun shouldHideEntity(entity: Entity): Boolean {
         if (!M4State.inBoss() || !enabled) return false
+
         // Hide invis armorstands, but keep the ones that are holding items (bow and tribal spear)
-        if (hideInvisArmorStands && entity is ArmorStand && entity.isInvisible && entity.mainHandItem.isEmpty && !ended) return true
+        if (hideInvisArmorStands && entity is ArmorStand && entity.isInvisible && entity.mainHandItem.isEmpty && !ended) {
+            return true
+        }
+
         if (!npcs.contains(entity)) return false
-        return npcVisibility == 2 || (npcVisibility == 1 && !isRelevant(entity))
+
+        return npcVisibility == NpcVisibility.NONE ||
+            (npcVisibility == NpcVisibility.RELEVANT_ONLY && !isRelevant(entity))
     }
 
     init {
@@ -69,16 +89,16 @@ object RenderOptimizer: Module(
             ended = false
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!M4State.inBoss()) return@on
             runCatching {
                 val style = renderStyle
 
-                if (npcHighlight != 0) {
+                if (npcHighlight != NpcHighlight.NONE) {
                     npcs.toList().forEach { entity ->
-                        if (npcHighlight == 1 && isRelevant(entity)) {
+                        if (npcHighlight == NpcHighlight.RELEVANT_ONLY && isRelevant(entity)) {
                             drawStyledBox(entity.renderBoundingBox, Colors.MINECRAFT_GRAY, style, true)
-                        } else if (npcHighlight == 2) {
+                        } else if (npcHighlight == NpcHighlight.ALL) {
                             drawStyledBox(entity.renderBoundingBox, Colors.MINECRAFT_GRAY, style, true)
                         }
                     }

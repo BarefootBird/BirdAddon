@@ -10,7 +10,7 @@ group = property("maven_group")!!
 version = property("mod_version")!!
 
 val odinJarVersion = "0.3.4"
-val mcVersion = "26.1"
+val mcVersion = "26.2"
 
 repositories {
     mavenCentral()
