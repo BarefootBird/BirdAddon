@@ -25,7 +25,7 @@ import net.minecraft.world.phys.Vec3
 import kotlin.math.atan2
 
 object ThornStunTimer: Module(
-    name = "Stun",
+    name = "M4 Stun",
     description = "Shows information relevant to the stun",
     category = Category.M4
 ) {

@@ -8,7 +8,7 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 
 object HideMessages: Module(
-    name = "Hide Messages",
+    name = "M4 Hide Messages",
     description = "Hides some messages in m4",
     category = Category.M4
 ) {

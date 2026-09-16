@@ -23,7 +23,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 
 object Titles: Module(
-    name = "Titles",
+    name = "M4 Titles",
     description = "Custom Titles for m4 (leave them blank to disable them)",
     category = Category.M4
 ) {

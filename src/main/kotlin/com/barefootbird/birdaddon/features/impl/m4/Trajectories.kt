@@ -15,7 +15,7 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 
 object Trajectories : Module (
-        name = "Trajectories",
+        name = "M4 Trajectories",
         description = "Shows trajectories of sheeps/cows/chickens",
         category = Category.M4
 ) {
