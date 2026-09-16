@@ -3,7 +3,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatMessageEvent
+import com.odtheking.odin.events.MessageEvent.Chat
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 
@@ -36,19 +36,19 @@ object HideMessages: Module(
 
     init {
 
-        on<ChatMessageEvent> {
+        on<Chat> {
             if (!M4State.inBoss()) return@on
 
             when {
-                chickenMine && chickenRegex.matches(value) -> cancel()
-                crowd && crowdRegex.matches(value) -> cancel()
-                thorn && thornRegex.matches(value) -> cancel()
-                bearSpawn && bearSpawnRegex.matches(value) -> cancel()
-                bowDrop && bowDropRegex.matches(value) -> cancel()
-                bowPickup && bowPickupRegex.matches(value) -> cancel()
-                chickenLightning && chickenLightningRegex.matches(value) -> cancel()
-                exploSheep && exploSheepRegex.matches(value) -> cancel()
-                bowShot && bowShotRegex.matches(value) -> cancel()
+                chickenMine && chickenRegex.matches(message) -> cancel()
+                crowd && crowdRegex.matches(message) -> cancel()
+                thorn && thornRegex.matches(message) -> cancel()
+                bearSpawn && bearSpawnRegex.matches(message) -> cancel()
+                bowDrop && bowDropRegex.matches(message) -> cancel()
+                bowPickup && bowPickupRegex.matches(message) -> cancel()
+                chickenLightning && chickenLightningRegex.matches(message) -> cancel()
+                exploSheep && exploSheepRegex.matches(message) -> cancel()
+                bowShot && bowShotRegex.matches(message) -> cancel()
             }
         }
     }

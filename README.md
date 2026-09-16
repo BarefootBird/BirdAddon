@@ -10,7 +10,7 @@ This mod is an addon for **Odin**:
 👉 https://github.com/odtheking/Odin
 
 - Odin must be installed to use Bird Addon
-- Latest version requires **Odin 0.2.2** and **Minecraft 26.1.2**
+- Latest version requires **Odin 0.3.3** and **Minecraft 26.1.2**
 - Use `/od` or `/birdaddon` to open the config
 
 # Features
