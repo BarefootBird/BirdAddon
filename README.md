@@ -65,4 +65,4 @@ Adds a waypoint at the block you are looking at, visible only for the specified 
 ## Bug Reports & Feedback
 
 For bugs, feature requests, or discussion, join the M4 Newgens Discord:  
-[M4 Newgens Discord](discord.gg/QyXwYvdch6)
+[M4 Newgens Discord](https://discord.gg/QyXwYvdch6)
