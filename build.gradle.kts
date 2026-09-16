@@ -9,6 +9,9 @@ plugins {
 group = property("maven_group")!!
 version = property("mod_version")!!
 
+val odinJarVersion = "0.3.4"
+val mcVersion = "26.1"
+
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
@@ -17,7 +20,7 @@ repositories {
         forRepository {
             ivy("https://github.com/odtheking/Odin/releases/download/") {
                 patternLayout {
-                    artifact("[revision]/Odin-[revision].[ext]")
+                    artifact("[revision]/Odin-$odinJarVersion-$mcVersion.[ext]")
                 }
                 metadataSources {
                     artifact()

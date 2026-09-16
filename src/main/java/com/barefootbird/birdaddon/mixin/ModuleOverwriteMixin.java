@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import java.util.Arrays;
 
 @Mixin(value = ModuleManager.class, remap = false)
-public class ModuleOverwriteMixin {
+final class ModuleOverwriteMixin {
     @ModifyVariable(method = "registerModules", at = @At("HEAD"), argsOnly = true, ordinal = 0)
-    private static Module[] filterModules(Module[] modules, ModuleConfig config) {
+    private static Module[] birdaddon$filterModules(Module[] modules, ModuleConfig config) {
         return Arrays.stream(modules)
                 .filter(module -> !(module instanceof SpiritBear))
                 .toArray(Module[]::new);

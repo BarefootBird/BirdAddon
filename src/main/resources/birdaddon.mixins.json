@@ -1,14 +1,18 @@
 {
   "required": true,
-  "minVersion": "0.8",
-  "package": "com.barefootbird.birdaddon.mixin",
+  "minVersion": "0.8.7",
+  "mixinextras": {
+    "minVersion": "0.5.4"
+  }, 
   "compatibilityLevel": "JAVA_25",
-  "verbose": true,
+  "package": "com.barefootbird.birdaddon.mixin",
   "injectors": {
-    "defaultRequire": 1
+    "defaultRequire": 1,
+    "maxShiftBy": 2
   },
   "overwrites": {
-    "requireAnnotations": true
+    "requireAnnotations": true,
+    "conformVisibility": true
   },
   "client": [
     "EntityRendererMixin",

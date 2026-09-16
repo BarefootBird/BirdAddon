@@ -10,7 +10,7 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
-import com.odtheking.odin.events.ChatMessageEvent
+import com.odtheking.odin.events.MessageEvent.Chat
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.onReceive
@@ -89,21 +89,21 @@ object Titles: Module(
             it.cancel()
         }
 
-        on<ChatMessageEvent> {
+        on<Chat> {
             if (!M4State.inBoss()) return@on
 
-            if (value == bowPickup && pickupWarning != "" && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.TANK) {
+            if (message == bowPickup && pickupWarning != "" && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.TANK) {
                 setTitle(pickupWarning)
             }
 
-            if (value == bowPickup && tankPickup != "" && DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK) {
+            if (message == bowPickup && tankPickup != "" && DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK) {
                 setTitle(pickupWarning)
             }
 
-            if (bowMiss.matches(value) && missWarning != "") {
+            if (bowMiss.matches(message) && missWarning != "") {
                 setTitle(missWarning)
             }
-            if (wishRegex.matches(value)) wished = true
+            if (wishRegex.matches(message)) wished = true
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> { event ->

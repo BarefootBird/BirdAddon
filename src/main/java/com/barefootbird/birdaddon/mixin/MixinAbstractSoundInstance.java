@@ -7,11 +7,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-
 @Mixin(AbstractSoundInstance.class)
-public class MixinAbstractSoundInstance {
+final class MixinAbstractSoundInstance {
     @Inject(method = "getVolume", at = @At("RETURN"), cancellable = true)
-    private void onGetVolume(CallbackInfoReturnable<Float> cir) {
+    private void birdaddon$onGetVolume(CallbackInfoReturnable<Float> cir) {
         AbstractSoundInstance sound = (AbstractSoundInstance) (Object) this;
         String id = sound.getIdentifier().toString();
         if (Sounds.shouldBlockSound(id)) {

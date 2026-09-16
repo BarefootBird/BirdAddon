@@ -5,7 +5,7 @@ import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.features.impl.m4.SpiritBear
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.BlockUpdateEvent
-import com.odtheking.odin.events.ChatMessageEvent
+import com.odtheking.odin.events.MessageEvent.Chat
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
@@ -138,9 +138,9 @@ object M4State {
             lastSpiritBowPickup = timer
         }
 
-        on<ChatMessageEvent> {
+        on<Chat> {
             // Boss checks
-            if (enteredRegex.matches(value)) {
+            if (enteredRegex.matches(message)) {
                 inThornBoss = true
             }
             if (!inThornBoss) return@on
