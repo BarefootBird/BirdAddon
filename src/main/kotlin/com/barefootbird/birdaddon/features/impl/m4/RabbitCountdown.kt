@@ -59,12 +59,12 @@ object RabbitCountdown: Module(
         desc = "Shows alive bats"
     )
 
-    private const val RABBIT_SPAWN_TIME = 710
+    private const val RABBIT_SPAWN_TIME = 630
 
     private fun displayLines(example: Boolean): List<String> {
         if (example) {
             return listOf(
-                "§b$displayText 35.5s",
+                "§b$displayText 31.5s",
                 "§dGround: 3",
                 "§fBats: 1"
             )

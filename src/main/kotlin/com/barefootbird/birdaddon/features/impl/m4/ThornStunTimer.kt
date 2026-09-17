@@ -64,8 +64,8 @@ object ThornStunTimer: Module(
         }
         return parseTemplate(notStunnedText)
     }
-    private var timer = 310
-    private var firstTimer = 310
+    private var timer = 230
+    private var firstTimer = 230
     private var secondTimer = -1
     private var secondTimerStarted = false
 
@@ -116,8 +116,8 @@ object ThornStunTimer: Module(
         }
 
         on<LevelEvent.Load> {
-            timer = 310
-            firstTimer = 300
+            timer = 230
+            firstTimer = 230
             secondTimer = -1
             secondTimerStarted = false
         }
