@@ -23,7 +23,8 @@ import net.minecraft.world.level.block.state.BlockState
 
 
 object RenderOptimizer: Module(
-    name = "M4 Render Optimizer",
+    name = "Render Optimizer",
+    key = null,
     description = "Improves performance by not rendering certain things",
     category = Category.M4
 ) {

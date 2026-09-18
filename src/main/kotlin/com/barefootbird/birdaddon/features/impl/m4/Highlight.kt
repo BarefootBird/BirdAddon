@@ -45,7 +45,8 @@ import net.minecraft.world.phys.Vec3
 
 
 object Highlight: Module(
-    name = "M4 Highlight",
+    name = "Highlight",
+    key = null,
     description = "Highlights M4 animals",
     category = Category.M4
 ) {

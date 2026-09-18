@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(DelicateCoroutinesApi::class)
 object Timer: Module(
-    name = "M4 Timer",
+    name = "Timer",
+    key = null,
     description = "Shows how long the boss has gone on for",
     category = Category.M4
 ) {

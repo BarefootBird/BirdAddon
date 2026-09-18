@@ -28,7 +28,8 @@ import net.minecraft.world.InteractionHand
 
 @OptIn(DelicateCoroutinesApi::class)
 object Tac: Module(
-    name = "M4 Tac",
+    name = "Tac",
+    key = null,
     description = "Stuff for tactical insertion",
     category = Category.M4
 ) {

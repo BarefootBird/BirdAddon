@@ -15,7 +15,8 @@ import com.barefootbird.birdaddon.utils.M4State.overkillSheep
 import com.barefootbird.birdaddon.utils.M4State.overkillWolves
 
 object OverkillDisplay : Module(
-    name = "M4 Overkill Display",
+    name = "Overkill Display",
+    key = null,
     description = "Shows how much overkill in m4",
     category = Category.M4
 ) {

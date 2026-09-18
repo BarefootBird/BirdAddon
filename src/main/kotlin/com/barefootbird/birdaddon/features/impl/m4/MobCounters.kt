@@ -9,7 +9,8 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 
 object MobCounters : Module(
-    name = "M4 Mob Counter",
+    name = "Mob Counter",
+    key = null,
     description = "Shows how many mobs are alive in m4",
     category = Category.M4
 ) {

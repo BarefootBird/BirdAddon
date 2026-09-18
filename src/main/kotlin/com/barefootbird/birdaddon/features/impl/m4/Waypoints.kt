@@ -39,7 +39,8 @@ import kotlin.math.sin
 
 
 object Waypoints: Module(
-    name = "M4 Waypoints",
+    name = "Waypoints",
+    key = null,
     description = "Waypoints for m4",
     category = Category.M4
 ) {

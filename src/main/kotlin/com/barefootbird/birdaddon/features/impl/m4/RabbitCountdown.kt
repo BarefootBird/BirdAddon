@@ -15,7 +15,8 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 
 object RabbitCountdown: Module(
-    name = "M4 Rabbit Countdown",
+    name = "Rabbit Countdown",
+    key = null,
     description = "Counts down when rabbits spawn",
     category = Category.M4
 ) {

@@ -23,7 +23,8 @@ import net.minecraft.world.phys.Vec3
 
 
 object Decoy: Module(
-    name = "M4 Decoy",
+    name = "Decoy",
+    key = null,
     description = "Thing for m4 decoys",
     category = Category.M4
 ) {

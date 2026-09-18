@@ -20,7 +20,8 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import java.io.File
 
 object SpiritBear: Module(
-    name = "M4 Spirit Bear",
+    name = "Spirit Bear",
+    key = null,
     description = "Shows the state of the spirit bear spawns",
     category = Category.M4
 ) {

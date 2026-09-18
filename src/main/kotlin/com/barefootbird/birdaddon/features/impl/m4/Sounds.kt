@@ -7,7 +7,8 @@ import com.odtheking.odin.features.Module
 
 
 object Sounds: Module(
-    name = "M4 Sounds",
+    name = "Sounds",
+    key = null,
     description = "Mutes annoying sounds in m4 boss",
     category = Category.M4
 ) {
