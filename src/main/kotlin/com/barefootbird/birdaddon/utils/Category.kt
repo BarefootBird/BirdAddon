@@ -4,5 +4,5 @@ import com.odtheking.odin.features.Category
 
 object Category {
     @JvmField
-    val M4 = Category.custom("M4")
+    val M4 = Category.custom("M4", 860, 10)
 }

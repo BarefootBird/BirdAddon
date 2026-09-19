@@ -24,22 +24,23 @@ import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 
 object Titles: Module(
     name = "Titles",
+    key = null,
     description = "Custom Titles for m4 (leave them blank to disable them)",
     category = Category.M4
 ) {
     private val hideDefault by BooleanSetting("Hide Default Titles", true, desc = "Hides the titles for picking up bows and bears dying")
-    private val titleDuration by NumberSetting("Title Duration Ticks", 20, 1,  200, 1, "How long to display the title for")
+    private val titleDuration by NumberSetting("Title Duration Ticks", 20, 1..200, 1, "How long to display the title for")
 
-    private val missWarning by StringSetting("Miss Warning", "§cBow Missed", desc = "Shows a title when bow is missed")
-    private val pickupWarning by StringSetting("Non-Tank Pickup Warning", "§cBow Picked Up", desc = "Shows a title when bow is picked up if you're not on tank")
-    private val tankPickup by StringSetting("Tank Bow Pickup", "§aBow Picked Up", desc = "Shows a title when bow is picked up if you're on tank")
+    private val missWarning by StringSetting("Miss Warning", "§cBow Missed", desc = "Shows a title when bow is missed", placeholder = "§cBow Missed")
+    private val pickupWarning by StringSetting("Non-Tank Pickup Warning", "§cBow Picked Up", desc = "Shows a title when bow is picked up if you're not on tank", placeholder = "§cBow Picked Up")
+    private val tankPickup by StringSetting("Tank Bow Pickup", "§aBow Picked Up", desc = "Shows a title when bow is picked up if you're on tank", placeholder = "§aBow Picked Up")
 
-    private val bearTimerStarted by StringSetting("Bear Timer Started", "§cSTOP KILLING", desc = "Shows a title when timer starts")
-    private val bearSpawned by StringSetting("Bear Spawned", "§5Bear Spawned", desc = "Shows a title when bear spawns")
-    private val bearKilled by StringSetting("Bear Killed", "§aResume Killing", desc = "Shows a title when bear dies")
+    private val bearTimerStarted by StringSetting("Bear Timer Started", "§cSTOP KILLING", desc = "Shows a title when timer starts", placeholder = "§cSTOP KILLING")
+    private val bearSpawned by StringSetting("Bear Spawned", "§5Bear Spawned", desc = "Shows a title when bear spawns", placeholder = "§5Bear Spawned")
+    private val bearKilled by StringSetting("Bear Killed", "§aResume Killing", desc = "Shows a title when bear dies", placeholder = "§aResume Killing")
 
-    private val wishTitle by StringSetting("Wish Title", "§dWISH WISH WISH", desc = "Shows a title when it's time to wish")
-    private val wishThreshold by NumberSetting("Wish Threshold", 100000, 50000, 200000, 10000, "Tank's hp needs to be bigger than this number to show wish title")
+    private val wishTitle by StringSetting("Wish Title", "§dWISH WISH WISH", desc = "Shows a title when it's time to wish", placeholder = "§dWISH WISH WISH")
+    private val wishThreshold by NumberSetting("Wish Threshold", 100000, 50000..200000, 10000, "Tank's hp needs to be bigger than this number to show wish title")
 
     val bowMiss = Regex("""^\[CROWD] [^:]+: (Yeah!!! Keep dodging them Thorn!|[A-Za-z0-9_]+ missed the shot! No way!! Hahaha|My goodness, [A-Za-z0-9_]+ really can't aim!!|Alright those humans are a joke, missing easy shots like that\.\.\.|[A-Za-z0-9_]+ has no thumbs!)$""")
     val bowPickup = "You picked up the Spirit Bow! Use it to attack Thorn!"
@@ -50,8 +51,8 @@ object Titles: Module(
     private var wished = false
 
     fun setTitle(title: String) {
-        mc.gui.setTimes(0, titleDuration, 5)
-        mc.gui.setTitle(Component.literal(title))
+        mc.gui.hud.setTimes(0, titleDuration, 5)
+        mc.gui.hud.setTitle(Component.literal(title))
     }
 
     init {

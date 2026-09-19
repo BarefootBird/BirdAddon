@@ -10,6 +10,7 @@ import com.odtheking.odin.utils.render.textDim
 
 object MobCounters : Module(
     name = "Mob Counter",
+    key = null,
     description = "Shows how many mobs are alive in m4",
     category = Category.M4
 ) {

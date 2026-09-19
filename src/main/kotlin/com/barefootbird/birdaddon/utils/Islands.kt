@@ -8,6 +8,7 @@ import com.odtheking.odin.events.core.onReceive
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.item.DyeColor
 
 
 object Islands {
@@ -35,7 +36,7 @@ object Islands {
     val blockMap = mapOf(
         '#' to Blocks.COARSE_DIRT,
         '@' to Blocks.DIRT,
-        '.' to Blocks.BROWN_STAINED_GLASS,
+        '.' to Blocks.STAINED_GLASS.pick(DyeColor.BROWN),
     )
 
     fun checkPattern(startPos: BlockPos, pattern: List<String>): Boolean {

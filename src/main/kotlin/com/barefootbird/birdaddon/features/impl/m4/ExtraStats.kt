@@ -21,6 +21,7 @@ import java.util.UUID
 @OptIn(DelicateCoroutinesApi::class)
 object ExtraStats: Module(
     name = "Extra Stats",
+    key = null,
     description = "Shows stats from your run",
     category = Category.M4
 ) {

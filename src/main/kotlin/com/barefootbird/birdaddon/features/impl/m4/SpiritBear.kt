@@ -21,6 +21,7 @@ import java.io.File
 
 object SpiritBear: Module(
     name = "Spirit Bear",
+    key = null,
     description = "Shows the state of the spirit bear spawns",
     category = Category.M4
 ) {
@@ -47,38 +48,43 @@ object SpiritBear: Module(
     private val killPhaseText by StringSetting(
         "Kill Phase Text",
         $$"§6Bear $bear: §a$kills/$cap",
-        desc = $$"HUD format for when bears are being killed"
+        desc = $$"HUD format for when bears are being killed",
+        placeholder = $$"§6Bear $bear: §a$kills/$cap"
     )
 
     private val spawningText by StringSetting(
         "Spawning Text",
         $$"§6Bear $bear: §c$timer",
-        desc = $$"HUD format for when bear is about to spawn"
+        desc = $$"HUD format for when bear is about to spawn",
+        placeholder = $$"§6Bear $bear: §c$timer"
     )
 
     private val spawnedText by StringSetting(
         "Spawned Text",
         $$"§6Bear $bear: §4!",
-        desc = $$"HUD format for when bear has spawned"
+        desc = $$"HUD format for when bear has spawned",
+        placeholder = $$"§6Bear $bear: §4!"
     )
 
     private val splitText by StringSetting(
         "Split Text",
         $$"§6Bear $bear: §b$spawn Kill: $kill",
         96,
-        desc = $$"HUD format for each bear split. Options: $bear, $spawnStart, $spawn, $death, $kill, $total"
+        desc = $$"HUD format for each bear split. Options: $bear, $spawnStart, $spawn, $death, $kill, $total",
+        placeholder = $$"§6Bear $bear: §b$spawn Kill: $kill"
     )
 
     private val splitTotalText by StringSetting(
         "Split Total Text",
         $$"§7Total: §b$total",
         96,
-        desc = $$"HUD format for the total boss time at the end of the splits. Options: $bear, $spawnStart, $spawn, $death, $kill, $total"
+        desc = $$"HUD format for the total boss time at the end of the splits. Options: $bear, $spawnStart, $spawn, $death, $kill, $total",
+        placeholder = $$"§7Total: §b$total"
     )
 
     private val showTicks by BooleanSetting("Show Timer in Ticks", false, desc = "Changes the timer to be in ticks instead of seconds")
 
-    private val decimals by NumberSetting("Decimals", 2, 1, 2, 1, "How many decimals to show")
+    private val decimals by NumberSetting("Decimals", 2, 1..2, 1, "How many decimals to show")
 
     private val personalBestsFile = File(mc.gameDirectory, "config/odin/addons/m4personalbests.json")
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()

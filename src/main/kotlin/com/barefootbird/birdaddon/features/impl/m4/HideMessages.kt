@@ -9,6 +9,7 @@ import com.odtheking.odin.features.Module
 
 object HideMessages: Module(
     name = "Hide Messages",
+    key = null,
     description = "Hides some messages in m4",
     category = Category.M4
 ) {
