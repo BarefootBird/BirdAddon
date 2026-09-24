@@ -10,7 +10,10 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.barefootbird.birdaddon.utils.Vec2
-import com.odtheking.odin.utils.render.drawFilledBox
+import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
+import com.odtheking.odin.utils.render.drawStyledBox
+import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
+import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.monster.skeleton.Skeleton
 import net.minecraft.world.entity.monster.skeleton.WitherSkeleton
@@ -28,6 +31,16 @@ object Decoy: Module(
     category = Category.M4
 ) {
     private val highlightBestDecoySpot by BooleanSetting("Show best decoy spot", true, desc = "Highlights the best available decoy spot")
+    private val showCave by BooleanSetting("Show cave spot", true, desc = "Highlights where you should rcm for cave")
+    private val renderStyle by SelectorSetting(
+        "Render Style",
+        "Outline",
+        listOf("Filled", "Outline", "Filled Outline"),
+        desc = "Style of the box."
+    )
+    private val depth by BooleanSetting("Depth", true, desc = "depth")
+    private val onlyShowOnBers by BooleanSetting("Only Show On Bers", true, desc = "Only shows the waypoints when playing bers class")
+
     // x + z coords of the spots in order of best to worst
     private val bestSpots = listOf(
         Vec2(26, 29), Vec2(29, 26), Vec2(31, 28), Vec2(27, 32), // front 4
@@ -38,8 +51,18 @@ object Decoy: Module(
         Vec2(27, 38), Vec2(24, 37), Vec2(21, 36), Vec2(24, 40), // some extra left ones just in case
     )
 
+    private val caveSpots = mapOf(
+        Vec2(26, 29) to Vec3(28.0, 75.5, 28.0),
+        Vec2(29, 26) to Vec3(28.0, 75.5, 28.0),
+        Vec2(31, 28) to Vec3(29.0, 75.5, 29.0),
+        Vec2(27, 32) to Vec3(29.0, 75.5, 29.0),
+        Vec2(21, 31) to Vec3(20.0, 76.5, 30.0),
+        Vec2(32, 21) to Vec3(29.0, 76.5, 22.0),
+    )
+
     private var bestSpotIndex = 100
     private var bestSpot: Vec3? = null
+    private var caveSpot: Vec3? = null
 
     private val searchBox = AABB(-36.0, 77.0, -36.0, 47.0, 83.0, 47.0)
 
@@ -56,6 +79,7 @@ object Decoy: Module(
                 if (spot.x + 0.5 == entity.x && spot.z + 0.5 == entity.z) {
                     bestSpotIndex = index
                     bestSpot = entity.position()
+                    caveSpot = caveSpots[Vec2(spot.x, spot.z)]
                 }
             }
         }
@@ -84,9 +108,14 @@ object Decoy: Module(
 
         on<RenderEvent.Extract> {
             if (!M4State.inBoss()) return@on
-            if (bestSpot != null) {
+            if (onlyShowOnBers && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.BERSERK) return@on
+            if (highlightBestDecoySpot && bestSpot != null) {
                 val box = AABB(bestSpot!!.x - 0.5, bestSpot!!.y, bestSpot!!.z - 0.5, bestSpot!!.x + 0.5, bestSpot!!.y, bestSpot!!.z + 0.5)
-                drawFilledBox(box, Colors.MINECRAFT_RED, true)
+                drawStyledBox(box, Colors.MINECRAFT_RED, renderStyle, depth)
+            }
+            if (showCave && caveSpot != null && M4State.bearSpawnStartTimes.size >= 4 && M4State.bearSpawnStartTimes.size < 6) {
+                val box = AABB(caveSpot!!.x - 0.5, caveSpot!!.y, caveSpot!!.z - 0.5, caveSpot!!.x + 0.5, caveSpot!!.y, caveSpot!!.z + 0.5)
+                drawStyledBox(box, Colors.MINECRAFT_RED, renderStyle, depth)
             }
         }
 
