@@ -114,7 +114,7 @@ object Decoy: Module(
                 drawStyledBox(box, Colors.MINECRAFT_RED, renderStyle, depth)
             }
             if (showCave && caveSpot != null && M4State.bearSpawnStartTimes.size >= 4 && M4State.bearSpawnStartTimes.size < 6) {
-                val box = AABB(caveSpot!!.x - 0.5, caveSpot!!.y, caveSpot!!.z - 0.5, caveSpot!!.x + 0.5, caveSpot!!.y, caveSpot!!.z + 0.5)
+                val box = AABB(caveSpot!!.x, caveSpot!!.y, caveSpot!!.z, caveSpot!!.x + 1, caveSpot!!.y, caveSpot!!.z + 1)
                 drawStyledBox(box, Colors.MINECRAFT_RED, renderStyle, depth)
             }
         }
