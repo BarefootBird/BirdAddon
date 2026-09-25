@@ -13,21 +13,6 @@ repositories {
     mavenCentral()
     maven("https://jitpack.io")
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
-    exclusiveContent {
-        forRepository {
-            ivy("https://github.com/odtheking/Odin/releases/download/") {
-                patternLayout {
-                    artifact("${property("odin_release_path")}")
-                }
-                metadataSources {
-                    artifact()
-                }
-            }
-        }
-        filter {
-            includeGroup("com.odtheking")
-        }
-    }
 }
 
 dependencies {
@@ -40,7 +25,7 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_api_version")}")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
-    modImplementation("com.odtheking:Odin:${property("odin_version")}")
+    modImplementation("com.github.odtheking:Odin:${property("odin_version")}")
 
     modImplementation("com.github.stivais:Commodore:${property("commodore_version")}")
 
@@ -58,14 +43,6 @@ loom {
 
     runConfigs.named("client") {
         isIdeConfigGenerated = true
-        vmArgs.addAll(
-            arrayOf(
-                "-Dmixin.debug.export=true",
-                "-Ddevauth.enabled=true",
-                "-Ddevauth.account=main",
-                "-XX:+AllowEnhancedClassRedefinition"
-            )
-        )
     }
 
     runConfigs.named("server") {

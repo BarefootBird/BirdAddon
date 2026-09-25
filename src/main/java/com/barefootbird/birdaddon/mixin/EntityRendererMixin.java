@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EntityRenderer.class)
 final class EntityRendererMixin {
     @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
-    private void birdaddon$onRender(Entity entity, Frustum frustum, double d, double e, double f, CallbackInfoReturnable<Boolean> cir) {
+    private void birdaddon$onRender(Entity entity, Frustum culler, double camX, double camY, double camZ, float partialTicks, CallbackInfoReturnable<Boolean> cir) {
         if (RenderOptimizer.shouldHideEntity(entity)) cir.setReturnValue(false);
         if (Highlight.shouldHideEntity(entity)) cir.setReturnValue(false);
     }
