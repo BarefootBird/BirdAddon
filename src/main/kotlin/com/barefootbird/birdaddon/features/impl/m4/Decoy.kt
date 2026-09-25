@@ -31,6 +31,8 @@ object Decoy: Module(
     category = Category.M4
 ) {
     private val highlightBestDecoySpot by BooleanSetting("Show best decoy spot", true, desc = "Highlights the best available decoy spot")
+    private val hideDecoySpotAfterB1 by BooleanSetting("Hide decoy highlight after b1", true, desc = "Stops highlighting the decoy spot once b2 starts spawning")
+
     private val showCave by BooleanSetting("Show cave spot", true, desc = "Highlights where you should rcm for cave")
     private val renderStyle by SelectorSetting(
         "Render Style",
@@ -109,7 +111,7 @@ object Decoy: Module(
         on<RenderEvent.Extract> {
             if (!M4State.inBoss()) return@on
             if (onlyShowOnBers && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.BERSERK) return@on
-            if (highlightBestDecoySpot && bestSpot != null) {
+            if (highlightBestDecoySpot && bestSpot != null && (!hideDecoySpotAfterB1 || M4State.bearSpawnTimes.isEmpty())) {
                 val box = AABB(bestSpot!!.x - 0.5, bestSpot!!.y, bestSpot!!.z - 0.5, bestSpot!!.x + 0.5, bestSpot!!.y, bestSpot!!.z + 0.5)
                 drawStyledBox(box, Colors.MINECRAFT_RED, renderStyle, depth)
             }
