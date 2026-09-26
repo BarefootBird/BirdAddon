@@ -364,27 +364,38 @@ object Waypoints: Module(
     private fun RenderEvent.Extract.renderBowPickup () {
         if (!(onCgm4 && showOnCgm4) && !(onM4Miku && showOnM4Miku) && !M4State.inBoss()) return
 
-        var closestSpot = getBowSpawnSpot()
+        val closestSpot = getBowSpawnSpot()
 
-        if (onCgm4) {
-            closestSpot = Vec3(closestSpot.x + 2, closestSpot.y + 41, closestSpot.z + 2)
+        val bows = M4Mobs.bows.map { it.position().subtract(0.5, 0.0, 0.5) }
+
+
+        val allBows =
+            if (bows.isEmpty() || M4State.bearTimer > -1) {
+                // only show the next bow spawn point if there are no bows, or if its spawning soon
+                bows.plus(closestSpot)
+            } else bows
+
+        for (spot in allBows) {
+
+            val translatedSpot = if (onCgm4) {
+                 Vec3(spot.x + 2, spot.y + 41, spot.z + 2)
+            } else spot
+
+            val points = 64
+            val radius = 1.5
+
+            val circlePoints = (0..points).map { i ->
+                val angle = 2.0 * Math.PI * i / points
+
+                Vec3(
+                    translatedSpot.x + radius * cos(angle),
+                    translatedSpot.y,
+                    translatedSpot.z + radius * sin(angle)
+                )
+            }
+
+            drawLine(circlePoints, Colors.MINECRAFT_GREEN, depth)
         }
-
-
-        val points = 64
-        val radius = 1.5
-
-        val circlePoints = (0..points).map { i ->
-            val angle = 2.0 * Math.PI * i / points
-
-            Vec3(
-                closestSpot.x + radius * cos(angle),
-                closestSpot.y,
-                closestSpot.z + radius * sin(angle)
-            )
-        }
-
-        drawLine(circlePoints, Colors.MINECRAFT_GREEN, depth)
 
     }
 
