@@ -5,10 +5,12 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import net.minecraft.core.particles.DustParticleOptions
+import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import net.minecraft.world.phys.Vec3
 import kotlin.math.floor
+import kotlin.math.roundToInt
 
 object ParticleTrails {
 
@@ -59,81 +61,94 @@ object ParticleTrails {
 
     var spawnPrediction = Vec3(0.0, 0.0, 0.0)
 
-    fun generatePredictions(): List<TimedParticle> {
-        val linear = particles.filter { it.linearPortion }
+    /*
+    * if there are missing particles between p1 and p2 that didn't spawn due to
+    * particle cap or render distance or whatever else then this scales it accordingly
+    */
+    fun getParticleStep(delta: Vec3): Vec3? {
 
-        val predictions = mutableListOf<TimedParticle>()
+        /*
+        * When the particles spawn, the usual difference in y values of particles that are next to each other
+        * Varies but falls somewhere within the bounds of 0.36 and 0.4 so 0.38 is very roughly the avg y delta
+        */
+        val spacing = 0.38
 
-        if (linear.size >= 2) {
-            val p1 = linear[0].pos
-            val p2 = linear[1].pos
+        val particleSteps = (kotlin.math.abs(delta.y) / spacing).roundToInt()
+            .coerceAtLeast(1)
 
-            var d = p2.subtract(p1)
+        val perSegmentY = kotlin.math.abs(delta.y) / particleSteps
 
-            if (d.y >= 0) {
-                d = p1.subtract(p2)
-            }
-
-            var scale = 1.0
-
-            for (i in 1..100) {
-                // rough range of normal y variation between particles
-                if (d.y/i in -0.4..-0.36) {
-                    scale = 1.0/i
-                    break
-                }
-            }
-
-            /*
-            * if there are missing particles between p1 and p2 that didn't spawn due to
-            * particle cap or render distance or whatever else then this scales it accordingly
-            */
-            d = d.scale(scale)
-
-            // start projecting from the lower particle
-            var newPos = if (p1.y < p2.y) {
-                p1.add(d)
-            } else {
-                p2.add(d)
-            }
-
-
-            while (newPos.y > 69.6969) {
-                predictions.add(TimedParticle(newPos, M4State.timer))
-                newPos = newPos.add(d)
-            }
-
-            if (predictions.isEmpty()) {
-                return emptyList()
-            }
-
-            val last = predictions.last().pos
-
-            val spawnPrediction = Vec3(floor(last.x * 32) / 32, floor(last.y * 32) / 32, floor(last.z * 32) / 32)
-
-            ParticleTrails.spawnPrediction = spawnPrediction
-
-            return predictions
+        // Make sure that the result is within the expected bounds
+        return if (perSegmentY in 0.36..0.4) {
+            delta.scale(1.0 / particleSteps)
+        } else {
+            null
         }
-        return emptyList()
     }
 
-    fun getPredictionsRemaining(pos: Vec3): Int {
-        if (predictions.isEmpty()) return -1
+    private fun quantizeToGrid(pos: Vec3): Vec3 =
+        Vec3(
+            floor(pos.x * 32) / 32,
+            floor(pos.y * 32) / 32,
+            floor(pos.z * 32) / 32
+        )
 
-        var closestIndex = 0
-        var closestDistance = Double.MAX_VALUE
+    fun generatePredictions(): List<TimedParticle> {
+        val linear = particles.filter { it.linearPortion }
+        if (linear.size < 2) return emptyList()
 
-        for (i in predictions.indices) {
-            val distance = predictions[i].pos.distanceToSqr(pos)
 
-            if (distance < closestDistance) {
-                closestDistance = distance
-                closestIndex = i
-            }
+        val first = linear[0].pos
+        val second = linear[1].pos
+
+        val lower = if (first.y < second.y) first else second
+        val upper = if (first.y < second.y) second else first
+
+        // Get a vector pointing from the upper particle to lower
+        val delta = lower.subtract(upper)
+
+        // Scale the delta to account for missing particles due to server being weird
+        val step = getParticleStep(delta) ?: return emptyList()
+
+        // The actual lower bound of how low particles can spawn is not a constant and does vary somewhat
+        // But it is generally between 69.695 and 69.697
+        // I have no idea what the actual function for the lower bound is or how to find it
+        val particleLowerBound = 69.6969
+
+        // Start projecting from the lower particle to create a sequence of predicted particles
+        val predictions = generateSequence(lower.add(step)) { it.add(step) }
+            .takeWhile { it.y > particleLowerBound }
+            .map { TimedParticle(it, M4State.timer) }
+            .toList()
+
+        if (predictions.isEmpty()) {
+            return emptyList()
         }
 
-        return predictions.size - closestIndex - 1
+        // The last particle quantized on to a 1/32 grid is where the bear spawns
+        spawnPrediction = quantizeToGrid(predictions.last().pos)
+
+        return predictions
+    }
+
+    // Returns how many more particles there are predicted to be based on the position of the current particle
+    fun getPredictionsRemaining(pos: Vec3): Int {
+        // Find the prediction that represents the current particle position
+        val closestPrediction = predictions.minByOrNull { it.pos.distanceToSqr(pos) } ?: return -1
+
+        return predictions.size - predictions.indexOf(closestPrediction)
+    }
+
+    private fun isPotentialBearParticle(particle: ParticleOptions): Boolean {
+        val dustParticle = particle as? DustParticleOptions ?: return false
+
+        val col = dustParticle.color
+
+        val bearDustColorComponent = 9.804E-2f
+
+        return col.x != bearDustColorComponent ||
+                col.y != bearDustColorComponent ||
+                col.z != bearDustColorComponent
     }
 
     var predictions = emptyList<TimedParticle>()
@@ -150,7 +165,7 @@ object ParticleTrails {
 
             particles.removeIf { it.createdTick < cutoff }
 
-            if (!M4State.bearSpawnTimes.isEmpty()) {
+            if (M4State.bearSpawnTimes.isNotEmpty()) {
                 if (M4State.timer == M4State.bearSpawnTimes.last() + 3) {
                     predictions = emptyList()
                     predictionsRemaining = -1
@@ -162,52 +177,40 @@ object ParticleTrails {
         onReceive<ClientboundLevelParticlesPacket> { event ->
             if (!M4State.inBoss()) return@onReceive
             if (M4State.bearSpawnStartTimes.size <= M4State.bearSpawnTimes.size) return@onReceive // Only need to worry about particles while the bear is spawning
-            val packet = event.packet
-            if (packet is ClientboundLevelParticlesPacket) {
-                val type = BuiltInRegistries.PARTICLE_TYPE.getKey(packet.particle.type)
+            val packet = event.packet as? ClientboundLevelParticlesPacket ?: return@onReceive
+            if (!isPotentialBearParticle(packet.particle)) return@onReceive
 
-                if (type.toString() == "minecraft:dust") {
-                    val col = (packet.particle as? DustParticleOptions)?.color
+            val newParticle = TimedParticle(
+                Vec3(packet.x, packet.y, packet.z),
+                M4State.timer
+            )
 
-                    val bearParticleColor = "( 9.804E-2  9.804E-2  9.804E-2)"
+            for (existing in particles) {
+                if (isInLinearPortion(existing.pos, newParticle.pos)) {
 
-                    if (col.toString() != bearParticleColor) {
-                        return@onReceive
+                    existing.linearPortion = true
+                    newParticle.linearPortion = true
+
+                    particleAddedThisTick = true
+                    // Use the lower particle for the predictions remaining
+                    val remaining = if (newParticle.pos.y < existing.pos.y) {
+                        getPredictionsRemaining(newParticle.pos)
+                    } else {
+                        getPredictionsRemaining(existing.pos)
+                    }
+                    // Bear timer should never go up once predictions are found
+                    if (predictionsRemaining !in 0..remaining) {
+                        predictionsRemaining = remaining
                     }
 
-                    val newParticle = TimedParticle(
-                        Vec3(packet.x, packet.y, packet.z),
-                        M4State.timer
-                    )
-
-                    for (existing in particles) {
-                        if (isInLinearPortion(existing.pos, newParticle.pos)) {
-
-                            existing.linearPortion = true
-                            newParticle.linearPortion = true
-
-                            particleAddedThisTick = true
-                            // Use the lower particle for the predictions remaining
-                            val remaining = if (newParticle.pos.y < existing.pos.y) {
-                                getPredictionsRemaining(newParticle.pos)
-                            } else {
-                                getPredictionsRemaining(existing.pos)
-                            }
-                            // Bear timer should never go up once predictions are found
-                            if (predictionsRemaining !in 0..remaining) {
-                                predictionsRemaining = remaining
-                            }
-
-                            break
-                        }
-                    }
-
-                    particles += newParticle
-
-                    if (predictions.isEmpty() && newParticle.linearPortion) {
-                        predictions = generatePredictions()
-                    }
+                    break
                 }
+            }
+
+            particles += newParticle
+
+            if (predictions.isEmpty() && newParticle.linearPortion) {
+                predictions = generatePredictions()
             }
         }
     }
