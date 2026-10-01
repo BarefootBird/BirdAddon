@@ -11,6 +11,7 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.barefootbird.birdaddon.utils.Vec2
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -37,8 +38,7 @@ object Decoy: Module(
     private val showCave by BooleanSetting("Show cave spot", true, desc = "Highlights where you should rcm for cave")
     private val renderStyle by SelectorSetting(
         "Render Style",
-        "Outline",
-        listOf("Filled", "Outline", "Filled Outline"),
+        BoxStyle.OUTLINE,
         desc = "Style of the box."
     )
     private val depth by BooleanSetting("Depth", true, desc = "depth")
