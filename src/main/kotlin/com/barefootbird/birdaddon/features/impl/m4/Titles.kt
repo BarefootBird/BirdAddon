@@ -4,6 +4,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.debugMessage
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.core.on
@@ -33,6 +34,7 @@ object Titles: Module(
     private val missWarning by StringSetting("Miss Warning", "§cBow Missed", desc = "Shows a title when bow is missed")
     private val pickupWarning by StringSetting("Non-Tank Pickup Warning", "§cBow Picked Up", desc = "Shows a title when bow is picked up if you're not on tank")
     private val tankPickup by StringSetting("Tank Bow Pickup", "§aBow Picked Up", desc = "Shows a title when bow is picked up if you're on tank")
+    private val bowDisintegrateWarning by StringSetting("Bow Disintegrate warning", "§0SHOOT §4THE §5BOW", desc = "Shows a title when the bow is close to disintegrating")
 
     private val bearTimerStarted by StringSetting("Bear Timer Started", "§cSTOP KILLING", desc = "Shows a title when timer starts")
     private val bearSpawned by StringSetting("Bear Spawned", "§5Bear Spawned", desc = "Shows a title when bear spawns")
@@ -54,6 +56,8 @@ object Titles: Module(
         mc.gui.setTitle(Component.literal(title))
     }
 
+    private var pickupTime = -10000
+
     init {
         on<M4Event.BearSpawnStart> {
             setTitle(bearTimerStarted)
@@ -69,11 +73,17 @@ object Titles: Module(
             if (tankInMastiff && !wished && wishTitle != "") {
                 setTitle(wishTitle)
             }
+
+            // bow disintegrates after 400t so 280t means the player has 6s from the title appearing to shoot which should be plenty
+            if (M4State.timer - pickupTime > 280 && mc.player?.inventory?.contains { debugMessage(it.displayName.string); it.displayName.string.contains("Spirit Bow")} == true) {
+                setTitle(bowDisintegrateWarning)
+            }
         }
 
         on<LevelEvent.Load> {
             wished = false
             tankInMastiff = false
+            pickupTime = -10000
         }
 
         onReceive<ClientboundSetSubtitleTextPacket> {
@@ -92,12 +102,15 @@ object Titles: Module(
         on<Chat> {
             if (!M4State.inBoss()) return@on
 
-            if (message == bowPickup && pickupWarning != "" && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.TANK) {
-                setTitle(pickupWarning)
-            }
+            if (message == bowPickup) {
+                pickupTime = M4State.timer
+                if (pickupWarning != "" && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.TANK) {
+                    setTitle(pickupWarning)
+                }
 
-            if (message == bowPickup && tankPickup != "" && DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK) {
-                setTitle(pickupWarning)
+                if (tankPickup != "" && DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK) {
+                    setTitle(pickupWarning)
+                }
             }
 
             if (bowMiss.matches(message) && missWarning != "") {
