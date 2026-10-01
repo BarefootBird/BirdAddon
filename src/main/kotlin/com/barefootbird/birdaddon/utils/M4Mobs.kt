@@ -11,6 +11,7 @@ import net.minecraft.world.entity.animal.cow.Cow
 import net.minecraft.world.entity.animal.rabbit.Rabbit
 import net.minecraft.world.entity.animal.sheep.Sheep
 import net.minecraft.world.entity.animal.wolf.Wolf
+import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.Ghast
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.AABB
@@ -23,6 +24,7 @@ object M4Mobs {
     private var _chickens = emptySet<Chicken>()
     private var _rabbits = emptySet<Rabbit>()
     private var _cows = emptySet<Cow>()
+    private var _bows = emptySet<ArmorStand>()
 
     val sheep get() = _sheep
     val wolves get() = _wolves
@@ -30,6 +32,7 @@ object M4Mobs {
     val chickens get() = _chickens
     val rabbits get() = _rabbits
     val cows get() = _cows
+    val bows get() = _bows
 
     private var _thorn: Ghast? = null
     private var _bear: Player? = null
@@ -46,6 +49,7 @@ object M4Mobs {
             _chickens = emptySet()
             _rabbits = emptySet()
             _cows = emptySet()
+            _bows = emptySet()
             _thorn = null
             _bear = null
         }
@@ -61,6 +65,7 @@ object M4Mobs {
                 val chickensNew = mutableSetOf<Chicken>()
                 val rabbitsNew = mutableSetOf<Rabbit>()
                 val cowsNew = mutableSetOf<Cow>()
+                val bowsNew = mutableSetOf<ArmorStand>()
                 var thornNew: Ghast? = null
                 var bearNew: Player? = null
 
@@ -69,6 +74,14 @@ object M4Mobs {
                     ?: return@runCatching
 
                 allEntities.forEach { entity ->
+                    if (entity is ArmorStand) {
+                        debugMessage(entity.name.string)
+                        if (entity.name.string == "Spirit Bow") {
+                            debugMessage("bow detected")
+                            bowsNew.add(entity)
+                        }
+                    }
+
                     if (!entity.isAlive) return@forEach
 
                     when (entity) {
@@ -92,6 +105,7 @@ object M4Mobs {
                 _chickens = chickensNew
                 _rabbits = rabbitsNew
                 _cows = cowsNew
+                _bows = bowsNew
                 _thorn = thornNew
                 _bear = bearNew
             }
