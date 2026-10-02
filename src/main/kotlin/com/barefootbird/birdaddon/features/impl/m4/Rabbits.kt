@@ -7,19 +7,29 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
+import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.TickEvent
+import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
+import net.minecraft.world.phys.Vec3
 
-object RabbitCountdown: Module(
-    name = "Rabbit Countdown",
+object Rabbits: Module(
+    name = "Rabbits",
     key = null,
-    description = "Counts down when rabbits spawn",
+    description = "Features for rabbits",
     category = Category.M4
 ) {
+
+    private val showRabbitsInHutch by BooleanSetting("Show Rabbits in hutch", true, "Shows how many rabbits are in a hutch")
+
+    private val depth by BooleanSetting("depth", true, "depth")
+
     private val hud by HUD(name, "Displays the time until rabbits spawn in HUD", false) { example ->
         val lines = displayLines(example)
         var width = 0
@@ -106,5 +116,46 @@ object RabbitCountdown: Module(
         }
 
         return lines
+    }
+
+    private val hutches = listOf(
+        Vec3(16.5, 71.5, -21.5),
+        Vec3(32.5, 71.5, -5.5),
+        Vec3(32.5, 71.5, 16.5),
+        Vec3(16.5, 71.5, 32.5),
+        Vec3(-5.5, 71.5, 32.5),
+        Vec3(-21.5, 71.5, 16.5),
+        Vec3(-21.5, 71.5, -5.5),
+        Vec3(-5.5, 71.5, -21.5)
+    )
+
+
+
+    private var rabbitCounts = listOf(0, 0, 0, 0, 0, 0, 0, 0)
+
+    init {
+        on<TickEvent.Server> {
+            val newRabbitCounts = mutableListOf<Int>()
+
+            hutches.forEach { hutch ->
+
+                newRabbitCounts.add(M4Mobs.rabbits.count {
+                     it.x < hutch.x + 0.5 &&
+                     it.x > hutch.x - 0.5 &&
+                     it.z < hutch.z + 0.5 &&
+                     it.z > hutch.z - 0.5
+                })
+            }
+            rabbitCounts = newRabbitCounts
+        }
+
+        on<RenderEvent.Extract> {
+            if (!showRabbitsInHutch) return@on
+
+            hutches.forEachIndexed { index, hutch ->
+                val count = rabbitCounts[index]
+                drawText("§a$count", hutch, 2f, depth)
+            }
+        }
     }
 }
