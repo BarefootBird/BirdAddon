@@ -148,6 +148,7 @@ object Rabbits: Module(
         }
 
         on<RenderEvent.Extract> {
+            if (!M4State.inBoss()) return@on
             if (!showRabbitsInHutch) return@on
 
             hutches.forEachIndexed { index, hutch ->
