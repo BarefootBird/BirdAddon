@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 26 ]
+        java: [ 27 ]
 
     steps:
       - name: checkout repository
