@@ -28,8 +28,6 @@ object Rabbits: Module(
 
     private val showRabbitsInHutch by BooleanSetting("Show Rabbits in hutch", true, "Shows how many rabbits are in a hutch")
 
-    private val depth by BooleanSetting("depth", true, "depth")
-
     private val hud by HUD(name, "Displays the time until rabbits spawn in HUD", false) { example ->
         val lines = displayLines(example)
         var width = 0
@@ -54,9 +52,9 @@ object Rabbits: Module(
 
     private val displayText by StringSetting(
         "Display text:",
-        $$"Rabbits spawning in",
-        desc = $$"HUD format for when rabbits are about to spawn",
-        placeholder = $$"Rabbits spawning in"
+        "Rabbits spawning in",
+        placeholder = "Rabbits spawning in",
+        desc = "HUD format for when rabbits are about to spawn"
     )
 
     private val showArenaMobs by BooleanSetting(
@@ -155,7 +153,7 @@ object Rabbits: Module(
 
             hutches.forEachIndexed { index, hutch ->
                 val count = rabbitCounts[index]
-                drawText("§a$count", hutch, 2f, depth)
+                drawText("§a$count", hutch, 2f, true)
             }
         }
     }
