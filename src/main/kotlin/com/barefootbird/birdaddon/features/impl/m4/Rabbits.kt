@@ -3,11 +3,11 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4Mobs
 import com.barefootbird.birdaddon.utils.M4State
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -41,11 +41,11 @@ object Rabbits: Module(
         width to height
     }
 
-    private val decimals by NumberSetting("Decimals", 2, 1, 2, 1, "How many decimals to show")
+    private val decimals by NumberSetting("Decimals", 2, 1..2, 1, "How many decimals to show")
 
     private val showFromStart by BooleanSetting("Show on boss start", true, "Shows the timer from start of boss")
     private val showAfterB1 by BooleanSetting("Show after b1 start", true, "Shows the timer only after b1 starts spawning").withDependency { !showFromStart }
-    private val secondsBefore by NumberSetting("Seconds before", 4, 2, 7, 1, "How many seconds before rabbits spawn to render the timer").withDependency {
+    private val secondsBefore by NumberSetting("Seconds before", 4, 2..7, 1, "How many seconds before rabbits spawn to render the timer").withDependency {
         !showFromStart && !showAfterB1
     }
 
@@ -53,8 +53,9 @@ object Rabbits: Module(
 
     private val displayText by StringSetting(
         "Display text:",
-        $$"Rabbits spawning in",
-        desc = $$"HUD format for when rabbits are about to spawn"
+        "Rabbits spawning in",
+        placeholder = "Rabbits spawning in",
+        desc = "HUD format for when rabbits are about to spawn"
     )
 
     private val showArenaMobs by BooleanSetting(
@@ -147,7 +148,7 @@ object Rabbits: Module(
             rabbitCounts = newRabbitCounts
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!M4State.inBoss()) return@on
             if (!showRabbitsInHutch) return@on
 

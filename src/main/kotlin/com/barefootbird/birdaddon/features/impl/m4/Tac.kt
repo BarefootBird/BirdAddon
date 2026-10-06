@@ -1,15 +1,13 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
-import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.modMessage
 import com.barefootbird.birdaddon.utils.sendCommand
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
@@ -19,9 +17,6 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket
 import net.minecraft.world.InteractionHand
 

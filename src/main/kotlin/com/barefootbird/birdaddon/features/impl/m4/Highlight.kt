@@ -2,7 +2,6 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
 import com.odtheking.odin.OdinMod
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
@@ -23,6 +22,7 @@ import com.barefootbird.birdaddon.utils.M4Mobs.sheep
 import com.barefootbird.birdaddon.utils.M4Mobs.wolves
 import com.barefootbird.birdaddon.utils.M4Mobs.bear
 import com.barefootbird.birdaddon.utils.M4State
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.Color
