@@ -2,7 +2,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
 import com.odtheking.odin.OdinMod
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting

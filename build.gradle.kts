@@ -57,25 +57,26 @@ loom {
     noIntermediateMappings()
 
     runConfigs.named("client") {
-        isIdeConfigGenerated = true
-        vmArgs.addAll(
-            arrayOf(
-                "-Dmixin.debug.export=true",
-                "-Ddevauth.enabled=true",
-                "-Ddevauth.account=main",
-                "-XX:+AllowEnhancedClassRedefinition"
-            )
+        generateRunConfig.set(true)
+        jvmArguments.addAll(
+            "-Dmixin.debug.export=true",
+            "-Ddevauth.enabled=true",
+            "-Ddevauth.account=main",
+            "-Dfabric.log.disableAnsi=false",
+            "-XX:StackShadowPages=32",
+            "-XX:+AllowEnhancedClassRedefinition",
+            "-XX:+IgnoreUnrecognizedVMOptions", // AllowEnhancedClassRedefinition is only available on JBR
         )
     }
 
     runConfigs.named("server") {
-        isIdeConfigGenerated = false
+        generateRunConfig.set(false)
     }
 }
 
 afterEvaluate {
     loom.runs.named("client") {
-        vmArg("-javaagent:${configurations.compileClasspath.get().find { it.name.contains("sponge-mixin") }}")
+        jvmArguments.add("-javaagent:${configurations.compileClasspath.get().find { it.name.contains("sponge-mixin") }}")
     }
 }
 
@@ -115,7 +116,7 @@ base {
     archivesName.set(project.property("archives_base_name") as String)
 }
 
-val targetJavaVersion = 26
+val targetJavaVersion = 27
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
 }

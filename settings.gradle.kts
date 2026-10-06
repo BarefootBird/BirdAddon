@@ -8,8 +8,8 @@ pluginManagement {
         maven("https://jitpack.io")
     }
 
-    val loom_version: String by settings
-    val kotlin_version: String by settings
+    val loom_version = providers.gradleProperty("loom_version").get()
+    val kotlin_version = providers.gradleProperty("kotlin_version").get()
 
     plugins {
         id("fabric-loom") version loom_version

@@ -3,11 +3,11 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4Mobs
 import com.barefootbird.birdaddon.utils.M4State
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -149,7 +149,7 @@ object Rabbits: Module(
             rabbitCounts = newRabbitCounts
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!M4State.inBoss()) return@on
             if (!showRabbitsInHutch) return@on
 
