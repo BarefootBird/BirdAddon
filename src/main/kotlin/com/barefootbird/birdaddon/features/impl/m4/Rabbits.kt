@@ -26,8 +26,9 @@ object Rabbits: Module(
 ) {
 
     private val showRabbitsInHutch by BooleanSetting("Show Rabbits in hutch", true, "Shows how many rabbits are in a hutch")
+    private val hideHutchesWhen0 by BooleanSetting("Hide hutch when 0", true, "Hides the hutch counters when there's no rabbits in the hutch")
 
-    private val hud by HUD(name, "Displays the time until rabbits spawn in HUD", false) { example ->
+    private val hud by HUD("Rabbit countdown", "Displays the time until rabbits spawn in HUD", true) { example ->
         val lines = displayLines(example)
         var width = 0
         var height = 0
@@ -39,34 +40,34 @@ object Rabbits: Module(
         width to height
     }
 
-    private val decimals by NumberSetting("Decimals", 2, 1..2, 1, "How many decimals to show")
+    private val decimals by NumberSetting("Decimals", 2, 1..2, 1, "How many decimals to show").withDependency { hud.enabled }
 
-    private val showFromStart by BooleanSetting("Show on boss start", true, "Shows the timer from start of boss")
-    private val showAfterB1 by BooleanSetting("Show after b1 start", true, "Shows the timer only after b1 starts spawning").withDependency { !showFromStart }
+    private val showFromStart by BooleanSetting("Show on boss start", true, "Shows the timer from start of boss").withDependency { hud.enabled }
+    private val showAfterB1 by BooleanSetting("Show after b1 start", true, "Shows the timer only after b1 starts spawning").withDependency { !showFromStart && hud.enabled }
     private val secondsBefore by NumberSetting("Seconds before", 4, 2..7, 1, "How many seconds before rabbits spawn to render the timer").withDependency {
-        !showFromStart && !showAfterB1
+        !showFromStart && !showAfterB1 && hud.enabled
     }
 
-    private val hideWhen0 by BooleanSetting("Hide counters when 0", true, "Hides the mob counters when there are 0 of that mob")
+    private val hideWhen0 by BooleanSetting("Hide counters when 0", true, "Hides the mob counters when there are 0 of that mob").withDependency { hud.enabled }
 
     private val displayText by StringSetting(
         "Display text:",
         "Rabbits spawning in",
         placeholder = "Rabbits spawning in",
         desc = "HUD format for when rabbits are about to spawn"
-    )
+    ).withDependency { hud.enabled }
 
     private val showArenaMobs by BooleanSetting(
         "Show Ground Mobs",
         true,
         desc = "Shows alive mobs that are on the ground"
-    )
+    ).withDependency { hud.enabled }
 
     private val showBats by BooleanSetting(
         "Show Bats",
         true,
         desc = "Shows alive bats"
-    )
+    ).withDependency { hud.enabled }
 
     private const val RABBIT_SPAWN_TIME = 630
 
@@ -152,7 +153,15 @@ object Rabbits: Module(
 
             hutches.forEachIndexed { index, hutch ->
                 val count = rabbitCounts[index]
-                drawText("§a$count", hutch, 2f, true)
+                if (count == 0 && hideHutchesWhen0) {
+                    return@forEachIndexed
+                } else if (count < 5) {
+                    drawText("§a$count", hutch, 2f, true)
+                } else if (count < 10) {
+                    drawText("§e$count", hutch, 3f, true)
+                } else {
+                    drawText("§4$count", hutch.add(0.0, 0.5, 0.0), 5f, true)
+                }
             }
         }
     }
