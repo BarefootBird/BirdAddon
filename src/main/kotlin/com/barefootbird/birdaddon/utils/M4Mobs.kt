@@ -75,9 +75,7 @@ object M4Mobs {
 
                 allEntities.forEach { entity ->
                     if (entity is ArmorStand) {
-                        debugMessage(entity.name.string)
                         if (entity.name.string == "Spirit Bow") {
-                            debugMessage("bow detected")
                             bowsNew.add(entity)
                         }
                     }

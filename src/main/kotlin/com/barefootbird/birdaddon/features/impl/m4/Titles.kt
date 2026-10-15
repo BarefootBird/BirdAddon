@@ -65,7 +65,7 @@ object Titles: Module(
         on<TickEvent.Server> {
 
             // bow disintegrates after 400t so 280t means the player has 6s from the title appearing to shoot which should be plenty
-            if (M4State.timer - pickupTime > 280 && mc.player?.inventory?.contains { debugMessage(it.displayName.string); it.displayName.string.contains("Spirit Bow")} == true) {
+            if (M4State.timer - pickupTime > 280 && mc.player?.inventory?.contains { it.displayName.string.contains("Spirit Bow")} == true) {
                 setTitle(bowDisintegrateWarning)
             }
         }
