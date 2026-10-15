@@ -14,9 +14,16 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.toFixed
 import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.ParticleTrails
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
+import com.odtheking.odin.events.RenderExtractEvent
+import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.world.phys.Vec3
+import org.joml.Quaternionf
+import org.joml.Vector3f
 import java.io.File
 
 object SpiritBear: Module(
@@ -29,7 +36,8 @@ object SpiritBear: Module(
     private val hud by HUD(name, "Displays the current state of Spirit Bear in the HUD.", true) { example ->
         textDim(timerText(example), 0, 0, Colors.WHITE)
     }
-    public val experimental by BooleanSetting("Experimental Bear Timer", false,"More accurate timer, but sometimes its really wrong")
+    val experimental by BooleanSetting("Experimental Bear Timer", false,"More accurate timer, but sometimes its really wrong")
+    val experimentalRender by BooleanSetting("Render Experimental Prediction", false, "Renders the particle predictions used in the experimental timer").withDependency { experimental }
 
     private val splitsHud by HUD("Spirit Bear Splits", "Displays Spirit Bear split times in the HUD.", true) { example ->
         val lines = splitLines(example)
@@ -300,6 +308,24 @@ object SpiritBear: Module(
         on<LevelEvent.Load> {
             completedSplits.clear()
             loadPersonalBests()
+        }
+
+        on<RenderExtractEvent> {
+            if (!experimentalRender) return@on
+            if (!M4State.inBoss()) return@on
+            if (ParticleTrails.predictions.isEmpty()) return@on
+
+            val remaining = ParticleTrails.predictionsRemaining
+            val lastIndex = ParticleTrails.predictions.size - 1
+
+            if (remaining == -1) return@on
+
+            val filled = ParticleTrails.predictions.slice(0..lastIndex - remaining).map { it.pos }
+            val unfilled = ParticleTrails.predictions.slice(lastIndex - remaining..lastIndex).map { it.pos }
+
+
+            drawLine(filled, Colors.MINECRAFT_LIGHT_PURPLE, false, 10f)
+            drawLine(unfilled, Colors.MINECRAFT_GRAY, false, 10f)
         }
     }
 }

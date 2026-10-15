@@ -202,6 +202,7 @@ object M4State {
             if (bearTimer > 0) {
                 if (SpiritBear.experimental && ParticleTrails.predictionsRemaining > 0) {
                     bearTimer = ParticleTrails.predictionsRemaining - 1
+                    debugMessage(ParticleTrails.predictionsRemaining)
                 } else {
                     bearTimer--
                 }

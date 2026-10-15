@@ -6,10 +6,10 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import net.minecraft.core.particles.DustParticleOptions
 import net.minecraft.core.particles.ParticleOptions
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import net.minecraft.world.phys.Vec3
 import kotlin.math.floor
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 object ParticleTrails {
@@ -32,7 +32,7 @@ object ParticleTrails {
 
     // Particles trails have a linear portion where the particles head towards (5.5, 69.0, 5.5)
     // This function checks if 2 particles are within a certain tolerance (epsilon) of that line
-    private fun isInLinearPortion(a: Vec3, b: Vec3): Boolean {
+    private fun isLinearToMid(a: Vec3, b: Vec3): Boolean {
         val dx = b.x - a.x
         val dy = b.y - a.y
         val dz = b.z - a.z
@@ -144,19 +144,23 @@ object ParticleTrails {
 
         val col = dustParticle.color
 
-        val bearDustColorComponent = 9.804E-2f
+        val bearDustColorComponent = 0.09803922f
 
-        return col.x != bearDustColorComponent ||
-                col.y != bearDustColorComponent ||
-                col.z != bearDustColorComponent
+        return col.x == bearDustColorComponent &&
+                col.y == bearDustColorComponent &&
+                col.z == bearDustColorComponent
     }
 
     var predictions = emptyList<TimedParticle>()
 
+    val candidatePairs = mutableListOf<Pair<TimedParticle, TimedParticle>>()
+
     init {
         on<LevelEvent.Load> {
             predictions = emptyList()
+            predictionsRemaining = -1
             particles.clear()
+            candidatePairs.clear()
         }
 
         on<TickEvent.Server> {
@@ -164,9 +168,11 @@ object ParticleTrails {
             val cutoff = M4State.timer - 8
 
             particles.removeIf { it.createdTick < cutoff }
+            candidatePairs.removeIf { it.first.createdTick < cutoff || it.second.createdTick < cutoff }
 
             if (M4State.bearSpawnTimes.isNotEmpty()) {
-                if (M4State.timer == M4State.bearSpawnTimes.last() + 3) {
+                // Reset the counters a few ticks after the bear spawns
+                if (M4State.timer >= M4State.bearSpawnTimes.last() + 3 && M4State.bearSpawnStartTimes.size == M4State.bearSpawnTimes.size) {
                     predictions = emptyList()
                     predictionsRemaining = -1
                     spawnPrediction = Vec3(0.0, 0.0, 0.0)
@@ -185,25 +191,34 @@ object ParticleTrails {
                 M4State.timer
             )
 
-            for (existing in particles) {
-                if (isInLinearPortion(existing.pos, newParticle.pos)) {
-
-                    existing.linearPortion = true
+            for ((first, second) in candidatePairs) {
+                if (isLinearToMid(first.pos, newParticle.pos) && isLinearToMid(second.pos, newParticle.pos)) {
+                    debugMessage("Found trio")
+                    first.linearPortion = true
+                    second.linearPortion = true
                     newParticle.linearPortion = true
 
                     particleAddedThisTick = true
-                    // Use the lower particle for the predictions remaining
-                    val remaining = if (newParticle.pos.y < existing.pos.y) {
-                        getPredictionsRemaining(newParticle.pos)
-                    } else {
-                        getPredictionsRemaining(existing.pos)
-                    }
+
+                    val particles = listOf(first, second, newParticle)
+
+                    val lowest = particles.minBy { it.pos.y }
+
+                    val remaining = getPredictionsRemaining(lowest.pos)
                     // Bear timer should never go up once predictions are found
                     if (predictionsRemaining !in 0..remaining) {
                         predictionsRemaining = remaining
                     }
 
                     break
+                }
+
+            }
+
+            for (existing in particles) {
+                if (isLinearToMid(existing.pos, newParticle.pos)) {
+                    debugMessage("added pair to candidates")
+                    candidatePairs.add(Pair(existing, newParticle))
                 }
             }
 
