@@ -21,9 +21,6 @@ import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.world.phys.Vec3
-import org.joml.Quaternionf
-import org.joml.Vector3f
 import java.io.File
 
 object SpiritBear: Module(
@@ -38,6 +35,7 @@ object SpiritBear: Module(
     }
     val experimental by BooleanSetting("Experimental Bear Timer", false,"More accurate timer, but sometimes its really wrong")
     val experimentalRender by BooleanSetting("Render Experimental Prediction", false, "Renders the particle predictions used in the experimental timer").withDependency { experimental }
+    val interpolation by BooleanSetting("Smooth Line", false, "Makes the progress of the line smooth").withDependency { experimentalRender }
 
     private val splitsHud by HUD("Spirit Bear Splits", "Displays Spirit Bear split times in the HUD.", true) { example ->
         val lines = splitLines(example)
@@ -292,6 +290,9 @@ object SpiritBear: Module(
         modMessage("§d$key §7took §b${seconds.toFixed(2)} §7$pbMessage")
     }
 
+    private var displayedProgress = 0.0
+    private var lastFrameNanos = 0L
+
     init {
         loadPersonalBests()
 
@@ -311,21 +312,37 @@ object SpiritBear: Module(
         }
 
         on<RenderExtractEvent> {
-            if (!experimentalRender) return@on
-            if (!M4State.inBoss()) return@on
-            if (ParticleTrails.predictions.isEmpty()) return@on
+            if (!experimentalRender || !M4State.inBoss()) return@on
+
+            val predictions = ParticleTrails.predictions
+            if (predictions.size < 2) return@on
 
             val remaining = ParticleTrails.predictionsRemaining
-            val lastIndex = ParticleTrails.predictions.size - 1
+            if (remaining < 0) return@on
 
-            if (remaining == -1) return@on
+            val total = predictions.size
+            val targetProgress = ((total - remaining).toDouble() / total).coerceIn(0.0, 1.0)
 
-            val filled = ParticleTrails.predictions.slice(0..lastIndex - remaining).map { it.pos }
-            val unfilled = ParticleTrails.predictions.slice(lastIndex - remaining..lastIndex).map { it.pos }
+            val now = System.nanoTime()
+            val dt = if (lastFrameNanos == 0L) 0.0
+            else ((now - lastFrameNanos) / 1_000_000_000.0).coerceAtMost(0.1)
+            lastFrameNanos = now
 
+            val progress = if (interpolation) {
+                val alpha = 1 - kotlin.math.exp(-12 * dt)
+                displayedProgress += (targetProgress - displayedProgress) * alpha
+                displayedProgress
+            } else {
+                displayedProgress = targetProgress
+                targetProgress
+            }
 
-            drawLine(filled, Colors.MINECRAFT_LIGHT_PURPLE, false, 10f)
-            drawLine(unfilled, Colors.MINECRAFT_GRAY, false, 10f)
+            val start = predictions.first().pos
+            val end = predictions.last().pos
+            val split = start.add(end.subtract(start).scale(progress))
+
+            drawLine(listOf(start, split), Colors.MINECRAFT_LIGHT_PURPLE, false, 10f)
+            drawLine(listOf(split, end), Colors.MINECRAFT_GRAY, false, 10f)
         }
     }
 }
