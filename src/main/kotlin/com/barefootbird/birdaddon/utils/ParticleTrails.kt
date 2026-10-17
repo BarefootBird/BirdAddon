@@ -9,7 +9,6 @@ import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import net.minecraft.world.phys.Vec3
 import kotlin.math.floor
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 object ParticleTrails {
@@ -24,36 +23,20 @@ object ParticleTrails {
     var predictionsRemaining = -1
     var particleAddedThisTick = false
 
-    private const val TARGET_X = 5.5
-    private const val TARGET_Z = 5.5
-    private const val TARGET_Y = 69.0
+    private val target = Vec3(5.5, 69.0, 5.5)
     private const val EPSILON = 0.0001
     private const val EPSILON_SQ = EPSILON * EPSILON
 
     // Particles trails have a linear portion where the particles head towards (5.5, 69.0, 5.5)
     // This function checks if 2 particles are within a certain tolerance (epsilon) of that line
     private fun isLinearToMid(a: Vec3, b: Vec3): Boolean {
-        val dx = b.x - a.x
-        val dy = b.y - a.y
-        val dz = b.z - a.z
+        val line = b.subtract(a)
+        val lengthSq = line.lengthSqr()
 
-        val lengthSq = dx * dx + dz * dz + dy * dy
         if (lengthSq == 0.0) return false
 
-        val tx = TARGET_X - a.x
-        val tz = TARGET_Z - a.z
-        val ty = TARGET_Y - a.y
-
-        val crossX = dy * tz - dz * ty
-        val crossY = dz * tx - dx * tz
-        val crossZ = dx * ty - dy * tx
-
-        val crossLengthSq =
-            crossX * crossX +
-                    crossY * crossY +
-                    crossZ * crossZ
-
-        return crossLengthSq <= EPSILON_SQ * lengthSq
+        val toTarget = target.subtract(a)
+        return line.cross(toTarget).lengthSqr() <= EPSILON_SQ * lengthSq
     }
 
 
@@ -193,7 +176,6 @@ object ParticleTrails {
 
             for ((first, second) in candidatePairs) {
                 if (isLinearToMid(first.pos, newParticle.pos) && isLinearToMid(second.pos, newParticle.pos)) {
-                    debugMessage("Found trio")
                     first.linearPortion = true
                     second.linearPortion = true
                     newParticle.linearPortion = true
@@ -217,7 +199,6 @@ object ParticleTrails {
 
             for (existing in particles) {
                 if (isLinearToMid(existing.pos, newParticle.pos)) {
-                    debugMessage("added pair to candidates")
                     candidatePairs.add(Pair(existing, newParticle))
                 }
             }
