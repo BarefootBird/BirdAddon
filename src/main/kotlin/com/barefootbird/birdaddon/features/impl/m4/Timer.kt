@@ -1,19 +1,12 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
-import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.toFixed
-import com.barefootbird.birdaddon.utils.M4State
-import com.barefootbird.birdaddon.utils.modMessage
-import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.core.on
+import com.barefootbird.birdaddon.utils.state.M4State
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(DelicateCoroutinesApi::class)
 object Timer: Module(

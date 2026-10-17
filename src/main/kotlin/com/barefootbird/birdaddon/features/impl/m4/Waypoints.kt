@@ -10,10 +10,10 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.state.M4State
 import com.barefootbird.birdaddon.utils.Islands.onCgm4
 import com.barefootbird.birdaddon.utils.Islands.onM4Miku
-import com.barefootbird.birdaddon.utils.M4Mobs
+import com.barefootbird.birdaddon.utils.state.M4Mobs
 import com.barefootbird.birdaddon.utils.modMessage
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.core.BlockPos

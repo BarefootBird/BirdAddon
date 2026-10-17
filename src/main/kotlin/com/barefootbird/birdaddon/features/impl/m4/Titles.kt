@@ -3,8 +3,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.M4State
-import com.barefootbird.birdaddon.utils.debugMessage
+import com.barefootbird.birdaddon.utils.state.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.core.on

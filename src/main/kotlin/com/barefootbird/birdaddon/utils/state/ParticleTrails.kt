@@ -1,4 +1,4 @@
-package com.barefootbird.birdaddon.utils
+package com.barefootbird.birdaddon.utils.state
 
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.TickEvent
@@ -8,6 +8,7 @@ import net.minecraft.core.particles.DustParticleOptions
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import net.minecraft.world.phys.Vec3
+import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
@@ -56,10 +57,10 @@ object ParticleTrails {
         */
         val spacing = 0.38
 
-        val particleSteps = (kotlin.math.abs(delta.y) / spacing).roundToInt()
+        val particleSteps = (abs(delta.y) / spacing).roundToInt()
             .coerceAtLeast(1)
 
-        val perSegmentY = kotlin.math.abs(delta.y) / particleSteps
+        val perSegmentY = abs(delta.y) / particleSteps
 
         // Make sure that the result is within the expected bounds
         return if (perSegmentY in 0.36..0.4) {

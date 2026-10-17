@@ -24,11 +24,11 @@ import com.barefootbird.birdaddon.features.impl.m4.Tac
 import com.barefootbird.birdaddon.features.impl.m4.ThornStunTimer
 import com.barefootbird.birdaddon.features.impl.m4.Trajectories
 import com.barefootbird.birdaddon.features.impl.m4.Waypoints
-import com.barefootbird.birdaddon.utils.BowTracker
+import com.barefootbird.birdaddon.utils.state.BowTracker
 import com.barefootbird.birdaddon.utils.Islands
-import com.barefootbird.birdaddon.utils.M4Mobs
-import com.barefootbird.birdaddon.utils.M4State
-import com.barefootbird.birdaddon.utils.ParticleTrails
+import com.barefootbird.birdaddon.utils.state.M4Mobs
+import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.ParticleTrails
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import org.apache.logging.log4j.LogManager

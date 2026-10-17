@@ -1,20 +1,20 @@
-package com.barefootbird.birdaddon.utils
+package com.barefootbird.birdaddon.utils.state
 
 import com.barefootbird.birdaddon.events.M4Event
-import com.barefootbird.birdaddon.utils.M4State.timer
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import net.minecraft.world.InteractionHand
 
-data class BowSnapshot(
-    val pickup: Int? = null,
-    val draw: Int? = null,
-    val release: Int? = null,
-)
 
 object BowTracker {
+    data class BowSnapshot(
+        val pickup: Int? = null,
+        val draw: Int? = null,
+        val release: Int? = null,
+    )
+
     private var state = BowSnapshot()
 
     val snapshot: BowSnapshot
@@ -28,12 +28,12 @@ object BowTracker {
 
         if (playersSnapshot.any { it.getItemInHand(InteractionHand.MAIN_HAND).displayName.string == "[Spirit Bow]" && it.isUsingItem }) {
             if (!drawn) {
-                state = state.copy(draw = timer)
+                state = state.copy(draw = M4State.timer)
             }
             drawn = true
         } else {
             if (drawn) {
-                state = state.copy(release = timer - 1)
+                state = state.copy(release = M4State.timer - 1)
             }
             drawn = false
         }
@@ -41,7 +41,7 @@ object BowTracker {
 
     init {
         on<M4Event.BowPickup> {
-            state = state.copy(pickup = timer)
+            state = state.copy(pickup = M4State.timer)
         }
 
         on<TickEvent.Server> {

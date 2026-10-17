@@ -1,18 +1,18 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.state.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
-import com.barefootbird.birdaddon.utils.M4State.overkill
-import com.barefootbird.birdaddon.utils.M4State.overkillBats
-import com.barefootbird.birdaddon.utils.M4State.overkillChickens
-import com.barefootbird.birdaddon.utils.M4State.overkillCows
-import com.barefootbird.birdaddon.utils.M4State.overkillRabbits
-import com.barefootbird.birdaddon.utils.M4State.overkillSheep
-import com.barefootbird.birdaddon.utils.M4State.overkillWolves
+import com.barefootbird.birdaddon.utils.state.M4State.overkill
+import com.barefootbird.birdaddon.utils.state.M4State.overkillBats
+import com.barefootbird.birdaddon.utils.state.M4State.overkillChickens
+import com.barefootbird.birdaddon.utils.state.M4State.overkillCows
+import com.barefootbird.birdaddon.utils.state.M4State.overkillRabbits
+import com.barefootbird.birdaddon.utils.state.M4State.overkillSheep
+import com.barefootbird.birdaddon.utils.state.M4State.overkillWolves
 
 object OverkillDisplay : Module(
     name = "Overkill Display",

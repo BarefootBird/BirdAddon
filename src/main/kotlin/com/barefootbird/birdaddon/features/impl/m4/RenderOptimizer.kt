@@ -3,7 +3,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.features.impl.m4.Decoy.npcs
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.state.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderExtractEvent
@@ -18,8 +18,6 @@ import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 
 
 object RenderOptimizer: Module(
