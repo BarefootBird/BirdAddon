@@ -11,10 +11,8 @@ import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import kotlinx.coroutines.DelicateCoroutinesApi
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket
-import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.ambient.Bat
 import net.minecraft.world.entity.animal.chicken.Chicken
 import net.minecraft.world.entity.animal.cow.Cow
@@ -27,8 +25,6 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-
-@OptIn(DelicateCoroutinesApi::class)
 object M4State {
 
     private inline val blockLocations get() = if (DungeonUtils.floor?.isMM == true) m4BlockLocations else f4BlockLocations // coal/sea lantern blocks
@@ -50,11 +46,6 @@ object M4State {
     // to make sure that the odin timer and my timer match exactly
     var inThornBoss = false
 
-    var lastSpiritBowHoldStart = -1
-    private var lastSpiritBowHold = -1
-    var lastSpiritBowRelease = -1
-    var lastSpiritBowPickup = -1
-
     var overkill = 0
     var overkillBats = 0
     var overkillChickens = 0
@@ -69,24 +60,7 @@ object M4State {
     var bearSpawnSpot = Vec3(5.5, 69.85, 5.5)
 
     fun inBoss (): Boolean {
-        if (Debug.disableBossChecks) return true
-        return DungeonUtils.inBoss && DungeonUtils.isFloor(4)
-    }
-
-    fun updateSpiritBowData () {
-
-        val playersSnapshot = mc.level!!.players().toList()
-
-        if (playersSnapshot.any { it.getItemInHand(InteractionHand.MAIN_HAND).displayName.string == "[Spirit Bow]" && it.isUsingItem }) {
-            if (lastSpiritBowHold != timer - 1) {
-                lastSpiritBowHoldStart = timer
-            }
-            lastSpiritBowHold = timer
-        } else {
-            if (lastSpiritBowHold == timer - 1) {
-                lastSpiritBowRelease = timer - 1
-            }
-        }
+        return Debug.disableBossChecks || DungeonUtils.inBoss && DungeonUtils.isFloor(4)
     }
 
     fun updateBearSpawnSpot () {
@@ -132,10 +106,6 @@ object M4State {
         on<M4Event.BearSpawnStart> {
             bearTimer = 70
             bearSpawnStartTimes.add(timer)
-        }
-
-        on<M4Event.BowPickup> {
-            lastSpiritBowPickup = timer
         }
 
         on<Chat> {
@@ -213,7 +183,6 @@ object M4State {
             }
             timer++
             updateBearSpawnSpot()
-            updateSpiritBowData()
         }
 
         on<M4Event.End> {
@@ -237,10 +206,6 @@ object M4State {
             overkillWolves = 0
             ended = false
             inThornBoss = false
-            lastSpiritBowHoldStart = -1
-            lastSpiritBowHold = -1
-            lastSpiritBowRelease = -1
-            lastSpiritBowPickup = -1
         }
     }
 

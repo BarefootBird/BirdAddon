@@ -24,6 +24,7 @@ import com.barefootbird.birdaddon.features.impl.m4.Tac
 import com.barefootbird.birdaddon.features.impl.m4.ThornStunTimer
 import com.barefootbird.birdaddon.features.impl.m4.Trajectories
 import com.barefootbird.birdaddon.features.impl.m4.Waypoints
+import com.barefootbird.birdaddon.utils.BowTracker
 import com.barefootbird.birdaddon.utils.Islands
 import com.barefootbird.birdaddon.utils.M4Mobs
 import com.barefootbird.birdaddon.utils.M4State
@@ -45,7 +46,7 @@ object BirdAddon : ClientModInitializer {
         }
 
         // Register objects to event bus by adding to the list
-        listOf(this, M4State, M4Mobs, Islands, EventDispatcher, ParticleTrails).forEach { EventBus.subscribe(it) }
+        listOf(this, M4State, M4Mobs, Islands, EventDispatcher, ParticleTrails, BowTracker).forEach { EventBus.subscribe(it) }
 
         // Register modules by adding to the list
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"),

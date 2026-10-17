@@ -1,6 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.events.M4Event
+import com.barefootbird.birdaddon.utils.BowTracker
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.M4State
 import com.barefootbird.birdaddon.utils.modMessage
@@ -17,6 +18,7 @@ import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import java.util.UUID
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(DelicateCoroutinesApi::class)
 object ExtraStats: Module(
@@ -35,8 +37,8 @@ object ExtraStats: Module(
         val bearSpawnStartTimes: List<Int>,
         val bearSpawnTimes: List<Int>,
         val bearKillTimes: List<Int>,
-        val lastBowReleased: Int,
-        val lastBowHeldStart: Int,
+        val bowReleased: Int?,
+        val bowDrawn: Int?,
         val timer: Int,
     )
 
@@ -53,17 +55,21 @@ object ExtraStats: Module(
 
         if (bearId == run.bearKillTimes.size) { // last bear
 
-            modMessage("Last bow shot ${(run.lastBowReleased - run.bearKillTimes[id]) / 20.0}s after bear died (held down for ${(run.lastBowReleased - run.lastBowHeldStart) / 20.0}s)")
+            if (run.bowReleased != null && run.bowDrawn != null) {
+                modMessage("Last bow shot ${(run.bowDrawn - run.bearKillTimes[id]) / 20.0}s after bear died (held down for ${(run.bowReleased - run.bowDrawn) / 20.0}s)")
+            }
 
-            modMessage(
-                "Thorn Died ${
-                    ((run.timer - run.bearKillTimes[id]) / 20.0).toFixed(2)
-                }s after last bear kill, ${
-                    ((run.timer - run.bearSpawnTimes[id]) / 20.0).toFixed(2)
-                }s after last bear spawn, ${
-                    ((run.timer - run.lastBowReleased) / 20.0).toFixed(2)
-                }s after bow release"
-            )
+            if (run.bowReleased != null) {
+                modMessage(
+                    "Thorn Died ${
+                        ((run.timer - run.bearKillTimes[id]) / 20.0).toFixed(2)
+                    }s after last bear kill, ${
+                        ((run.timer - run.bearSpawnTimes[id]) / 20.0).toFixed(2)
+                    }s after last bear spawn, ${
+                        ((run.timer - run.bowReleased) / 20.0).toFixed(2)
+                    }s after bow release"
+                )
+            }
         }
     }
 
@@ -111,14 +117,14 @@ object ExtraStats: Module(
                 bearSpawnStartTimes = M4State.bearSpawnStartTimes.toList(),
                 bearSpawnTimes = M4State.bearSpawnTimes.toList(),
                 bearKillTimes = M4State.bearKillTimes.toList(),
-                lastBowReleased = M4State.lastSpiritBowRelease,
-                lastBowHeldStart = M4State.lastSpiritBowHoldStart,
+                bowReleased = BowTracker.snapshot.release,
+                bowDrawn = BowTracker.snapshot.draw,
                 timer = M4State.timer,
             )
 
             completedRuns[runId] = snapshot
             GlobalScope.launch {
-                delay(1000)
+                delay(1000.milliseconds)
                 val lastBear = M4State.bearKillTimes.size - 1
                 val killTime = M4State.bearKillTimes[lastBear]
                 val spawnTime = M4State.bearSpawnTimes[lastBear]
@@ -129,18 +135,22 @@ object ExtraStats: Module(
                     modMessage("Thorn Defeated in ${(M4State.timer / 20.0).toFixed(2)}s")
                 }
                 if (printLastBearBreakdown) {
+                    val pickup = BowTracker.snapshot.pickup
+                    val draw = BowTracker.snapshot.draw
+                    val release = BowTracker.snapshot.release
+                    if (pickup != null && draw != null && release != null)
                     modMessage("Spawn ${
                         spawnTime / 20.0
                     }s → Kill +${
                             (killTime - spawnTime) / 20.0
                     }s → Pickup +${
-                        (M4State.lastSpiritBowPickup - killTime) / 20.0
+                        (pickup - killTime) / 20.0
                     }s → Hold +${
-                        (M4State.lastSpiritBowHoldStart - M4State.lastSpiritBowPickup) / 20.0
+                        (draw - pickup) / 20.0
                     }s → Release +${
-                        (M4State.lastSpiritBowRelease - M4State.lastSpiritBowHoldStart) / 20.0
+                        (release - draw) / 20.0
                     }s → End +${
-                        (M4State.timer - M4State.lastSpiritBowRelease) / 20.0
+                        (M4State.timer - release) / 20.0
                     }s (${
                         (M4State.timer - spawnTime) / 20.0
                     }s after spawn)")
