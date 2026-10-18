@@ -99,7 +99,7 @@ object Rabbits: Module(
         lines.add("§b$displayText ${(ticksUntilRabbitSpawn / 20.0).toFixed(decimals)}s")
 
         if (showArenaMobs && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) {
-            val groundMobs = Mobs.animalsOf(Cow::class.java).size + Mobs.animalsOf(Rabbit::class.java).size
+            val groundMobs = Mobs.animalsOf(Cow::class.java).size + Mobs.animalsOf(Wolf::class.java).size
 
             if (groundMobs > 0 || !hideWhen0) {
                 lines.add("§dGround: $groundMobs")
