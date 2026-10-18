@@ -36,6 +36,7 @@ import java.io.File
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import kotlin.io.encoding.Base64
+import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -369,8 +370,7 @@ object Waypoints: Module(
 
         val closestSpot = getBowSpawnSpot()
 
-        val bows = Mobs.bows.map { it.position().subtract(0.5, 0.0, 0.5) }
-
+        val bows = Mobs.bows.map { Vec3(it.x - 0.5, ceil(it.y), it.z - 0.5) }
 
         val allBows =
             if (bows.isEmpty() || BearTracker.spawning() || BearTracker.spawned()) {
@@ -381,7 +381,7 @@ object Waypoints: Module(
         for (spot in allBows) {
 
             val translatedSpot = if (onCgm4) {
-                 Vec3(spot.x + 2, spot.y + 41, spot.z + 2)
+                spot.add(2.0, 41.0, 2.0)
             } else spot
 
             val points = 64
