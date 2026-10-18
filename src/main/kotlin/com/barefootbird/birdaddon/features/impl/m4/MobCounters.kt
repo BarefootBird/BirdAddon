@@ -99,7 +99,7 @@ object MobCounters : Module(
 
                 separateCounters.forEach { counter ->
                     val text = if (prefixes) {
-                        counter.prefix + counter.amount
+                        "${counter.prefix}: ${counter.amount}"
                     } else {
                         counter.amount.toString()
                     }
@@ -114,7 +114,7 @@ object MobCounters : Module(
             var width = 0
             visibleCounters.forEachIndexed { index, counter ->
                 val text = if (prefixes) {
-                    counter.prefix + counter.amount
+                    "${counter.prefix}: ${counter.amount}"
                 } else {
                     counter.amount.toString()
                 }
@@ -167,10 +167,10 @@ object MobCounters : Module(
         }
 
         val counters = buildList {
-            add(Counter(totalGUI, Colors.WHITE, "Mobs: ", "M", false, allMobs.size))
+            add(Counter(totalGUI, Colors.WHITE, "Mobs", "M", false, allMobs.size))
             addAll(animalCounters)
-            add(Counter(mobsUnderThornGui, Highlight.thornColor, "Under Thorn: ", "UT", true, mobsUnderThorn))
-            add(Counter(rabbitsNotUnderThornGui, Highlight.rabbitColor, "Rabbits in Mid: ", "RM", true, rabbitsInMid))
+            add(Counter(mobsUnderThornGui, Highlight.thornColor, "Under Thorn", "UT", true, mobsUnderThorn))
+            add(Counter(rabbitsNotUnderThornGui, Highlight.rabbitColor, "Rabbits in Mid", "RM", true, rabbitsInMid))
         }
 
         return@HUD renderCounters(counters)
