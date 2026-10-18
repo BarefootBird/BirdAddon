@@ -1,7 +1,7 @@
 package com.barefootbird.birdaddon.events
 
 import com.barefootbird.birdaddon.utils.state.BearTracker
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.events.MessageEvent.Chat
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
@@ -25,7 +25,7 @@ object EventDispatcher {
 
     init {
         on<Chat> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
 
             if (bearSpawnRegex.matches(message)) {
                 M4Event.BearSpawn().postAndCatch()

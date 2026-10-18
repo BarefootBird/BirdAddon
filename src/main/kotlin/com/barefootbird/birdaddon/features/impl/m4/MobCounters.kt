@@ -2,7 +2,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.state.M4Mobs
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
@@ -141,7 +141,7 @@ object MobCounters : Module(
             return@HUD renderCounters(examples)
         }
 
-        if (!M4State.inBoss()) {
+        if (!BossLifecycle.inBoss()) {
             return@HUD 0 to 0
         }
 

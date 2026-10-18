@@ -148,7 +148,7 @@ object ParticleTrails {
         }
 
         on<TickEvent.Server> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
             val cutoff = M4State.timer - 8
 
             particles.removeIf { it.createdTick < cutoff }
@@ -165,7 +165,7 @@ object ParticleTrails {
         }
 
         onReceive<ClientboundLevelParticlesPacket> { event ->
-            if (!M4State.inBoss()) return@onReceive
+            if (!BossLifecycle.inBoss()) return@onReceive
             if (BearTracker.bearSpawning()) return@onReceive
             val packet = event.packet as? ClientboundLevelParticlesPacket ?: return@onReceive
             if (!isPotentialBearParticle(packet.particle)) return@onReceive

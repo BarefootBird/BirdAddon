@@ -16,6 +16,7 @@ import com.barefootbird.birdaddon.utils.Islands.onM4Miku
 import com.barefootbird.birdaddon.utils.state.M4Mobs
 import com.barefootbird.birdaddon.utils.modMessage
 import com.barefootbird.birdaddon.utils.state.BearTracker
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
@@ -208,7 +209,7 @@ object Waypoints: Module(
         var newPos = pos
         if (onCgm4) {
             newPos = BlockPos(pos.x - 2, pos.y - 41, pos.z -2) // cgm4's island is offset from actual m4
-        } else if (M4State.inBoss() && !onM4Miku) {
+        } else if (BossLifecycle.inBoss() && !onM4Miku) {
             modMessage("need to be in f4/m4 or on catgirlm4's/m4miku's is")
         }
         if (waypoints.removeIf { it.pos.x == newPos.x && it.pos.y == newPos.y && it.pos.z == newPos.z }) {
@@ -224,7 +225,7 @@ object Waypoints: Module(
         if (onCgm4) {
             newPos = BlockPos(pos.x - 2, pos.y - 41, pos.z -2) // cgm4's island is offset from actual m4
         } else {
-            if (!M4State.inBoss() && !onM4Miku) {
+            if (!BossLifecycle.inBoss() && !onM4Miku) {
                 modMessage("need to be in f4/m4 or on catgirlm4's/m4miku's is")
             }
         }
@@ -273,7 +274,7 @@ object Waypoints: Module(
     }
 
     fun RenderExtractEvent.renderCustomWaypoints() {
-        if (!onCgm4 && !onM4Miku && !M4State.inBoss()) return
+        if (!onCgm4 && !onM4Miku && !BossLifecycle.inBoss()) return
         waypoints.forEach {
             val clazz = dungeonClassFromName(it.clazz) ?: return@forEach
             if (onCgm4 || onM4Miku || clazz == DungeonUtils.currentDungeonPlayer.clazz) {
@@ -317,7 +318,7 @@ object Waypoints: Module(
         val shouldRender =
             (onCgm4 && showOnCgm4) ||
                     (onM4Miku && showOnM4Miku) ||
-                    M4State.inBoss()
+                    BossLifecycle.inBoss()
 
         if (!shouldRender || (bearSpawnOnlyWhenBearIsSpawning && (BearTracker.bearSpawning() || BearTracker.bearSpawned()))) {
             return
@@ -364,7 +365,7 @@ object Waypoints: Module(
     }
 
     private fun RenderExtractEvent.renderBowPickup () {
-        if (!(onCgm4 && showOnCgm4) && !(onM4Miku && showOnM4Miku) && !M4State.inBoss()) return
+        if (!(onCgm4 && showOnCgm4) && !(onM4Miku && showOnM4Miku) && !BossLifecycle.inBoss()) return
 
         val closestSpot = getBowSpawnSpot()
 
@@ -404,7 +405,7 @@ object Waypoints: Module(
     init {
         on<RenderExtractEvent> {
             renderCustomWaypoints()
-            if ((M4State.inBoss()) || onCgm4 || onM4Miku) {
+            if ((BossLifecycle.inBoss()) || onCgm4 || onM4Miku) {
                 if (bearSpawn && (!bearSpawnOnMage ||
                     onCgm4 ||
                     onM4Miku ||

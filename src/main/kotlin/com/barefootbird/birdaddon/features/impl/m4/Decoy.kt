@@ -1,7 +1,6 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.state.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.TickEvent
@@ -11,6 +10,7 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.barefootbird.birdaddon.utils.Vec2
 import com.barefootbird.birdaddon.utils.state.BearTracker
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
@@ -92,7 +92,7 @@ object Decoy: Module(
     init {
 
         on<TickEvent.Server> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
 
             runCatching {
                 val allEntities = mc.level?.getEntities(null, searchBox)?.toList() ?: emptyList()
@@ -111,7 +111,7 @@ object Decoy: Module(
         }
 
         on<RenderExtractEvent> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
             if (onlyShowOnBers && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.BERSERK) return@on
             if (highlightBestDecoySpot && bestSpot != null && (!hideDecoySpotAfterB1 || BearTracker.bearSpawnTimes.isEmpty())) {
                 val box = AABB(bestSpot!!.x - 0.5, bestSpot!!.y, bestSpot!!.z - 0.5, bestSpot!!.x + 0.5, bestSpot!!.y, bestSpot!!.z + 0.5)

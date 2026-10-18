@@ -16,7 +16,7 @@ import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.barefootbird.birdaddon.utils.state.M4Mobs.thorn
 import com.barefootbird.birdaddon.utils.state.M4Mobs.bear
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.core.onReceive
@@ -152,7 +152,7 @@ object Highlight: Module(
     @JvmStatic
     fun shouldHideEntity(entity: Entity): Boolean {
         if (!enabled) return false
-        if (!M4State.inBoss()) return false
+        if (!BossLifecycle.inBoss()) return false
         if (hideNameTags) {
             if (entity is ArmorStand && entity.name.string.contains("❤")) return true
         }
@@ -290,14 +290,14 @@ object Highlight: Module(
     init {
 
         on<TickEvent.Server> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
             if (damaged > -1) {
                 damaged--
             }
         }
 
         onReceive<ClientboundHurtAnimationPacket> {
-            if (!M4State.inBoss()) return@onReceive
+            if (!BossLifecycle.inBoss()) return@onReceive
             val entity = OdinMod.mc.level!!.getEntity(this.id)
             if (entity is Ghast) {
                 damaged = dmgFlashDuration
@@ -305,7 +305,7 @@ object Highlight: Module(
         }
 
         on<RenderExtractEvent> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
             runCatching {
                 val style = renderStyle
 

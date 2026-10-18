@@ -37,7 +37,7 @@ object KillTracker {
 
     init {
         onReceive<ClientboundEntityEventPacket> {
-            if (!M4State.inBoss() || eventId.toInt() != 3) { // event id 3 = mob death
+            if (!BossLifecycle.inBoss() || eventId.toInt() != 3) { // event id 3 = mob death
                 return@onReceive
             }
 
@@ -57,7 +57,7 @@ object KillTracker {
 
         // Update timer based on sea lantern/coal blocks
         on<BlockUpdateEvent> {
-            if (!M4State.inBoss() || !blockLocations.contains(pos)) return@on
+            if (!BossLifecycle.inBoss() || !blockLocations.contains(pos)) return@on
 
             when (updated.block) {
                 Blocks.SEA_LANTERN if old.block == Blocks.COAL_BLOCK -> {

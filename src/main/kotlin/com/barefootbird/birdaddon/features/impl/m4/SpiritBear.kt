@@ -17,6 +17,7 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.toFixed
 import com.barefootbird.birdaddon.utils.state.M4State
 import com.barefootbird.birdaddon.utils.state.ParticleTrails
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
@@ -111,7 +112,7 @@ object SpiritBear: Module(
 
         if (example) return parseTemplate(killPhaseText, 1, "§c1.55s", 0, 30)
 
-        if (!M4State.inBoss()) return ""
+        if (!BossLifecycle.inBoss()) return ""
 
         val text = when {
             BearTracker.bearSpawning() -> spawningText
@@ -153,7 +154,7 @@ object SpiritBear: Module(
                 splitTotalLine(1, "12.35s", "15.40s", "15.40s", formatKillTime(3), "15.40s")
             )
         }
-        if (!M4State.inBoss()) return emptyList()
+        if (!BossLifecycle.inBoss()) return emptyList()
 
         val lines = completedSplits.sortedBy { it.bear }.map { split ->
             splitLine(
@@ -167,7 +168,7 @@ object SpiritBear: Module(
         }.toMutableList()
 
         val currentBear = completedSplits.size + 1
-        if (!M4State.ended && currentBear <= 4) {
+        if (!BossLifecycle.ended && currentBear <= 4) {
             val spawnStartTime = BearTracker.bearSpawnStartTimes.getOrNull(currentBear - 1)
             val spawnTime = BearTracker.bearSpawnTimes.getOrNull(currentBear - 1)
             val killTime = spawnTime?.let { formatKillTime(M4State.timer - it) } ?: formatPendingKillTime()
@@ -184,7 +185,7 @@ object SpiritBear: Module(
             )
         }
 
-        val totalTicks = if (M4State.ended) {
+        val totalTicks = if (BossLifecycle.ended) {
             BearTracker.bearKillTimes.lastOrNull() ?: M4State.timer
         } else {
             M4State.timer
@@ -314,7 +315,7 @@ object SpiritBear: Module(
         }
 
         on<RenderExtractEvent> {
-            if (!experimentalRender || !M4State.inBoss()) return@on
+            if (!experimentalRender || !BossLifecycle.inBoss()) return@on
 
             val predictions = ParticleTrails.predictions
             if (predictions.size < 2) return@on

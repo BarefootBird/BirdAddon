@@ -4,6 +4,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.core.on
@@ -74,20 +75,20 @@ object Titles: Module(
         }
 
         onReceive<ClientboundSetSubtitleTextPacket> {
-            if (!M4State.inBoss() || !hideDefault) return@onReceive
+            if (!BossLifecycle.inBoss() || !hideDefault) return@onReceive
             it.cancel()
         }
         onReceive<ClientboundSetTitlesAnimationPacket> {
-            if (!M4State.inBoss() || !hideDefault) return@onReceive
+            if (!BossLifecycle.inBoss() || !hideDefault) return@onReceive
             it.cancel()
         }
         onReceive<ClientboundSetTitleTextPacket> {
-            if (!M4State.inBoss() || !hideDefault) return@onReceive
+            if (!BossLifecycle.inBoss() || !hideDefault) return@onReceive
             it.cancel()
         }
 
         on<Chat> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
 
             if (message == bowPickup) {
                 pickupTime = M4State.timer

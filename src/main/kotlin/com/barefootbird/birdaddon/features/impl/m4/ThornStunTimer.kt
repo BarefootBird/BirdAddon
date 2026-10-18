@@ -2,7 +2,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.state.M4Mobs
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
@@ -59,7 +59,7 @@ object ThornStunTimer: Module(
     }
     private fun timerText (example: Boolean): String {
         if (example) return parseTemplate(notStunnedText)
-        if (!M4State.inBoss()) return ""
+        if (!BossLifecycle.inBoss()) return ""
         if (onlyShowOnHealer && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) return ""
 
         if (timer >= 0) {
@@ -79,7 +79,7 @@ object ThornStunTimer: Module(
 
     init {
         onReceive<ClientboundHurtAnimationPacket> {
-            if (!M4State.inBoss()) return@onReceive
+            if (!BossLifecycle.inBoss()) return@onReceive
             val entity = OdinMod.mc.level!!.getEntity(this.id)
             if (entity is Ghast) {
                 timer = 82
@@ -87,7 +87,7 @@ object ThornStunTimer: Module(
         }
 
         on<RenderExtractEvent> {
-            if (!stunHelper || !M4State.inBoss()) return@on
+            if (!stunHelper || !BossLifecycle.inBoss()) return@on
             if (onlyShowOnHealer && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) return@on
 
             if (firstTimer != -1) drawText("§5${(firstTimer / 20.0).toFixed(decimals)}s", firstStunPos, 2f, false)
@@ -95,7 +95,7 @@ object ThornStunTimer: Module(
         }
 
         on<TickEvent.Server> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
             if (timer > -1) {
                 timer--
             }

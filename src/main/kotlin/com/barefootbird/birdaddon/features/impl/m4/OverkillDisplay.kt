@@ -3,7 +3,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.state.M4Mobs
 import com.barefootbird.birdaddon.utils.state.KillTracker
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -42,7 +42,7 @@ object OverkillDisplay : Module(
     )
 
     private val hud by HUD(name, "Displays the overkill", false) {
-        if (!M4State.inBoss()) return@HUD 0 to 0
+        if (!BossLifecycle.inBoss()) return@HUD 0 to 0
 
 
         val counts = KillTracker.overkill

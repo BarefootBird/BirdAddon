@@ -4,6 +4,7 @@ import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.state.BearTracker
 import com.barefootbird.birdaddon.utils.state.M4Mobs
 import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
@@ -84,7 +85,7 @@ object Rabbits: Module(
             )
         }
 
-        if (!M4State.inBoss() || DungeonUtils.floor?.isMM != true) return emptyList()
+        if (!BossLifecycle.inBoss() || DungeonUtils.floor?.isMM != true) return emptyList()
 
         val lines = mutableListOf<String>()
         val ticksUntilRabbitSpawn = RABBIT_SPAWN_TIME - M4State.timer
@@ -148,7 +149,7 @@ object Rabbits: Module(
         }
 
         on<RenderExtractEvent> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
             if (!showRabbitsInHutch) return@on
 
             hutches.forEachIndexed { index, hutch ->

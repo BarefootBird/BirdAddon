@@ -5,6 +5,7 @@ import com.barefootbird.birdaddon.utils.state.M4State
 import com.barefootbird.birdaddon.utils.modMessage
 import com.barefootbird.birdaddon.utils.sendCommand
 import com.barefootbird.birdaddon.utils.state.BearTracker
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
@@ -42,7 +43,7 @@ object Tac: Module(
 
     private fun timerText (example: Boolean): String {
         if (example) return "${prefix}1.55s"
-        if (!M4State.inBoss() && !outsideOfM4) return ""
+        if (!BossLifecycle.inBoss() && !outsideOfM4) return ""
         if (tacTime >= 0) {
             return "$prefix${(tacTime / 20.0).toFixed(2)}s"
         }
