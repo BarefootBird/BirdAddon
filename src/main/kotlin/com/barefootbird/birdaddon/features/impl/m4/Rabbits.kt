@@ -1,6 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
+import com.barefootbird.birdaddon.utils.state.BearTracker
 import com.barefootbird.birdaddon.utils.state.M4Mobs
 import com.barefootbird.birdaddon.utils.state.M4State
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
@@ -89,7 +90,7 @@ object Rabbits: Module(
         val ticksUntilRabbitSpawn = RABBIT_SPAWN_TIME - M4State.timer
         if (ticksUntilRabbitSpawn <= 0) return emptyList()
 
-        val shouldShowTimer = (showFromStart || (ticksUntilRabbitSpawn <= secondsBefore * 20 && !showAfterB1) || (showAfterB1 && M4State.bearSpawnStartTimes.isNotEmpty()))
+        val shouldShowTimer = (showFromStart || (ticksUntilRabbitSpawn <= secondsBefore * 20 && !showAfterB1) || (showAfterB1 && BearTracker.bearSpawnStartTimes.isNotEmpty()))
         if (!shouldShowTimer) {
             return emptyList()
         }

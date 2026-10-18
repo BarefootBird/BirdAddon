@@ -154,9 +154,9 @@ object ParticleTrails {
             particles.removeIf { it.createdTick < cutoff }
             candidatePairs.removeIf { it.first.createdTick < cutoff || it.second.createdTick < cutoff }
 
-            if (M4State.bearSpawnTimes.isNotEmpty()) {
+            if (BearTracker.bearSpawnTimes.isNotEmpty()) {
                 // Reset the counters a few ticks after the bear spawns
-                if (M4State.timer >= M4State.bearSpawnTimes.last() + 3 && M4State.bearSpawnStartTimes.size == M4State.bearSpawnTimes.size) {
+                if (M4State.timer >= BearTracker.bearSpawnTimes.last() + 3 && BearTracker.bearSpawnStartTimes.size == BearTracker.bearSpawnTimes.size) {
                     predictions = emptyList()
                     predictionsRemaining = -1
                     spawnPrediction = Vec3(0.0, 0.0, 0.0)
@@ -166,7 +166,7 @@ object ParticleTrails {
 
         onReceive<ClientboundLevelParticlesPacket> { event ->
             if (!M4State.inBoss()) return@onReceive
-            if (M4State.bearSpawnStartTimes.size <= M4State.bearSpawnTimes.size) return@onReceive // Only need to worry about particles while the bear is spawning
+            if (BearTracker.bearSpawning()) return@onReceive
             val packet = event.packet as? ClientboundLevelParticlesPacket ?: return@onReceive
             if (!isPotentialBearParticle(packet.particle)) return@onReceive
 

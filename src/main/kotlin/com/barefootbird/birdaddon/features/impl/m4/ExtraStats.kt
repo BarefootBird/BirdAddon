@@ -5,6 +5,7 @@ import com.barefootbird.birdaddon.utils.state.BowTracker
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.state.M4State
 import com.barefootbird.birdaddon.utils.modMessage
+import com.barefootbird.birdaddon.utils.state.BearTracker
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -80,7 +81,7 @@ object ExtraStats: Module(
         val message = Component.literal("Click to view stats: ")
             .withStyle(ChatFormatting.YELLOW)
 
-        for (i in 1..M4State.bearKillTimes.size) {
+        for (i in 1..BearTracker.bearKillTimes.size) {
             val bearText = Component.literal("Bear $i")
                 .withStyle {
                     it.withColor(ChatFormatting.GOLD)
@@ -98,7 +99,7 @@ object ExtraStats: Module(
 
             message.append(bearText)
 
-            if (i < M4State.bearKillTimes.size) {
+            if (i < BearTracker.bearKillTimes.size) {
                 message.append(
                     Component.literal(" | ")
                         .withStyle(ChatFormatting.DARK_GRAY)
@@ -114,9 +115,9 @@ object ExtraStats: Module(
             val runId = UUID.randomUUID()
             val snapshot = M4RunSnapshot(
                 runId = runId,
-                bearSpawnStartTimes = M4State.bearSpawnStartTimes.toList(),
-                bearSpawnTimes = M4State.bearSpawnTimes.toList(),
-                bearKillTimes = M4State.bearKillTimes.toList(),
+                bearSpawnStartTimes = BearTracker.bearSpawnStartTimes.toList(),
+                bearSpawnTimes = BearTracker.bearSpawnTimes.toList(),
+                bearKillTimes = BearTracker.bearKillTimes.toList(),
                 bowReleased = BowTracker.snapshot.release,
                 bowDrawn = BowTracker.snapshot.draw,
                 timer = M4State.timer,
@@ -125,9 +126,9 @@ object ExtraStats: Module(
             completedRuns[runId] = snapshot
             GlobalScope.launch {
                 delay(1000.milliseconds)
-                val lastBear = M4State.bearKillTimes.size - 1
-                val killTime = M4State.bearKillTimes[lastBear]
-                val spawnTime = M4State.bearSpawnTimes[lastBear]
+                val lastBear = BearTracker.bearKillTimes.size - 1
+                val killTime = BearTracker.bearKillTimes[lastBear]
+                val spawnTime = BearTracker.bearSpawnTimes[lastBear]
                 if (extraStats) {
                     sendBearStatsMenu(runId)
                 }

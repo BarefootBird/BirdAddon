@@ -4,6 +4,7 @@ import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.state.M4State
 import com.barefootbird.birdaddon.utils.modMessage
 import com.barefootbird.birdaddon.utils.sendCommand
+import com.barefootbird.birdaddon.utils.state.BearTracker
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
@@ -58,7 +59,7 @@ object Tac: Module(
                 if (tacTimer && tacTime == -1) {
                     tacTime = 60
                 }
-                if (printTacTime && M4State.bearTimer != -1) {
+                if (printTacTime && BearTracker.bearSpawning()) {
                     if (DungeonUtils.inBoss && DungeonUtils.isFloor(4)) {
                         if (DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK || !printTimeOnlyOnTank) {
                             if (printTacToPartyChat) {

@@ -1,5 +1,6 @@
 package com.barefootbird.birdaddon.events
 
+import com.barefootbird.birdaddon.utils.state.BearTracker
 import com.barefootbird.birdaddon.utils.state.M4State
 import com.odtheking.odin.events.MessageEvent.Chat
 import com.odtheking.odin.events.LevelEvent
@@ -17,7 +18,7 @@ object EventDispatcher {
     var ended = false
 
     fun triggerBearSpawnStart() {
-        if (M4State.bearTimer == -1) {
+        if (!BearTracker.bearSpawning()) {
             M4Event.BearSpawnStart().postAndCatch()
         }
     }
@@ -30,7 +31,7 @@ object EventDispatcher {
                 M4Event.BearSpawn().postAndCatch()
             }
             if (bearKillRegex.matches(message)) {
-                if (M4State.bearTimer != -1) {
+                if (BearTracker.bearSpawned()) {
                     M4Event.BearKill().postAndCatch()
                 }
             }

@@ -26,6 +26,7 @@ import com.barefootbird.birdaddon.features.impl.m4.Trajectories
 import com.barefootbird.birdaddon.features.impl.m4.Waypoints
 import com.barefootbird.birdaddon.utils.state.BowTracker
 import com.barefootbird.birdaddon.utils.Islands
+import com.barefootbird.birdaddon.utils.state.BearTracker
 import com.barefootbird.birdaddon.utils.state.M4Mobs
 import com.barefootbird.birdaddon.utils.state.M4State
 import com.barefootbird.birdaddon.utils.state.KillTracker
@@ -47,7 +48,7 @@ object BirdAddon : ClientModInitializer {
         }
 
         // Register objects to event bus by adding to the list
-        listOf(this, M4State, M4Mobs, Islands, EventDispatcher, ParticleTrails, BowTracker, KillTracker).forEach { EventBus.subscribe(it) }
+        listOf(this, M4State, M4Mobs, Islands, EventDispatcher, ParticleTrails, BowTracker, KillTracker, BearTracker).forEach { EventBus.subscribe(it) }
 
         // Register modules by adding to the list
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"),

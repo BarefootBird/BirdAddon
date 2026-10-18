@@ -15,6 +15,7 @@ import com.barefootbird.birdaddon.utils.Islands.onCgm4
 import com.barefootbird.birdaddon.utils.Islands.onM4Miku
 import com.barefootbird.birdaddon.utils.state.M4Mobs
 import com.barefootbird.birdaddon.utils.modMessage
+import com.barefootbird.birdaddon.utils.state.BearTracker
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
@@ -256,13 +257,13 @@ object Waypoints: Module(
             }
             val bearNum = event[1].digitToInt()
             if (event.endsWith("kill")) {
-                return M4State.bearKillTimes.size >= bearNum
+                return BearTracker.bearKillTimes.size >= bearNum
             }
             if (event.endsWith("spawn")) {
-                return M4State.bearSpawnTimes.size >= bearNum
+                return BearTracker.bearSpawnTimes.size >= bearNum
             }
             if (event.endsWith("spawnstart")) {
-                return M4State.bearSpawnStartTimes.size >= bearNum
+                return BearTracker.bearSpawnStartTimes.size >= bearNum
             }
         }
         if (event.endsWith("s")) {
@@ -318,17 +319,17 @@ object Waypoints: Module(
                     (onM4Miku && showOnM4Miku) ||
                     M4State.inBoss()
 
-        if (!shouldRender || (bearSpawnOnlyWhenBearIsSpawning && (M4State.bearTimer == -1 || M4State.bearTimer == 0))) {
+        if (!shouldRender || (bearSpawnOnlyWhenBearIsSpawning && (BearTracker.bearSpawning() || BearTracker.bearSpawned()))) {
             return
         }
 
-        val spawnSpot = M4State.bearSpawnSpot
+        val spawnSpot = BearTracker.bearSpawnSpot
         var bearSpawn = AABB(spawnSpot.x - 0.3, spawnSpot.y, spawnSpot.z - 0.3, spawnSpot.x + 0.3, spawnSpot.y+1.8, spawnSpot.z + 0.3)
         if (onCgm4) {
             bearSpawn = AABB(spawnSpot.x + 1.7, spawnSpot.y, spawnSpot.z + 1.7, spawnSpot.x + 2.3, spawnSpot.y+1.8, spawnSpot.z + 2.3)
         }
 
-        val bearSpawnColor: Color = if (M4State.bearTimer == -1 || !bearSpawnColors) {
+        val bearSpawnColor: Color = if ((!BearTracker.bearSpawned() && !BearTracker.bearSpawning()) || !bearSpawnColors) {
             defaultColor
         } else {
 
@@ -350,7 +351,7 @@ object Waypoints: Module(
 
         val bear = M4Mobs.bear ?: return defaultSpawn
 
-        if (M4State.bearTimer != 0) return defaultSpawn
+        if (!BearTracker.bearSpawned()) return defaultSpawn
 
         val x = bear.x
         val z = bear.z
@@ -371,7 +372,7 @@ object Waypoints: Module(
 
 
         val allBows =
-            if (bows.isEmpty() || M4State.bearTimer > -1) {
+            if (bows.isEmpty() || BearTracker.bearSpawning() || BearTracker.bearSpawned()) {
                 // only show the next bow spawn point if there are no bows, or if its spawning soon
                 bows.plus(closestSpot)
             } else bows
