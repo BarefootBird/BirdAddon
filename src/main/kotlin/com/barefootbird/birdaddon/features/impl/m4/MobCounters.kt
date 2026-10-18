@@ -5,8 +5,16 @@ import com.barefootbird.birdaddon.utils.state.M4Mobs
 import com.barefootbird.birdaddon.utils.state.M4State
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.ambient.Bat
+import net.minecraft.world.entity.animal.chicken.Chicken
+import net.minecraft.world.entity.animal.cow.Cow
+import net.minecraft.world.entity.animal.rabbit.Rabbit
+import net.minecraft.world.entity.animal.sheep.Sheep
+import net.minecraft.world.entity.animal.wolf.Wolf
 
 object MobCounters : Module(
     name = "Mob Counter",
@@ -17,11 +25,56 @@ object MobCounters : Module(
 
     private data class Counter(
         val enabled: Boolean,
-        val color: com.odtheking.odin.utils.Color,
+        val color: Color,
         val prefix: String,
         val compactPrefix: String,
         val compactSeparate: Boolean,
         val amount: Int
+    )
+
+
+    private val totalGUI by BooleanSetting("Total Mobs", true, desc = "Show Total Mobs")
+    private val cowsGUI by BooleanSetting("Cows", true, desc = "Shows alive cows")
+    private val sheepGUI by BooleanSetting("Sheep", true, desc = "Shows alive sheep")
+    private val chickensGUI by BooleanSetting("Chickens", true, desc = "Shows alive chickens")
+    private val batsGUI by BooleanSetting("Bats", true, desc = "Shows alive bats")
+    private val wolvesGUI by BooleanSetting("Wolves", true, desc = "Shows alive wolves")
+    private val rabbitsGUI by BooleanSetting("Rabbits", true, desc = "Shows alive rabbits")
+    private val mobsUnderThornGui by BooleanSetting(
+        "Mobs Under Thorn",
+        true,
+        desc = "Shows mobs under thorn"
+    )
+    private val rabbitsNotUnderThornGui by BooleanSetting(
+        "Rabbits Not Under Thorn",
+        true,
+        desc = "Shows the number of rabbits that aren't under thorn"
+    )
+
+    private val prefixes by BooleanSetting(
+        "Prefixes",
+        true,
+        desc = "Adds a prefix for each of the mob types"
+    )
+
+    private val compactMode by BooleanSetting(
+        "Compact Mode",
+        false,
+        desc = "Renders mob counters on one line with short mob names"
+    )
+
+    data class AnimalCounterConfig(
+        val type: Class<out Entity>,
+        val on: Boolean,
+    )
+
+    private val animalCounterConfigs = listOf(
+        AnimalCounterConfig(Cow::class.java, cowsGUI),
+        AnimalCounterConfig(Sheep::class.java, sheepGUI),
+        AnimalCounterConfig(Chicken::class.java, chickensGUI),
+        AnimalCounterConfig(Bat::class.java, batsGUI),
+        AnimalCounterConfig(Wolf::class.java, wolvesGUI),
+        AnimalCounterConfig(Rabbit::class.java, rabbitsGUI),
     )
 
     private val hud by HUD(name, "Mob Counter Hud", false) { example ->
@@ -92,34 +145,33 @@ object MobCounters : Module(
             return@HUD 0 to 0
         }
 
-        val allMobs = listOf(
-            M4Mobs.cows,
-            M4Mobs.sheep,
-            M4Mobs.chickens,
-            M4Mobs.bats,
-            M4Mobs.wolves,
-            M4Mobs.rabbits
-        )
-
-        val mobsUnderThorn = allMobs.sumOf { mobList ->
-            mobList.count { isUnderThorn(it.x, it.y, it.z) }
+        val animalCounters = animalCounterConfigs.map {
+            Counter(
+                it.on,
+                M4Mobs.mobColorFor(it.type),
+                M4Mobs.mobNameFor(it.type),
+                M4Mobs.mobNameFor(it.type, short = true),
+                false,
+                M4Mobs.animalsOf(it.type).size
+            )
         }
 
-        val rabbitsInMid = M4Mobs.rabbits.count {
+        val allMobs = M4Mobs.animalTypes.flatMap { M4Mobs.animalsOf(it) }
+
+        val mobsUnderThorn = allMobs.count {
+            isUnderThorn(it.x, it.y, it.z)
+        }
+
+        val rabbitsInMid = M4Mobs.animalsOf(Rabbit::class.java).count {
             !isUnderThorn(it.x, it.y, it.z)
         }
 
-        val counters = listOf(
-            Counter(totalGUI, Colors.WHITE, "Mobs: ", "M", false, allMobs.sumOf { it.size }),
-            Counter(cowsGUI, Highlight.cowColor, "Cows: ", "C", false, M4Mobs.cows.size),
-            Counter(sheepGUI, Highlight.sheepColor, "Sheep: ", "S", false, M4Mobs.sheep.size),
-            Counter(chickensGUI, Highlight.chickenColor, "Chickens: ", "Ch", false, M4Mobs.chickens.size),
-            Counter(batsGUI, Highlight.batColor, "Bats: ", "B", false, M4Mobs.bats.size),
-            Counter(wolvesGUI, Highlight.wolfColor, "Wolves: ", "W", false, M4Mobs.wolves.size),
-            Counter(rabbitsGUI, Highlight.rabbitColor, "Rabbits: ", "R", false, M4Mobs.rabbits.size),
-            Counter(mobsUnderThornGui, Highlight.thornColor, "Under Thorn: ", "UT", true, mobsUnderThorn),
-            Counter(rabbitsNotUnderThornGui, Highlight.rabbitColor, "Rabbits in Mid: ", "RM", true, rabbitsInMid)
-        )
+        val counters = buildList {
+            add(Counter(totalGUI, Colors.WHITE, "Mobs: ", "M", false, allMobs.size))
+            addAll(animalCounters)
+            add(Counter(mobsUnderThornGui, Highlight.thornColor, "Under Thorn: ", "UT", true, mobsUnderThorn))
+            add(Counter(rabbitsNotUnderThornGui, Highlight.rabbitColor, "Rabbits in Mid: ", "RM", true, rabbitsInMid))
+        }
 
         return@HUD renderCounters(counters)
     }
@@ -127,34 +179,4 @@ object MobCounters : Module(
     private fun isUnderThorn(x: Double, y: Double, z: Double): Boolean {
         return y < 75 && ((x > 21 && z > 21) || (x > 26 && z > 16) || (x > 16 && z > 26))
     }
-
-    private val totalGUI by BooleanSetting("Total Mobs", true, desc = "Show Total Mobs")
-    private val cowsGUI by BooleanSetting("Cows", true, desc = "Shows alive cows")
-    private val sheepGUI by BooleanSetting("Sheep", true, desc = "Shows alive sheep")
-    private val chickensGUI by BooleanSetting("Chickens", true, desc = "Shows alive chickens")
-    private val batsGUI by BooleanSetting("Bats", true, desc = "Shows alive bats")
-    private val wolvesGUI by BooleanSetting("Wolves", true, desc = "Shows alive wolves")
-    private val rabbitsGUI by BooleanSetting("Rabbits", true, desc = "Shows alive rabbits")
-    private val mobsUnderThornGui by BooleanSetting(
-        "Mobs Under Thorn",
-        true,
-        desc = "Shows mobs under thorn"
-    )
-    private val rabbitsNotUnderThornGui by BooleanSetting(
-        "Rabbits Not Under Thorn",
-        true,
-        desc = "Shows the number of rabbits that aren't under thorn"
-    )
-
-    private val prefixes by BooleanSetting(
-        "Prefixes",
-        true,
-        desc = "Adds a prefix for each of the mob types"
-    )
-
-    private val compactMode by BooleanSetting(
-        "Compact Mode",
-        false,
-        desc = "Renders mob counters on one line with short mob names"
-    )
 }

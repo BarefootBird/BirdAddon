@@ -37,24 +37,21 @@ object KillTracker {
 
     init {
         onReceive<ClientboundEntityEventPacket> {
-            if (!M4State.inBoss() || eventId.toInt() != 3) {
+            if (!M4State.inBoss() || eventId.toInt() != 3) { // event id 3 = mob death
                 return@onReceive
             }
 
             val level = mc.level ?: return@onReceive
             val entity = getEntity(level) ?: return@onReceive
+            if (M4Mobs.animalTypes.none { it.isInstance(entity)}) return@onReceive
 
-            if (entity is Wolf || entity is Cow || entity is Rabbit ||
-                entity is Bat || entity is Sheep || entity is Chicken
-            ) {
-                if (M4State.bearTimer == -1) {
-                    kills++
-                    if (kills >= maxKills) {
-                        EventDispatcher.triggerBearSpawnStart()
-                    }
-                } else {
-                    overkill[entity.javaClass] = overkill.getValue(entity.javaClass) + 1
+            if (M4State.bearTimer == -1) {
+                kills++
+                if (kills >= maxKills) {
+                    EventDispatcher.triggerBearSpawnStart()
                 }
+            } else {
+                overkill[entity.javaClass] = overkill.getValue(entity.javaClass) + 1
             }
         }
 

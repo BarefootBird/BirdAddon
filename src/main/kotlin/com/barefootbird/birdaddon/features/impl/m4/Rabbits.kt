@@ -17,6 +17,9 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
+import net.minecraft.world.entity.ambient.Bat
+import net.minecraft.world.entity.animal.cow.Cow
+import net.minecraft.world.entity.animal.rabbit.Rabbit
 import net.minecraft.world.phys.Vec3
 
 object Rabbits: Module(
@@ -94,11 +97,7 @@ object Rabbits: Module(
         lines.add("§b$displayText ${(ticksUntilRabbitSpawn / 20.0).toFixed(decimals)}s")
 
         if (showArenaMobs && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) {
-            val groundMobs = M4Mobs.cows.size +
-                    M4Mobs.sheep.size +
-                    M4Mobs.chickens.size +
-                    M4Mobs.wolves.size +
-                    M4Mobs.rabbits.size
+            val groundMobs = M4Mobs.animalsOf(Cow::class.java).size + M4Mobs.animalsOf(Rabbit::class.java).size
 
             if (groundMobs > 0 || !hideWhen0) {
                 lines.add("§dGround: $groundMobs")
@@ -106,7 +105,7 @@ object Rabbits: Module(
         }
 
         if (showBats && DungeonUtils.currentDungeonPlayer.clazz in setOf(DungeonClass.BERSERK, DungeonClass.MAGE)) {
-            val bats = M4Mobs.bats.size
+            val bats = M4Mobs.animalsOf(Bat::class.java).size
             if (bats > 0 || !hideWhen0) {
                 lines.add("§fBats: $bats")
             }
@@ -137,7 +136,7 @@ object Rabbits: Module(
 
             hutches.forEach { hutch ->
 
-                newRabbitCounts.add(M4Mobs.rabbits.count {
+                newRabbitCounts.add(M4Mobs.animalsOf(Rabbit::class.java).count {
                      it.x < hutch.x + 0.5 &&
                      it.x > hutch.x - 0.5 &&
                      it.z < hutch.z + 0.5 &&

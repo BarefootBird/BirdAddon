@@ -7,12 +7,6 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
-import net.minecraft.world.entity.ambient.Bat
-import net.minecraft.world.entity.animal.chicken.Chicken
-import net.minecraft.world.entity.animal.cow.Cow
-import net.minecraft.world.entity.animal.rabbit.Rabbit
-import net.minecraft.world.entity.animal.sheep.Sheep
-import net.minecraft.world.entity.animal.wolf.Wolf
 
 object OverkillDisplay : Module(
     name = "Overkill Display",
@@ -49,14 +43,11 @@ object OverkillDisplay : Module(
     private val hud by HUD(name, "Displays the overkill", false) {
         val counts = KillTracker.overkill
 
-        val types = listOf(
-            Cow::class.java, Sheep::class.java, Chicken::class.java,
-            Bat::class.java, Wolf::class.java, Rabbit::class.java
-        )
+        val types = M4Mobs.animalTypes
 
         val mobCounters = types.map {
-            val name = M4Mobs.mobNameFor(it) ?: ""
-            val short = M4Mobs.mobNameFor(it, short=true) ?: ""
+            val name = M4Mobs.mobNameFor(it)
+            val short = M4Mobs.mobNameFor(it, short=true)
             Counter(
                 prefix = name,
                 compactPrefix = short,

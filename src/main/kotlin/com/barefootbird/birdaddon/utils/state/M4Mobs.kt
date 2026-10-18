@@ -8,7 +8,6 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.Mob
 import net.minecraft.world.entity.ambient.Bat
 import net.minecraft.world.entity.animal.chicken.Chicken
 import net.minecraft.world.entity.animal.cow.Cow
@@ -23,6 +22,11 @@ import kotlin.jvm.java
 
 object M4Mobs {
 
+    val animalTypes = listOf(
+        Cow::class.java, Sheep::class.java, Chicken::class.java,
+        Bat::class.java, Wolf::class.java, Rabbit::class.java
+    )
+
     fun mobColorFor(entity: Class<out Entity>) = when (entity) {
         Cow::class.java -> Highlight.cowColor
         Sheep::class.java -> Highlight.sheepColor
@@ -33,7 +37,7 @@ object M4Mobs {
         else -> Colors.WHITE
     }
 
-    fun mobNameFor(entity: Class<out Entity>, short: Boolean = false): String? {
+    fun mobNameFor(entity: Class<out Entity>, short: Boolean = false): String {
         return if (short) {
             when (entity) {
                 Bat::class.java -> "B"
@@ -42,7 +46,7 @@ object M4Mobs {
                 Sheep::class.java -> "S"
                 Rabbit::class.java -> "R"
                 Wolf::class.java -> "W"
-                else -> null
+                else -> "N/A"
             }
         } else {
             when (entity) {
@@ -52,42 +56,28 @@ object M4Mobs {
                 Sheep::class.java -> "Sheep"
                 Rabbit::class.java -> "Rabbits"
                 Wolf::class.java -> "Wolves"
-                else -> null
+                else -> "N/A"
             }
         }
     }
 
-    private var _sheep = emptySet<Sheep>()
-    private var _wolves = emptySet<Wolf>()
-    private var _bats = emptySet<Bat>()
-    private var _chickens = emptySet<Chicken>()
-    private var _rabbits = emptySet<Rabbit>()
-    private var _cows = emptySet<Cow>()
+    private var animals: Map<Class<out Entity>, Set<Entity>> = emptyMap()
+
+    fun animalsOf(type: Class<out Entity>): Set<Entity> = animals[type].orEmpty()
+
     private var _bows = emptySet<ArmorStand>()
-
-    val sheep get() = _sheep
-    val wolves get() = _wolves
-    val bats get() = _bats
-    val chickens get() = _chickens
-    val rabbits get() = _rabbits
-    val cows get() = _cows
-    val bows get() = _bows
-
     private var _thorn: Ghast? = null
     private var _bear: Player? = null
+    val bows get() = _bows
     val thorn: Ghast? get() = _thorn
     val bear: Player? get() = _bear
+
     private val searchBox = AABB(-36.0, 68.0, -36.0, 47.0, 110.0, 47.0) // m4 arena size
 
     init {
 
         on<LevelEvent.Load> {
-            _sheep = emptySet()
-            _wolves = emptySet()
-            _bats = emptySet()
-            _chickens = emptySet()
-            _rabbits = emptySet()
-            _cows = emptySet()
+            animals = emptyMap()
             _bows = emptySet()
             _thorn = null
             _bear = null
@@ -98,12 +88,8 @@ object M4Mobs {
 
             runCatching {
 
-                val sheepNew = mutableSetOf<Sheep>()
-                val wolvesNew = mutableSetOf<Wolf>()
-                val batsNew = mutableSetOf<Bat>()
-                val chickensNew = mutableSetOf<Chicken>()
-                val rabbitsNew = mutableSetOf<Rabbit>()
-                val cowsNew = mutableSetOf<Cow>()
+                val animalsNew = animalTypes.associateWith { mutableSetOf<Entity>() }
+
                 val bowsNew = mutableSetOf<ArmorStand>()
                 var thornNew: Ghast? = null
                 var bearNew: Player? = null
@@ -113,35 +99,21 @@ object M4Mobs {
                     ?: return@runCatching
 
                 allEntities.forEach { entity ->
-                    if (entity is ArmorStand) {
-                        if (entity.name.string == "Spirit Bow") {
-                            bowsNew.add(entity)
-                        }
-                    }
-
                     if (!entity.isAlive) return@forEach
 
                     when (entity) {
-                        is Sheep -> sheepNew.add(entity)
-                        is Wolf -> wolvesNew.add(entity)
-                        is Chicken -> chickensNew.add(entity)
-                        is Rabbit -> rabbitsNew.add(entity)
-                        is Cow -> cowsNew.add(entity)
-
+                        is ArmorStand -> if (entity.name.string == "Spirit Bow") bowsNew.add(entity)
                         is Ghast -> thornNew = entity
-
-                        is Bat -> if (!entity.isInvisible) batsNew.add(entity)
-
                         is Player -> if (entity.gameProfile.name.equals("Spirit Bear")) bearNew = entity
                     }
+
+                    val type = animalTypes.firstOrNull { it.isInstance(entity) } ?: return@forEach
+                    if (entity is Bat && entity.isInvisible) return@forEach
+
+                    animalsNew.getValue(type).add(entity)
                 }
 
-                _sheep = sheepNew
-                _wolves = wolvesNew
-                _bats = batsNew
-                _chickens = chickensNew
-                _rabbits = rabbitsNew
-                _cows = cowsNew
+                animals = animalsNew.mapValues { (_, entities) -> entities.toSet() }
                 _bows = bowsNew
                 _thorn = thornNew
                 _bear = bearNew
