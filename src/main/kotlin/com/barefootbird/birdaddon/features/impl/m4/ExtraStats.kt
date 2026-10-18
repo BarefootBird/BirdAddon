@@ -81,7 +81,7 @@ object ExtraStats: Module(
         val message = Component.literal("Click to view stats: ")
             .withStyle(ChatFormatting.YELLOW)
 
-        for (i in 1..BearTracker.bearKillTimes.size) {
+        for (i in 1..BearTracker.killTimes.size) {
             val bearText = Component.literal("Bear $i")
                 .withStyle {
                     it.withColor(ChatFormatting.GOLD)
@@ -99,7 +99,7 @@ object ExtraStats: Module(
 
             message.append(bearText)
 
-            if (i < BearTracker.bearKillTimes.size) {
+            if (i < BearTracker.killTimes.size) {
                 message.append(
                     Component.literal(" | ")
                         .withStyle(ChatFormatting.DARK_GRAY)
@@ -115,9 +115,9 @@ object ExtraStats: Module(
             val runId = UUID.randomUUID()
             val snapshot = M4RunSnapshot(
                 runId = runId,
-                bearSpawnStartTimes = BearTracker.bearSpawnStartTimes.toList(),
-                bearSpawnTimes = BearTracker.bearSpawnTimes.toList(),
-                bearKillTimes = BearTracker.bearKillTimes.toList(),
+                bearSpawnStartTimes = BearTracker.spawnStartTimes.toList(),
+                bearSpawnTimes = BearTracker.spawnTimes.toList(),
+                bearKillTimes = BearTracker.killTimes.toList(),
                 bowReleased = BowTracker.snapshot.release,
                 bowDrawn = BowTracker.snapshot.draw,
                 timer = Timers.timer,
@@ -126,9 +126,9 @@ object ExtraStats: Module(
             completedRuns[runId] = snapshot
             GlobalScope.launch {
                 delay(1000.milliseconds)
-                val lastBear = BearTracker.bearKillTimes.size - 1
-                val killTime = BearTracker.bearKillTimes[lastBear]
-                val spawnTime = BearTracker.bearSpawnTimes[lastBear]
+                val lastBear = BearTracker.killTimes.size - 1
+                val killTime = BearTracker.killTimes[lastBear]
+                val spawnTime = BearTracker.spawnTimes[lastBear]
                 if (extraStats) {
                     sendBearStatsMenu(runId)
                 }

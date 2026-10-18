@@ -60,7 +60,7 @@ object Tac: Module(
                 if (tacTimer && tacTime == -1) {
                     tacTime = 60
                 }
-                if (printTacTime && BearTracker.bearSpawning()) {
+                if (printTacTime && BearTracker.spawning()) {
                     if (DungeonUtils.inBoss && DungeonUtils.isFloor(4)) {
                         if (DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK || !printTimeOnlyOnTank) {
                             if (printTacToPartyChat) {

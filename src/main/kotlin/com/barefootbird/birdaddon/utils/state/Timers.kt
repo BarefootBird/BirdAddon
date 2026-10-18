@@ -25,7 +25,7 @@ object Timers {
             // Odin splits start on dialogue start so this is needed for the splits to match with Odin's
             if (!BossLifecycle.thornDialogueStarted) return@on
             if (BossLifecycle.ended) return@on
-            if (BearTracker.bearSpawning()) {
+            if (BearTracker.spawning()) {
                 if (SpiritBear.experimental && ParticleTrails.predictionsRemaining > 0) {
                     bearTimer = ParticleTrails.predictionsRemaining - 1
                 } else {

@@ -45,7 +45,7 @@ object KillTracker {
             val entity = getEntity(level) ?: return@onReceive
             if (Mobs.animalTypes.none { it.isInstance(entity)}) return@onReceive
 
-            if (!BearTracker.bearSpawning() && !BearTracker.bearSpawned()) {
+            if (!BearTracker.spawning() && !BearTracker.spawned()) {
                 kills++
                 if (kills >= maxKills) {
                     EventDispatcher.triggerBearSpawnStart()

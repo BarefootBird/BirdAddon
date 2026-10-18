@@ -91,7 +91,7 @@ object Rabbits: Module(
         val ticksUntilRabbitSpawn = RABBIT_SPAWN_TIME - Timers.timer
         if (ticksUntilRabbitSpawn <= 0) return emptyList()
 
-        val shouldShowTimer = (showFromStart || (ticksUntilRabbitSpawn <= secondsBefore * 20 && !showAfterB1) || (showAfterB1 && BearTracker.bearSpawnStartTimes.isNotEmpty()))
+        val shouldShowTimer = (showFromStart || (ticksUntilRabbitSpawn <= secondsBefore * 20 && !showAfterB1) || (showAfterB1 && BearTracker.spawnStartTimes.isNotEmpty()))
         if (!shouldShowTimer) {
             return emptyList()
         }

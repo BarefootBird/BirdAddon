@@ -113,11 +113,11 @@ object Decoy: Module(
         on<RenderExtractEvent> {
             if (!BossLifecycle.inBoss()) return@on
             if (onlyShowOnBers && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.BERSERK) return@on
-            if (highlightBestDecoySpot && bestSpot != null && (!hideDecoySpotAfterB1 || BearTracker.bearSpawnTimes.isEmpty())) {
+            if (highlightBestDecoySpot && bestSpot != null && (!hideDecoySpotAfterB1 || BearTracker.spawnTimes.isEmpty())) {
                 val box = AABB(bestSpot!!.x - 0.5, bestSpot!!.y, bestSpot!!.z - 0.5, bestSpot!!.x + 0.5, bestSpot!!.y, bestSpot!!.z + 0.5)
                 drawStyledBox(box, Colors.MINECRAFT_RED, renderStyle, depth)
             }
-            if (showCave && caveSpot != null && BearTracker.bearSpawnStartTimes.size >= 4 && BearTracker.bearSpawnStartTimes.size < 6) {
+            if (showCave && caveSpot != null && BearTracker.spawnStartTimes.size >= 4 && BearTracker.spawnStartTimes.size < 6) {
                 val box = AABB(caveSpot!!.x, caveSpot!!.y, caveSpot!!.z, caveSpot!!.x + 1, caveSpot!!.y, caveSpot!!.z + 1)
                 drawStyledBox(box, Colors.MINECRAFT_RED, renderStyle, depth)
             }

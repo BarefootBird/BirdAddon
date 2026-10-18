@@ -13,25 +13,25 @@ import kotlin.math.sin
 object BearTracker {
 
     // These track times in ticks for the events
-    val bearSpawnTimes = mutableListOf<Int>()
-    val bearKillTimes = mutableListOf<Int>()
-    val bearSpawnStartTimes = mutableListOf<Int>()
+    val spawnTimes = mutableListOf<Int>()
+    val killTimes = mutableListOf<Int>()
+    val spawnStartTimes = mutableListOf<Int>()
 
     // This spot is on the 0.85 blocks above the exact center of m4, this is roughly the avg location of every bear spawn
-    var bearSpawnSpot = Vec3(5.5, 69.85, 5.5)
+    var spawnSpot = Vec3(5.5, 69.85, 5.5)
 
-    fun bearSpawning (): Boolean {
-        return bearSpawnStartTimes.size > bearSpawnTimes.size
+    fun spawning (): Boolean {
+        return spawnStartTimes.size > spawnTimes.size
     }
 
-    fun bearSpawned (): Boolean {
-        return bearSpawnTimes.size > bearKillTimes.size
+    fun spawned (): Boolean {
+        return spawnTimes.size > killTimes.size
     }
 
     fun updateBearSpawnSpot () {
-        if (bearSpawning()) {
+        if (spawning()) {
             if (ParticleTrails.spawnPrediction.y != 0.0 && SpiritBear.experimental) {
-                bearSpawnSpot = ParticleTrails.spawnPrediction
+                spawnSpot = ParticleTrails.spawnPrediction
                 return
             }
             Mobs.thorn?.let {
@@ -47,28 +47,28 @@ object BearTracker {
                 val newX = 5.5 + r * cos(angle)
                 val newZ = 5.5 + r * sin(angle)
 
-                bearSpawnSpot = Vec3(newX, 69.85, newZ)
+                spawnSpot = Vec3(newX, 69.85, newZ)
             }
         }
     }
 
     init {
         on<M4Event.BearSpawn> {
-            bearSpawnTimes.add(Timers.timer)
+            spawnTimes.add(Timers.timer)
         }
 
         on<M4Event.BearKill> {
-            bearKillTimes.add(Timers.timer)
+            killTimes.add(Timers.timer)
         }
 
         on<M4Event.BearSpawnStart> {
-            bearSpawnStartTimes.add(Timers.timer)
+            spawnStartTimes.add(Timers.timer)
         }
 
         on<LevelEvent.Load> {
-            bearKillTimes.clear()
-            bearSpawnStartTimes.clear()
-            bearSpawnTimes.clear()
+            killTimes.clear()
+            spawnStartTimes.clear()
+            spawnTimes.clear()
         }
 
         on<TickEvent.Server> {

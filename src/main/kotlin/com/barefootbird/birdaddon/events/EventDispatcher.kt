@@ -18,7 +18,7 @@ object EventDispatcher {
     var ended = false
 
     fun triggerBearSpawnStart() {
-        if (!BearTracker.bearSpawning()) {
+        if (!BearTracker.spawning()) {
             M4Event.BearSpawnStart().postAndCatch()
         }
     }
@@ -31,7 +31,7 @@ object EventDispatcher {
                 M4Event.BearSpawn().postAndCatch()
             }
             if (bearKillRegex.matches(message)) {
-                if (BearTracker.bearSpawned()) {
+                if (BearTracker.spawned()) {
                     M4Event.BearKill().postAndCatch()
                 }
             }

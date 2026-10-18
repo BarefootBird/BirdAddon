@@ -115,17 +115,17 @@ object SpiritBear: Module(
         if (!BossLifecycle.inBoss()) return ""
 
         val text = when {
-            BearTracker.bearSpawning() -> spawningText
-            BearTracker.bearSpawned() -> spawnedText
+            BearTracker.spawning() -> spawningText
+            BearTracker.spawned() -> spawnedText
             else -> killPhaseText
         }
 
-        val bear = BearTracker.bearKillTimes.size + 1
+        val bear = BearTracker.killTimes.size + 1
         val kills = KillTracker.kills
         val cap = KillTracker.maxKills
 
         val timerValue = when {
-            BearTracker.bearSpawning() -> {
+            BearTracker.spawning() -> {
                 val ticksLeft = Timers.bearTimer.toDouble()
                 if (showTicks) {
                     ticksLeft.toFixed(0).padStart(2, '0')
@@ -169,8 +169,8 @@ object SpiritBear: Module(
 
         val currentBear = completedSplits.size + 1
         if (!BossLifecycle.ended && currentBear <= 4) {
-            val spawnStartTime = BearTracker.bearSpawnStartTimes.getOrNull(currentBear - 1)
-            val spawnTime = BearTracker.bearSpawnTimes.getOrNull(currentBear - 1)
+            val spawnStartTime = BearTracker.spawnStartTimes.getOrNull(currentBear - 1)
+            val spawnTime = BearTracker.spawnTimes.getOrNull(currentBear - 1)
             val killTime = spawnTime?.let { formatKillTime(Timers.timer - it) } ?: formatPendingKillTime()
 
             lines.add(
@@ -186,7 +186,7 @@ object SpiritBear: Module(
         }
 
         val totalTicks = if (BossLifecycle.ended) {
-            BearTracker.bearKillTimes.lastOrNull() ?: Timers.timer
+            BearTracker.killTimes.lastOrNull() ?: Timers.timer
         } else {
             Timers.timer
         }
@@ -196,12 +196,12 @@ object SpiritBear: Module(
     }
 
     private fun recordCompletedSplit() {
-        val index = BearTracker.bearKillTimes.lastIndex
+        val index = BearTracker.killTimes.lastIndex
         if (index < 0) return
 
-        val spawnStartTime = BearTracker.bearSpawnStartTimes.getOrNull(index) ?: 0
-        val spawnTime = BearTracker.bearSpawnTimes.getOrNull(index) ?: spawnStartTime
-        val deathTime = BearTracker.bearKillTimes[index]
+        val spawnStartTime = BearTracker.spawnStartTimes.getOrNull(index) ?: 0
+        val spawnTime = BearTracker.spawnTimes.getOrNull(index) ?: spawnStartTime
+        val deathTime = BearTracker.killTimes[index]
 
         completedSplits.add(
             BearSplit(
@@ -300,7 +300,7 @@ object SpiritBear: Module(
         loadPersonalBests()
 
         on<M4Event.BearSpawn> {
-            val bearIndex = BearTracker.bearSpawnStartTimes.size
+            val bearIndex = BearTracker.spawnStartTimes.size
             if (bearIndex < 1) return@on
             reportBearPersonalBest(bearIndex, Timers.timer)
         }
