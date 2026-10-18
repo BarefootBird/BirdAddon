@@ -48,14 +48,6 @@ object M4State {
     // to make sure that the odin timer and my timer match exactly
     var inThornBoss = false
 
-    var overkill = 0
-    var overkillBats = 0
-    var overkillChickens = 0
-    var overkillCows = 0
-    var overkillSheep = 0
-    var overkillRabbits = 0
-    var overkillWolves = 0
-
     var ended = false
 
     // This spot is on the 0.85 blocks above the exact center of thorn, this is roughly the avg location of every bear spawn
@@ -155,14 +147,6 @@ object M4State {
                         if (kills >= maxKills) {
                             EventDispatcher.triggerBearSpawnStart()
                         }
-                    } else {
-                        overkill++
-                        if (entity is Wolf) overkillWolves++
-                        if (entity is Cow) overkillCows++
-                        if (entity is Rabbit) overkillRabbits++
-                        if (entity is Sheep) overkillSheep++
-                        if (entity is Chicken) overkillChickens++
-                        if (entity is Bat) overkillBats++
                     }
                 }
             }
@@ -199,13 +183,6 @@ object M4State {
             bearKillTimes.clear()
             bearSpawnStartTimes.clear()
             bearSpawnTimes.clear()
-            overkill = 0
-            overkillBats = 0
-            overkillChickens = 0
-            overkillCows = 0
-            overkillSheep = 0
-            overkillRabbits = 0
-            overkillWolves = 0
             ended = false
             inThornBoss = false
         }

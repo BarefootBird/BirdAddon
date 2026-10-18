@@ -1,10 +1,14 @@
 package com.barefootbird.birdaddon.utils.state
 
+import com.barefootbird.birdaddon.features.impl.m4.Highlight
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
+import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.Mob
 import net.minecraft.world.entity.ambient.Bat
 import net.minecraft.world.entity.animal.chicken.Chicken
 import net.minecraft.world.entity.animal.cow.Cow
@@ -15,8 +19,43 @@ import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.Ghast
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.AABB
+import kotlin.jvm.java
 
 object M4Mobs {
+
+    fun mobColorFor(entity: Class<out Entity>) = when (entity) {
+        Cow::class.java -> Highlight.cowColor
+        Sheep::class.java -> Highlight.sheepColor
+        Chicken::class.java -> Highlight.chickenColor
+        Bat::class.java -> Highlight.batColor
+        Wolf::class.java -> Highlight.wolfColor
+        Rabbit::class.java -> Highlight.rabbitColor
+        else -> Colors.WHITE
+    }
+
+    fun mobNameFor(entity: Class<out Entity>, short: Boolean = false): String? {
+        return if (short) {
+            when (entity) {
+                Bat::class.java -> "B"
+                Chicken::class.java -> "Ch"
+                Cow::class.java -> "C"
+                Sheep::class.java -> "S"
+                Rabbit::class.java -> "R"
+                Wolf::class.java -> "W"
+                else -> null
+            }
+        } else {
+            when (entity) {
+                Bat::class.java -> "Bats"
+                Chicken::class.java -> "Chickens"
+                Cow::class.java -> "Cows"
+                Sheep::class.java -> "Sheep"
+                Rabbit::class.java -> "Rabbits"
+                Wolf::class.java -> "Wolves"
+                else -> null
+            }
+        }
+    }
 
     private var _sheep = emptySet<Sheep>()
     private var _wolves = emptySet<Wolf>()
