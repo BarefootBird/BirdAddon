@@ -28,7 +28,7 @@ import com.barefootbird.birdaddon.utils.state.BowTracker
 import com.barefootbird.birdaddon.utils.Islands
 import com.barefootbird.birdaddon.utils.state.M4Mobs
 import com.barefootbird.birdaddon.utils.state.M4State
-import com.barefootbird.birdaddon.utils.state.OverkillTracker
+import com.barefootbird.birdaddon.utils.state.KillTracker
 import com.barefootbird.birdaddon.utils.state.ParticleTrails
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
@@ -47,7 +47,7 @@ object BirdAddon : ClientModInitializer {
         }
 
         // Register objects to event bus by adding to the list
-        listOf(this, M4State, M4Mobs, Islands, EventDispatcher, ParticleTrails, BowTracker, OverkillTracker).forEach { EventBus.subscribe(it) }
+        listOf(this, M4State, M4Mobs, Islands, EventDispatcher, ParticleTrails, BowTracker, KillTracker).forEach { EventBus.subscribe(it) }
 
         // Register modules by adding to the list
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"),

@@ -2,7 +2,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.state.M4Mobs
-import com.barefootbird.birdaddon.utils.state.OverkillTracker
+import com.barefootbird.birdaddon.utils.state.KillTracker
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -47,7 +47,7 @@ object OverkillDisplay : Module(
     )
 
     private val hud by HUD(name, "Displays the overkill", false) {
-        val counts = OverkillTracker.overkill
+        val counts = KillTracker.overkill
 
         val types = listOf(
             Cow::class.java, Sheep::class.java, Chicken::class.java,

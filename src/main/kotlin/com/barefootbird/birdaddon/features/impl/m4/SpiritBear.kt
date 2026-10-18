@@ -3,6 +3,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.modMessage
+import com.barefootbird.birdaddon.utils.state.KillTracker
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -118,8 +119,8 @@ object SpiritBear: Module(
         }
 
         val bear = M4State.bearKillTimes.size + 1
-        val kills = M4State.kills
-        val cap = M4State.maxKills
+        val kills = KillTracker.kills
+        val cap = KillTracker.maxKills
 
         val timerValue = when {
             M4State.bearTimer > 0 -> {

@@ -16,7 +16,6 @@ object EventDispatcher {
     val endRegex = Regex("^\\s*☠ Defeated Thorn in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
     var ended = false
 
-    // Callback so that the somewhat messy bear spawn start logic can stay in M4State
     fun triggerBearSpawnStart() {
         if (M4State.bearTimer == -1) {
             M4Event.BearSpawnStart().postAndCatch()
