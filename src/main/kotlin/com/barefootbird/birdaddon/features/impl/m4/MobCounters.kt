@@ -1,7 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.state.M4Mobs
+import com.barefootbird.birdaddon.utils.state.Mobs
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
@@ -148,21 +148,21 @@ object MobCounters : Module(
         val animalCounters = animalCounterConfigs.map {
             Counter(
                 it.on,
-                M4Mobs.mobColorFor(it.type),
-                M4Mobs.mobNameFor(it.type),
-                M4Mobs.mobNameFor(it.type, short = true),
+                Mobs.mobColorFor(it.type),
+                Mobs.mobNameFor(it.type),
+                Mobs.mobNameFor(it.type, short = true),
                 false,
-                M4Mobs.animalsOf(it.type).size
+                Mobs.animalsOf(it.type).size
             )
         }
 
-        val allMobs = M4Mobs.animalTypes.flatMap { M4Mobs.animalsOf(it) }
+        val allMobs = Mobs.animalTypes.flatMap { Mobs.animalsOf(it) }
 
         val mobsUnderThorn = allMobs.count {
             isUnderThorn(it.x, it.y, it.z)
         }
 
-        val rabbitsInMid = M4Mobs.animalsOf(Rabbit::class.java).count {
+        val rabbitsInMid = Mobs.animalsOf(Rabbit::class.java).count {
             !isUnderThorn(it.x, it.y, it.z)
         }
 

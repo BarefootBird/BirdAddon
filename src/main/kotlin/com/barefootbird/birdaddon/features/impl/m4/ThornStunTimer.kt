@@ -1,7 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.state.M4Mobs
+import com.barefootbird.birdaddon.utils.state.Mobs
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -105,7 +105,7 @@ object ThornStunTimer: Module(
             if (secondTimer > -1) {
                 secondTimer--
             } else {
-                val thorn = M4Mobs.thorn ?: return@on
+                val thorn = Mobs.thorn ?: return@on
                 val angle = atan2(thorn.x - 5.5, thorn.z - 5.5)
                 /*
                 thorn starts with angle of 0, moves towards negative angles before first stun.

@@ -10,10 +10,10 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.Timers
 import com.barefootbird.birdaddon.utils.Islands.onCgm4
 import com.barefootbird.birdaddon.utils.Islands.onM4Miku
-import com.barefootbird.birdaddon.utils.state.M4Mobs
+import com.barefootbird.birdaddon.utils.state.Mobs
 import com.barefootbird.birdaddon.utils.modMessage
 import com.barefootbird.birdaddon.utils.state.BearTracker
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
@@ -268,7 +268,7 @@ object Waypoints: Module(
             }
         }
         if (event.endsWith("s")) {
-            return M4State.timer / 20.0 > event.slice(0..<event.length - 1).toInt()
+            return Timers.timer / 20.0 > event.slice(0..<event.length - 1).toInt()
         }
         return false
     }
@@ -350,7 +350,7 @@ object Waypoints: Module(
     private fun getBowSpawnSpot(): Vec3 {
         val defaultSpawn = Vec3(5.0, 69.0, 4.0)
 
-        val bear = M4Mobs.bear ?: return defaultSpawn
+        val bear = Mobs.bear ?: return defaultSpawn
 
         if (!BearTracker.bearSpawned()) return defaultSpawn
 
@@ -369,7 +369,7 @@ object Waypoints: Module(
 
         val closestSpot = getBowSpawnSpot()
 
-        val bows = M4Mobs.bows.map { it.position().subtract(0.5, 0.0, 0.5) }
+        val bows = Mobs.bows.map { it.position().subtract(0.5, 0.0, 0.5) }
 
 
         val allBows =

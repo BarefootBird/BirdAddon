@@ -15,7 +15,7 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.toFixed
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.Timers
 import com.barefootbird.birdaddon.utils.state.ParticleTrails
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
@@ -126,7 +126,7 @@ object SpiritBear: Module(
 
         val timerValue = when {
             BearTracker.bearSpawning() -> {
-                val ticksLeft = M4State.bearTimer.toDouble()
+                val ticksLeft = Timers.bearTimer.toDouble()
                 if (showTicks) {
                     ticksLeft.toFixed(0).padStart(2, '0')
                 } else {
@@ -171,24 +171,24 @@ object SpiritBear: Module(
         if (!BossLifecycle.ended && currentBear <= 4) {
             val spawnStartTime = BearTracker.bearSpawnStartTimes.getOrNull(currentBear - 1)
             val spawnTime = BearTracker.bearSpawnTimes.getOrNull(currentBear - 1)
-            val killTime = spawnTime?.let { formatKillTime(M4State.timer - it) } ?: formatPendingKillTime()
+            val killTime = spawnTime?.let { formatKillTime(Timers.timer - it) } ?: formatPendingKillTime()
 
             lines.add(
                 splitLine(
                     currentBear,
-                    formatOptionalSeconds(spawnStartTime, M4State.timer),
-                    formatOptionalSeconds(spawnTime, M4State.timer),
-                    formatSeconds(M4State.timer),
+                    formatOptionalSeconds(spawnStartTime, Timers.timer),
+                    formatOptionalSeconds(spawnTime, Timers.timer),
+                    formatSeconds(Timers.timer),
                     killTime,
-                    formatSeconds(M4State.timer)
+                    formatSeconds(Timers.timer)
                 )
             )
         }
 
         val totalTicks = if (BossLifecycle.ended) {
-            BearTracker.bearKillTimes.lastOrNull() ?: M4State.timer
+            BearTracker.bearKillTimes.lastOrNull() ?: Timers.timer
         } else {
-            M4State.timer
+            Timers.timer
         }
         lines.add(splitTotalLine(currentBear.coerceAtMost(4), "", "", "", "", formatSeconds(totalTicks)))
 
@@ -302,7 +302,7 @@ object SpiritBear: Module(
         on<M4Event.BearSpawn> {
             val bearIndex = BearTracker.bearSpawnStartTimes.size
             if (bearIndex < 1) return@on
-            reportBearPersonalBest(bearIndex, M4State.timer)
+            reportBearPersonalBest(bearIndex, Timers.timer)
         }
 
         on<M4Event.BearKill> {

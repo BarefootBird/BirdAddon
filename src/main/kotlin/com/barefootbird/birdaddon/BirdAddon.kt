@@ -28,8 +28,8 @@ import com.barefootbird.birdaddon.utils.state.BowTracker
 import com.barefootbird.birdaddon.utils.Islands
 import com.barefootbird.birdaddon.utils.state.BearTracker
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
-import com.barefootbird.birdaddon.utils.state.M4Mobs
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.Mobs
+import com.barefootbird.birdaddon.utils.state.Timers
 import com.barefootbird.birdaddon.utils.state.KillTracker
 import com.barefootbird.birdaddon.utils.state.ParticleTrails
 import net.fabricmc.api.ClientModInitializer
@@ -49,7 +49,7 @@ object BirdAddon : ClientModInitializer {
         }
 
         // Register objects to event bus by adding to the list
-        listOf(this, M4State, M4Mobs, Islands, EventDispatcher, ParticleTrails, BowTracker, KillTracker, BearTracker,
+        listOf(this, Timers, Mobs, Islands, EventDispatcher, ParticleTrails, BowTracker, KillTracker, BearTracker,
             BossLifecycle).forEach { EventBus.subscribe(it) }
 
         // Register modules by adding to the list

@@ -3,7 +3,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.state.BowTracker
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.Timers
 import com.barefootbird.birdaddon.utils.modMessage
 import com.barefootbird.birdaddon.utils.state.BearTracker
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -120,7 +120,7 @@ object ExtraStats: Module(
                 bearKillTimes = BearTracker.bearKillTimes.toList(),
                 bowReleased = BowTracker.snapshot.release,
                 bowDrawn = BowTracker.snapshot.draw,
-                timer = M4State.timer,
+                timer = Timers.timer,
             )
 
             completedRuns[runId] = snapshot
@@ -133,7 +133,7 @@ object ExtraStats: Module(
                     sendBearStatsMenu(runId)
                 }
                 if (printRunTime) {
-                    modMessage("Thorn Defeated in ${(M4State.timer / 20.0).toFixed(2)}s")
+                    modMessage("Thorn Defeated in ${(Timers.timer / 20.0).toFixed(2)}s")
                 }
                 if (printLastBearBreakdown) {
                     val pickup = BowTracker.snapshot.pickup
@@ -151,9 +151,9 @@ object ExtraStats: Module(
                     }s → Release +${
                         (release - draw) / 20.0
                     }s → End +${
-                        (M4State.timer - release) / 20.0
+                        (Timers.timer - release) / 20.0
                     }s (${
-                        (M4State.timer - spawnTime) / 20.0
+                        (Timers.timer - spawnTime) / 20.0
                     }s after spawn)")
                 }
             }

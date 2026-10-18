@@ -1,7 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.state.M4Mobs
+import com.barefootbird.birdaddon.utils.state.Mobs
 import com.barefootbird.birdaddon.utils.state.KillTracker
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -47,15 +47,15 @@ object OverkillDisplay : Module(
 
         val counts = KillTracker.overkill
 
-        val types = M4Mobs.animalTypes
+        val types = Mobs.animalTypes
 
         val mobCounters = types.map {
-            val name = M4Mobs.mobNameFor(it)
-            val short = M4Mobs.mobNameFor(it, short=true)
+            val name = Mobs.mobNameFor(it)
+            val short = Mobs.mobNameFor(it, short=true)
             Counter(
                 prefix = name,
                 compactPrefix = short,
-                color = M4Mobs.mobColorFor(it),
+                color = Mobs.mobColorFor(it),
                 amount = counts.getValue(it)
             )
         }

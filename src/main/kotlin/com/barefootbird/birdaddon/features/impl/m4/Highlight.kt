@@ -1,7 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.state.M4Mobs
+import com.barefootbird.birdaddon.utils.state.Mobs
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
@@ -14,8 +14,8 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.barefootbird.birdaddon.utils.state.M4Mobs.thorn
-import com.barefootbird.birdaddon.utils.state.M4Mobs.bear
+import com.barefootbird.birdaddon.utils.state.Mobs.thorn
+import com.barefootbird.birdaddon.utils.state.Mobs.bear
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
@@ -313,12 +313,12 @@ object Highlight: Module(
                     list.forEach { drawStyledBox(it.renderBoundingBox, color, style, depth) }
                 }
 
-                if (highlightSheep) draw(M4Mobs.animalsOf(Sheep::class.java), sheepColor)
-                if (highlightWolves) draw(M4Mobs.animalsOf(Wolf::class.java), wolfColor)
-                if (highlightBats) draw(M4Mobs.animalsOf(Bat::class.java), batColor)
-                if (highlightChicken) draw(M4Mobs.animalsOf(Chicken::class.java), chickenColor)
-                if (highlightRabbit) draw(M4Mobs.animalsOf(Rabbit::class.java), rabbitColor)
-                if (highlightCow) draw(M4Mobs.animalsOf(Cow::class.java), cowColor)
+                if (highlightSheep) draw(Mobs.animalsOf(Sheep::class.java), sheepColor)
+                if (highlightWolves) draw(Mobs.animalsOf(Wolf::class.java), wolfColor)
+                if (highlightBats) draw(Mobs.animalsOf(Bat::class.java), batColor)
+                if (highlightChicken) draw(Mobs.animalsOf(Chicken::class.java), chickenColor)
+                if (highlightRabbit) draw(Mobs.animalsOf(Rabbit::class.java), rabbitColor)
+                if (highlightCow) draw(Mobs.animalsOf(Cow::class.java), cowColor)
 
                 if (highlightThorn) {
                     thorn?.let {

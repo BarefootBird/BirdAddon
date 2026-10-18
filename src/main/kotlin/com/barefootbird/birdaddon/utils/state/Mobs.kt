@@ -20,7 +20,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.AABB
 import kotlin.jvm.java
 
-object M4Mobs {
+object Mobs {
 
     val animalTypes = listOf(
         Cow::class.java, Sheep::class.java, Chicken::class.java,

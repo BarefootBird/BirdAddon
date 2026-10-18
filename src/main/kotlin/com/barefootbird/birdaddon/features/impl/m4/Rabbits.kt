@@ -2,8 +2,8 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.utils.state.BearTracker
-import com.barefootbird.birdaddon.utils.state.M4Mobs
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.Mobs
+import com.barefootbird.birdaddon.utils.state.Timers
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -88,7 +88,7 @@ object Rabbits: Module(
         if (!BossLifecycle.inBoss() || DungeonUtils.floor?.isMM != true) return emptyList()
 
         val lines = mutableListOf<String>()
-        val ticksUntilRabbitSpawn = RABBIT_SPAWN_TIME - M4State.timer
+        val ticksUntilRabbitSpawn = RABBIT_SPAWN_TIME - Timers.timer
         if (ticksUntilRabbitSpawn <= 0) return emptyList()
 
         val shouldShowTimer = (showFromStart || (ticksUntilRabbitSpawn <= secondsBefore * 20 && !showAfterB1) || (showAfterB1 && BearTracker.bearSpawnStartTimes.isNotEmpty()))
@@ -99,7 +99,7 @@ object Rabbits: Module(
         lines.add("§b$displayText ${(ticksUntilRabbitSpawn / 20.0).toFixed(decimals)}s")
 
         if (showArenaMobs && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) {
-            val groundMobs = M4Mobs.animalsOf(Cow::class.java).size + M4Mobs.animalsOf(Rabbit::class.java).size
+            val groundMobs = Mobs.animalsOf(Cow::class.java).size + Mobs.animalsOf(Rabbit::class.java).size
 
             if (groundMobs > 0 || !hideWhen0) {
                 lines.add("§dGround: $groundMobs")
@@ -107,7 +107,7 @@ object Rabbits: Module(
         }
 
         if (showBats && DungeonUtils.currentDungeonPlayer.clazz in setOf(DungeonClass.BERSERK, DungeonClass.MAGE)) {
-            val bats = M4Mobs.animalsOf(Bat::class.java).size
+            val bats = Mobs.animalsOf(Bat::class.java).size
             if (bats > 0 || !hideWhen0) {
                 lines.add("§fBats: $bats")
             }
@@ -138,7 +138,7 @@ object Rabbits: Module(
 
             hutches.forEach { hutch ->
 
-                newRabbitCounts.add(M4Mobs.animalsOf(Rabbit::class.java).count {
+                newRabbitCounts.add(Mobs.animalsOf(Rabbit::class.java).count {
                      it.x < hutch.x + 0.5 &&
                      it.x > hutch.x - 0.5 &&
                      it.z < hutch.z + 0.5 &&

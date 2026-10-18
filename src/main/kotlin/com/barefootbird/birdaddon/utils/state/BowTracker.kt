@@ -28,12 +28,12 @@ object BowTracker {
 
         if (playersSnapshot.any { it.getItemInHand(InteractionHand.MAIN_HAND).displayName.string == "[Spirit Bow]" && it.isUsingItem }) {
             if (!drawn) {
-                state = state.copy(draw = M4State.timer)
+                state = state.copy(draw = Timers.timer)
             }
             drawn = true
         } else {
             if (drawn) {
-                state = state.copy(release = M4State.timer - 1)
+                state = state.copy(release = Timers.timer - 1)
             }
             drawn = false
         }
@@ -41,7 +41,7 @@ object BowTracker {
 
     init {
         on<M4Event.BowPickup> {
-            state = state.copy(pickup = M4State.timer)
+            state = state.copy(pickup = Timers.timer)
         }
 
         on<TickEvent.Server> {

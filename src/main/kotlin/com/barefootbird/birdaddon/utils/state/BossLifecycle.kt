@@ -2,8 +2,8 @@ package com.barefootbird.birdaddon.utils.state
 
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Debug
-import com.barefootbird.birdaddon.utils.state.M4State.bearTimer
-import com.barefootbird.birdaddon.utils.state.M4State.timer
+import com.barefootbird.birdaddon.utils.state.Timers.bearTimer
+import com.barefootbird.birdaddon.utils.state.Timers.timer
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on

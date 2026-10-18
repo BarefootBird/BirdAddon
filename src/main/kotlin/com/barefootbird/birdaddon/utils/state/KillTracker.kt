@@ -43,7 +43,7 @@ object KillTracker {
 
             val level = mc.level ?: return@onReceive
             val entity = getEntity(level) ?: return@onReceive
-            if (M4Mobs.animalTypes.none { it.isInstance(entity)}) return@onReceive
+            if (Mobs.animalTypes.none { it.isInstance(entity)}) return@onReceive
 
             if (!BearTracker.bearSpawning() && !BearTracker.bearSpawned()) {
                 kills++

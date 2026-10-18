@@ -102,7 +102,7 @@ object ParticleTrails {
         // Start projecting from the lower particle to create a sequence of predicted particles
         val predictions = generateSequence(lower.add(step)) { it.add(step) }
             .takeWhile { it.y > particleLowerBound }
-            .map { TimedParticle(it, M4State.timer) }
+            .map { TimedParticle(it, Timers.timer) }
             .toList()
 
         if (predictions.isEmpty()) {
@@ -149,14 +149,14 @@ object ParticleTrails {
 
         on<TickEvent.Server> {
             if (!BossLifecycle.inBoss()) return@on
-            val cutoff = M4State.timer - 8
+            val cutoff = Timers.timer - 8
 
             particles.removeIf { it.createdTick < cutoff }
             candidatePairs.removeIf { it.first.createdTick < cutoff || it.second.createdTick < cutoff }
 
             if (BearTracker.bearSpawnTimes.isNotEmpty()) {
                 // Reset the counters a few ticks after the bear spawns
-                if (M4State.timer >= BearTracker.bearSpawnTimes.last() + 3 && BearTracker.bearSpawnStartTimes.size == BearTracker.bearSpawnTimes.size) {
+                if (Timers.timer >= BearTracker.bearSpawnTimes.last() + 3 && BearTracker.bearSpawnStartTimes.size == BearTracker.bearSpawnTimes.size) {
                     predictions = emptyList()
                     predictionsRemaining = -1
                     spawnPrediction = Vec3(0.0, 0.0, 0.0)
@@ -172,7 +172,7 @@ object ParticleTrails {
 
             val newParticle = TimedParticle(
                 Vec3(packet.x, packet.y, packet.z),
-                M4State.timer
+                Timers.timer
             )
 
             for ((first, second) in candidatePairs) {

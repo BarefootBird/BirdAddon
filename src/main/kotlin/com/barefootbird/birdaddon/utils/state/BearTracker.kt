@@ -34,7 +34,7 @@ object BearTracker {
                 bearSpawnSpot = ParticleTrails.spawnPrediction
                 return
             }
-            M4Mobs.thorn?.let {
+            Mobs.thorn?.let {
                 // Bear spawns roughly on a circle around (5.5, 5.5) with a radius of 0.7,
                 // and spawns on the closest point to where thorn was when the bear started spawning
                 // also spawns roughly at 69.85y
@@ -54,15 +54,15 @@ object BearTracker {
 
     init {
         on<M4Event.BearSpawn> {
-            bearSpawnTimes.add(M4State.timer)
+            bearSpawnTimes.add(Timers.timer)
         }
 
         on<M4Event.BearKill> {
-            bearKillTimes.add(M4State.timer)
+            bearKillTimes.add(Timers.timer)
         }
 
         on<M4Event.BearSpawnStart> {
-            bearSpawnStartTimes.add(M4State.timer)
+            bearSpawnStartTimes.add(Timers.timer)
         }
 
         on<LevelEvent.Load> {

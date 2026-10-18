@@ -3,7 +3,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.Timers
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
@@ -65,7 +65,7 @@ object Titles: Module(
         on<TickEvent.Server> {
 
             // bow disintegrates after 400t so 280t means the player has 6s from the title appearing to shoot which should be plenty
-            if (M4State.timer - pickupTime > 280 && mc.player?.inventory?.contains { it.displayName.string.contains("Spirit Bow")} == true) {
+            if (Timers.timer - pickupTime > 280 && mc.player?.inventory?.contains { it.displayName.string.contains("Spirit Bow")} == true) {
                 setTitle(bowDisintegrateWarning)
             }
         }
@@ -91,7 +91,7 @@ object Titles: Module(
             if (!BossLifecycle.inBoss()) return@on
 
             if (message == bowPickup) {
-                pickupTime = M4State.timer
+                pickupTime = Timers.timer
                 if (pickupWarning != "" && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.TANK) {
                     setTitle(pickupWarning)
                 }

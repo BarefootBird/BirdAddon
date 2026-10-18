@@ -1,7 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.Timers
 import com.barefootbird.birdaddon.utils.modMessage
 import com.barefootbird.birdaddon.utils.sendCommand
 import com.barefootbird.birdaddon.utils.state.BearTracker
@@ -64,10 +64,10 @@ object Tac: Module(
                     if (DungeonUtils.inBoss && DungeonUtils.isFloor(4)) {
                         if (DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK || !printTimeOnlyOnTank) {
                             if (printTacToPartyChat) {
-                                sendCommand("pc BirdAddon > Tacced at ${((M4State.bearTimer / 20.0).toFixed(2))}s")
+                                sendCommand("pc BirdAddon > Tacced at ${((Timers.bearTimer / 20.0).toFixed(2))}s")
                             } else {
                                 modMessage(
-                                    "Tacced at ${((M4State.bearTimer / 20.0).toFixed(2))}s"
+                                    "Tacced at ${((Timers.bearTimer / 20.0).toFixed(2))}s"
                                 )
                             }
                         }

@@ -6,7 +6,7 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 
-object M4State {
+object Timers {
 
     var bearTimer = -1 // state: -1=NotSpawned, 0=Alive, 1+=Spawning
     var timer = 0 // Times ticks from the start of boss

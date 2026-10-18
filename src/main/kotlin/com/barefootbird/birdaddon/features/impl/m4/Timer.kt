@@ -5,7 +5,7 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.toFixed
-import com.barefootbird.birdaddon.utils.state.M4State
+import com.barefootbird.birdaddon.utils.state.Timers
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import kotlinx.coroutines.DelicateCoroutinesApi
 
@@ -20,7 +20,7 @@ object Timer: Module(
         when {
             example -> "§c48.2"
             !BossLifecycle.inBoss() -> null
-            else -> "§c${(M4State.timer / 20f).toFixed()}s"
+            else -> "§c${(Timers.timer / 20f).toFixed()}s"
         }?.let { text ->
             textDim(text, 0, 0, Colors.WHITE)
         } ?: (0 to 0)
