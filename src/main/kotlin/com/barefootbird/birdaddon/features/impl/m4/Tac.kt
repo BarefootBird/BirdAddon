@@ -1,15 +1,15 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
-import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.state.Timers
 import com.barefootbird.birdaddon.utils.modMessage
 import com.barefootbird.birdaddon.utils.sendCommand
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.barefootbird.birdaddon.utils.state.BearTracker
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
@@ -19,9 +19,6 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket
 import net.minecraft.world.InteractionHand
 
@@ -46,7 +43,7 @@ object Tac: Module(
 
     private fun timerText (example: Boolean): String {
         if (example) return "${prefix}1.55s"
-        if (!M4State.inBoss() && !outsideOfM4) return ""
+        if (!BossLifecycle.inBoss() && !outsideOfM4) return ""
         if (tacTime >= 0) {
             return "$prefix${(tacTime / 20.0).toFixed(2)}s"
         }
@@ -63,14 +60,14 @@ object Tac: Module(
                 if (tacTimer && tacTime == -1) {
                     tacTime = 60
                 }
-                if (printTacTime && M4State.bearTimer != -1) {
+                if (printTacTime && BearTracker.spawning()) {
                     if (DungeonUtils.inBoss && DungeonUtils.isFloor(4)) {
                         if (DungeonUtils.currentDungeonPlayer.clazz == DungeonClass.TANK || !printTimeOnlyOnTank) {
                             if (printTacToPartyChat) {
-                                sendCommand("pc BirdAddon > Tacced at ${((M4State.bearTimer / 20.0).toFixed(2))}s")
+                                sendCommand("pc BirdAddon > Tacced at ${((Timers.bearTimer / 20.0).toFixed(2))}s")
                             } else {
                                 modMessage(
-                                    "Tacced at ${((M4State.bearTimer / 20.0).toFixed(2))}s"
+                                    "Tacced at ${((Timers.bearTimer / 20.0).toFixed(2))}s"
                                 )
                             }
                         }

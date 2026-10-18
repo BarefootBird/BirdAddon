@@ -1,7 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.M4Mobs
+import com.barefootbird.birdaddon.utils.state.Mobs
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderExtractEvent
@@ -11,6 +11,9 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.core.BlockPos
+import net.minecraft.world.entity.animal.chicken.Chicken
+import net.minecraft.world.entity.animal.cow.Cow
+import net.minecraft.world.entity.animal.sheep.Sheep
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 
@@ -93,7 +96,7 @@ object Trajectories : Module (
             sheepLandingSpots.clear()
             if (cows) {
                 runCatching {
-                    M4Mobs.cows.forEach {
+                    Mobs.animalsOf(Cow::class.java).forEach {
                         if (it.y > 71.5) {
                             val landingSpot = predictLanding(it.position(), it.deltaMovement)
                             if (landingSpot != null) {
@@ -105,7 +108,7 @@ object Trajectories : Module (
             }
             if (sheep) {
                 runCatching {
-                    M4Mobs.sheep.forEach {
+                    Mobs.animalsOf(Sheep::class.java).forEach {
                         if (it.y > 71.5) {
                             val landingSpot = predictLanding(it.position(), it.deltaMovement)
                             if (landingSpot != null) {
@@ -128,7 +131,7 @@ object Trajectories : Module (
                     drawStyledBox(box, Highlight.sheepColor,renderStyle, true)
                 }
                 if (chicken) {
-                    M4Mobs.chickens.forEach {
+                    Mobs.animalsOf(Chicken::class.java).forEach {
                         val y = getGroundY(it.x, it.z)
                         val box = AABB(it.x - 0.2, y, it.z - 0.2, it.x + 0.2, y, it.z + 0.2)
                         drawStyledBox(box, Highlight.chickenColor, renderStyle, true)

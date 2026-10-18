@@ -1,14 +1,13 @@
 package com.barefootbird.birdaddon.events
 
-import com.barefootbird.birdaddon.utils.M4State
-import com.barefootbird.birdaddon.utils.debugMessage
+import com.barefootbird.birdaddon.utils.state.BearTracker
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.events.MessageEvent.Chat
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.noControlCodes
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket
-import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket
 
 object EventDispatcher {
 
@@ -18,22 +17,21 @@ object EventDispatcher {
     val endRegex = Regex("^\\s*☠ Defeated Thorn in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
     var ended = false
 
-    // Callback so that the somewhat messy bear spawn start logic can stay in M4State
     fun triggerBearSpawnStart() {
-        if (M4State.bearTimer == -1) {
+        if (!BearTracker.spawning()) {
             M4Event.BearSpawnStart().postAndCatch()
         }
     }
 
     init {
         on<Chat> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
 
             if (bearSpawnRegex.matches(message)) {
                 M4Event.BearSpawn().postAndCatch()
             }
             if (bearKillRegex.matches(message)) {
-                if (M4State.bearTimer != -1) {
+                if (BearTracker.spawned()) {
                     M4Event.BearKill().postAndCatch()
                 }
             }

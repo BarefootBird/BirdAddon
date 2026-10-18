@@ -3,6 +3,8 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.utils.Category
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.utils.modMessage
+import com.barefootbird.birdaddon.utils.state.BearTracker
+import com.barefootbird.birdaddon.utils.state.KillTracker
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -13,9 +15,14 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.toFixed
-import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.state.Timers
+import com.barefootbird.birdaddon.utils.state.ParticleTrails
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
+import com.odtheking.odin.events.RenderExtractEvent
+import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import java.io.File
 
@@ -29,7 +36,9 @@ object SpiritBear: Module(
     private val hud by HUD(name, "Displays the current state of Spirit Bear in the HUD.", true) { example ->
         textDim(timerText(example), 0, 0, Colors.WHITE)
     }
-    public val experimental by BooleanSetting("Experimental Bear Timer", false,"More accurate timer, but sometimes its really wrong")
+    val experimental by BooleanSetting("Experimental Bear Timer", false,"More accurate timer, but sometimes its really wrong")
+    val experimentalRender by BooleanSetting("Render Experimental Prediction", false, "Renders the particle predictions used in the experimental timer").withDependency { experimental }
+    val interpolation by BooleanSetting("Smooth Line", false, "Makes the progress of the line smooth").withDependency { experimentalRender }
 
     private val splitsHud by HUD("Spirit Bear Splits", "Displays Spirit Bear split times in the HUD.", true) { example ->
         val lines = splitLines(example)
@@ -103,21 +112,21 @@ object SpiritBear: Module(
 
         if (example) return parseTemplate(killPhaseText, 1, "§c1.55s", 0, 30)
 
-        if (!M4State.inBoss()) return ""
+        if (!BossLifecycle.inBoss()) return ""
 
         val text = when {
-            M4State.bearTimer > 0 -> spawningText
-            M4State.bearTimer == 0 -> spawnedText
+            BearTracker.spawning() -> spawningText
+            BearTracker.spawned() -> spawnedText
             else -> killPhaseText
         }
 
-        val bear = M4State.bearKillTimes.size + 1
-        val kills = M4State.kills
-        val cap = M4State.maxKills
+        val bear = BearTracker.killTimes.size + 1
+        val kills = KillTracker.kills
+        val cap = KillTracker.maxKills
 
         val timerValue = when {
-            M4State.bearTimer > 0 -> {
-                val ticksLeft = M4State.bearTimer.toDouble()
+            BearTracker.spawning() -> {
+                val ticksLeft = Timers.bearTimer.toDouble()
                 if (showTicks) {
                     ticksLeft.toFixed(0).padStart(2, '0')
                 } else {
@@ -145,7 +154,7 @@ object SpiritBear: Module(
                 splitTotalLine(1, "12.35s", "15.40s", "15.40s", formatKillTime(3), "15.40s")
             )
         }
-        if (!M4State.inBoss()) return emptyList()
+        if (!BossLifecycle.inBoss()) return emptyList()
 
         val lines = completedSplits.sortedBy { it.bear }.map { split ->
             splitLine(
@@ -159,27 +168,27 @@ object SpiritBear: Module(
         }.toMutableList()
 
         val currentBear = completedSplits.size + 1
-        if (!M4State.ended && currentBear <= 4) {
-            val spawnStartTime = M4State.bearSpawnStartTimes.getOrNull(currentBear - 1)
-            val spawnTime = M4State.bearSpawnTimes.getOrNull(currentBear - 1)
-            val killTime = spawnTime?.let { formatKillTime(M4State.timer - it) } ?: formatPendingKillTime()
+        if (!BossLifecycle.ended && currentBear <= 4) {
+            val spawnStartTime = BearTracker.spawnStartTimes.getOrNull(currentBear - 1)
+            val spawnTime = BearTracker.spawnTimes.getOrNull(currentBear - 1)
+            val killTime = spawnTime?.let { formatKillTime(Timers.timer - it) } ?: formatPendingKillTime()
 
             lines.add(
                 splitLine(
                     currentBear,
-                    formatOptionalSeconds(spawnStartTime, M4State.timer),
-                    formatOptionalSeconds(spawnTime, M4State.timer),
-                    formatSeconds(M4State.timer),
+                    formatOptionalSeconds(spawnStartTime, Timers.timer),
+                    formatOptionalSeconds(spawnTime, Timers.timer),
+                    formatSeconds(Timers.timer),
                     killTime,
-                    formatSeconds(M4State.timer)
+                    formatSeconds(Timers.timer)
                 )
             )
         }
 
-        val totalTicks = if (M4State.ended) {
-            M4State.bearKillTimes.lastOrNull() ?: M4State.timer
+        val totalTicks = if (BossLifecycle.ended) {
+            BearTracker.killTimes.lastOrNull() ?: Timers.timer
         } else {
-            M4State.timer
+            Timers.timer
         }
         lines.add(splitTotalLine(currentBear.coerceAtMost(4), "", "", "", "", formatSeconds(totalTicks)))
 
@@ -187,12 +196,12 @@ object SpiritBear: Module(
     }
 
     private fun recordCompletedSplit() {
-        val index = M4State.bearKillTimes.lastIndex
+        val index = BearTracker.killTimes.lastIndex
         if (index < 0) return
 
-        val spawnStartTime = M4State.bearSpawnStartTimes.getOrNull(index) ?: 0
-        val spawnTime = M4State.bearSpawnTimes.getOrNull(index) ?: spawnStartTime
-        val deathTime = M4State.bearKillTimes[index]
+        val spawnStartTime = BearTracker.spawnStartTimes.getOrNull(index) ?: 0
+        val spawnTime = BearTracker.spawnTimes.getOrNull(index) ?: spawnStartTime
+        val deathTime = BearTracker.killTimes[index]
 
         completedSplits.add(
             BearSplit(
@@ -284,13 +293,16 @@ object SpiritBear: Module(
         modMessage("§d$key §7took §b${seconds.toFixed(2)} §7$pbMessage")
     }
 
+    private var displayedProgress = 0.0
+    private var lastFrameNanos = 0L
+
     init {
         loadPersonalBests()
 
         on<M4Event.BearSpawn> {
-            val bearIndex = M4State.bearSpawnStartTimes.size
+            val bearIndex = BearTracker.spawnStartTimes.size
             if (bearIndex < 1) return@on
-            reportBearPersonalBest(bearIndex, M4State.timer)
+            reportBearPersonalBest(bearIndex, Timers.timer)
         }
 
         on<M4Event.BearKill> {
@@ -300,6 +312,40 @@ object SpiritBear: Module(
         on<LevelEvent.Load> {
             completedSplits.clear()
             loadPersonalBests()
+        }
+
+        on<RenderExtractEvent> {
+            if (!experimentalRender || !BossLifecycle.inBoss()) return@on
+
+            val predictions = ParticleTrails.predictions
+            if (predictions.size < 2) return@on
+
+            val remaining = ParticleTrails.predictionsRemaining
+            if (remaining < 0) return@on
+
+            val total = predictions.size
+            val targetProgress = ((total - remaining).toDouble() / total).coerceIn(0.0, 1.0)
+
+            val now = System.nanoTime()
+            val dt = if (lastFrameNanos == 0L) 0.0
+            else ((now - lastFrameNanos) / 1_000_000_000.0).coerceAtMost(0.1)
+            lastFrameNanos = now
+
+            val progress = if (interpolation) {
+                val alpha = 1 - kotlin.math.exp(-12 * dt)
+                displayedProgress += (targetProgress - displayedProgress) * alpha
+                displayedProgress
+            } else {
+                displayedProgress = targetProgress
+                targetProgress
+            }
+
+            val start = predictions.first().pos
+            val end = predictions.last().pos
+            val split = start.add(end.subtract(start).scale(progress))
+
+            drawLine(listOf(start, split), Colors.MINECRAFT_LIGHT_PURPLE, false, 10f)
+            drawLine(listOf(split, end), Colors.MINECRAFT_GRAY, false, 10f)
         }
     }
 }

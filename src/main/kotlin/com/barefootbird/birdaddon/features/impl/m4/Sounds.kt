@@ -1,7 +1,7 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 
@@ -82,7 +82,7 @@ object Sounds: Module(
 
     @JvmStatic
     fun shouldBlockSound(soundId: String): Boolean {
-        if (!enabled || !M4State.inBoss()) return false
+        if (!enabled || !BossLifecycle.inBoss()) return false
         if (muteAnimalSounds && animalSounds.contains(soundId)) return true
         if (muteThorn && ghastSounds.contains(soundId)) return true
         if (muteMiscSounds && miscSounds.contains(soundId)) return true

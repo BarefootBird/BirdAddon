@@ -10,18 +10,20 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.state.Timers
 import com.barefootbird.birdaddon.utils.Islands.onCgm4
 import com.barefootbird.birdaddon.utils.Islands.onM4Miku
-import com.barefootbird.birdaddon.utils.M4Mobs
+import com.barefootbird.birdaddon.utils.state.Mobs
 import com.barefootbird.birdaddon.utils.modMessage
+import com.barefootbird.birdaddon.utils.state.BearTracker
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.utils.render.drawStyledBox
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.LevelEvent
@@ -34,6 +36,7 @@ import java.io.File
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import kotlin.io.encoding.Base64
+import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -207,7 +210,7 @@ object Waypoints: Module(
         var newPos = pos
         if (onCgm4) {
             newPos = BlockPos(pos.x - 2, pos.y - 41, pos.z -2) // cgm4's island is offset from actual m4
-        } else if (M4State.inBoss() && !onM4Miku) {
+        } else if (BossLifecycle.inBoss() && !onM4Miku) {
             modMessage("need to be in f4/m4 or on catgirlm4's/m4miku's is")
         }
         if (waypoints.removeIf { it.pos.x == newPos.x && it.pos.y == newPos.y && it.pos.z == newPos.z }) {
@@ -223,7 +226,7 @@ object Waypoints: Module(
         if (onCgm4) {
             newPos = BlockPos(pos.x - 2, pos.y - 41, pos.z -2) // cgm4's island is offset from actual m4
         } else {
-            if (!M4State.inBoss() && !onM4Miku) {
+            if (!BossLifecycle.inBoss() && !onM4Miku) {
                 modMessage("need to be in f4/m4 or on catgirlm4's/m4miku's is")
             }
         }
@@ -256,23 +259,23 @@ object Waypoints: Module(
             }
             val bearNum = event[1].digitToInt()
             if (event.endsWith("kill")) {
-                return M4State.bearKillTimes.size >= bearNum
+                return BearTracker.killTimes.size >= bearNum
             }
             if (event.endsWith("spawn")) {
-                return M4State.bearSpawnTimes.size >= bearNum
+                return BearTracker.spawnTimes.size >= bearNum
             }
             if (event.endsWith("spawnstart")) {
-                return M4State.bearSpawnStartTimes.size >= bearNum
+                return BearTracker.spawnStartTimes.size >= bearNum
             }
         }
         if (event.endsWith("s")) {
-            return M4State.timer / 20.0 > event.slice(0..<event.length - 1).toInt()
+            return Timers.timer / 20.0 > event.slice(0..<event.length - 1).toInt()
         }
         return false
     }
 
     fun RenderExtractEvent.renderCustomWaypoints() {
-        if (!onCgm4 && !onM4Miku && !M4State.inBoss()) return
+        if (!onCgm4 && !onM4Miku && !BossLifecycle.inBoss()) return
         waypoints.forEach {
             val clazz = dungeonClassFromName(it.clazz) ?: return@forEach
             if (onCgm4 || onM4Miku || clazz == DungeonUtils.currentDungeonPlayer.clazz) {
@@ -316,19 +319,19 @@ object Waypoints: Module(
         val shouldRender =
             (onCgm4 && showOnCgm4) ||
                     (onM4Miku && showOnM4Miku) ||
-                    M4State.inBoss()
+                    BossLifecycle.inBoss()
 
-        if (!shouldRender || (bearSpawnOnlyWhenBearIsSpawning && (M4State.bearTimer == -1 || M4State.bearTimer == 0))) {
+        if (!shouldRender || (bearSpawnOnlyWhenBearIsSpawning && (BearTracker.spawning() || BearTracker.spawned()))) {
             return
         }
 
-        val spawnSpot = M4State.bearSpawnSpot
+        val spawnSpot = BearTracker.spawnSpot
         var bearSpawn = AABB(spawnSpot.x - 0.3, spawnSpot.y, spawnSpot.z - 0.3, spawnSpot.x + 0.3, spawnSpot.y+1.8, spawnSpot.z + 0.3)
         if (onCgm4) {
             bearSpawn = AABB(spawnSpot.x + 1.7, spawnSpot.y, spawnSpot.z + 1.7, spawnSpot.x + 2.3, spawnSpot.y+1.8, spawnSpot.z + 2.3)
         }
 
-        val bearSpawnColor: Color = if (M4State.bearTimer == -1 || !bearSpawnColors) {
+        val bearSpawnColor: Color = if ((!BearTracker.spawned() && !BearTracker.spawning()) || !bearSpawnColors) {
             defaultColor
         } else {
 
@@ -348,9 +351,9 @@ object Waypoints: Module(
     private fun getBowSpawnSpot(): Vec3 {
         val defaultSpawn = Vec3(5.0, 69.0, 4.0)
 
-        val bear = M4Mobs.bear ?: return defaultSpawn
+        val bear = Mobs.bear ?: return defaultSpawn
 
-        if (M4State.bearTimer != 0) return defaultSpawn
+        if (!BearTracker.spawned()) return defaultSpawn
 
         val x = bear.x
         val z = bear.z
@@ -363,15 +366,14 @@ object Waypoints: Module(
     }
 
     private fun RenderExtractEvent.renderBowPickup () {
-        if (!(onCgm4 && showOnCgm4) && !(onM4Miku && showOnM4Miku) && !M4State.inBoss()) return
+        if (!(onCgm4 && showOnCgm4) && !(onM4Miku && showOnM4Miku) && !BossLifecycle.inBoss()) return
 
         val closestSpot = getBowSpawnSpot()
 
-        val bows = M4Mobs.bows.map { it.position().subtract(0.5, 0.0, 0.5) }
-
+        val bows = Mobs.bows.map { Vec3(it.x - 0.5, ceil(it.y), it.z - 0.5) }
 
         val allBows =
-            if (bows.isEmpty() || M4State.bearTimer > -1) {
+            if (bows.isEmpty() || BearTracker.spawning() || BearTracker.spawned()) {
                 // only show the next bow spawn point if there are no bows, or if its spawning soon
                 bows.plus(closestSpot)
             } else bows
@@ -379,7 +381,7 @@ object Waypoints: Module(
         for (spot in allBows) {
 
             val translatedSpot = if (onCgm4) {
-                 Vec3(spot.x + 2, spot.y + 41, spot.z + 2)
+                spot.add(2.0, 41.0, 2.0)
             } else spot
 
             val points = 64
@@ -403,7 +405,7 @@ object Waypoints: Module(
     init {
         on<RenderExtractEvent> {
             renderCustomWaypoints()
-            if ((M4State.inBoss()) || onCgm4 || onM4Miku) {
+            if ((BossLifecycle.inBoss()) || onCgm4 || onM4Miku) {
                 if (bearSpawn && (!bearSpawnOnMage ||
                     onCgm4 ||
                     onM4Miku ||

@@ -15,7 +15,7 @@ import com.odtheking.odin.features.ModuleManager
 import com.barefootbird.birdaddon.features.impl.m4.Highlight
 import com.barefootbird.birdaddon.features.impl.m4.MobCounters
 import com.barefootbird.birdaddon.features.impl.m4.OverkillDisplay
-import com.barefootbird.birdaddon.features.impl.m4.RabbitCountdown
+import com.barefootbird.birdaddon.features.impl.m4.Rabbits
 import com.barefootbird.birdaddon.features.impl.m4.Timer
 import com.barefootbird.birdaddon.features.impl.m4.RenderOptimizer
 import com.barefootbird.birdaddon.features.impl.m4.Sounds
@@ -24,15 +24,17 @@ import com.barefootbird.birdaddon.features.impl.m4.Tac
 import com.barefootbird.birdaddon.features.impl.m4.ThornStunTimer
 import com.barefootbird.birdaddon.features.impl.m4.Trajectories
 import com.barefootbird.birdaddon.features.impl.m4.Waypoints
+import com.barefootbird.birdaddon.utils.state.BowTracker
 import com.barefootbird.birdaddon.utils.Islands
-import com.barefootbird.birdaddon.utils.M4Mobs
-import com.barefootbird.birdaddon.utils.M4State
-import com.barefootbird.birdaddon.utils.ParticleTrails
-import com.odtheking.odin.OdinMod.mc
+import com.barefootbird.birdaddon.utils.state.BearTracker
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
+import com.barefootbird.birdaddon.utils.state.Mobs
+import com.barefootbird.birdaddon.utils.state.Timers
+import com.barefootbird.birdaddon.utils.state.KillTracker
+import com.barefootbird.birdaddon.utils.state.ParticleTrails
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import org.apache.logging.log4j.LogManager
-import java.io.File
 
 object BirdAddon : ClientModInitializer {
     val logger = LogManager.getLogger(BirdAddon::class.java.name)
@@ -47,13 +49,14 @@ object BirdAddon : ClientModInitializer {
         }
 
         // Register objects to event bus by adding to the list
-        listOf(this, M4State, M4Mobs, Islands, EventDispatcher, ParticleTrails).forEach { EventBus.subscribe(it) }
+        listOf(this, Timers, Mobs, Islands, EventDispatcher, ParticleTrails, BowTracker, KillTracker, BearTracker,
+            BossLifecycle).forEach { EventBus.subscribe(it) }
 
         // Register modules by adding to the list
         ModuleManager.registerModules(ModuleConfig("BirdAddon.json"),
             SpiritBear, Highlight, Waypoints, Timer, ThornStunTimer, OverkillDisplay,
             Titles, MobCounters, Decoy, Tac, HideMessages, ExtraStats, Sounds, RenderOptimizer, Trajectories,
-            RabbitCountdown
+            Rabbits
         )
     }
 }

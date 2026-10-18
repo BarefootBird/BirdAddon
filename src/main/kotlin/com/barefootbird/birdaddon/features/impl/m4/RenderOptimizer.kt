@@ -3,7 +3,7 @@ package com.barefootbird.birdaddon.features.impl.m4
 import com.barefootbird.birdaddon.events.M4Event
 import com.barefootbird.birdaddon.features.impl.m4.Decoy.npcs
 import com.barefootbird.birdaddon.utils.Category
-import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderExtractEvent
@@ -18,8 +18,6 @@ import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.state.BlockState
 
 
 object RenderOptimizer: Module(
@@ -59,7 +57,7 @@ object RenderOptimizer: Module(
 
     @JvmStatic
     fun shouldHideParticle(particleOptions: ParticleOptions): Boolean {
-        if (!enabled || !M4State.inBoss() || !hideParticles) return false
+        if (!enabled || !BossLifecycle.inBoss() || !hideParticles) return false
         val type = particleOptions.type
         if (type == ParticleTypes.HAPPY_VILLAGER && healerCircle) return false
         if (type == ParticleTypes.FIREWORK && mageBeam) return false
@@ -68,7 +66,7 @@ object RenderOptimizer: Module(
 
     @JvmStatic
     fun shouldHideEntity(entity: Entity): Boolean {
-        if (!M4State.inBoss() || !enabled) return false
+        if (!BossLifecycle.inBoss() || !enabled) return false
 
         // Hide invis armorstands, but keep the ones that are holding items (bow and tribal spear)
         if (hideInvisArmorStands && entity is ArmorStand && entity.isInvisible && entity.mainHandItem.isEmpty && !ended) {
@@ -91,7 +89,7 @@ object RenderOptimizer: Module(
         }
 
         on<RenderExtractEvent> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
             runCatching {
                 val style = renderStyle
 

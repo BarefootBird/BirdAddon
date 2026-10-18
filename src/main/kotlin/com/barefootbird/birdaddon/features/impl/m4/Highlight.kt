@@ -1,8 +1,8 @@
 package com.barefootbird.birdaddon.features.impl.m4
 
 import com.barefootbird.birdaddon.utils.Category
+import com.barefootbird.birdaddon.utils.state.Mobs
 import com.odtheking.odin.OdinMod
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
@@ -14,15 +14,10 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.barefootbird.birdaddon.utils.M4Mobs.bats
-import com.barefootbird.birdaddon.utils.M4Mobs.chickens
-import com.barefootbird.birdaddon.utils.M4Mobs.cows
-import com.barefootbird.birdaddon.utils.M4Mobs.thorn
-import com.barefootbird.birdaddon.utils.M4Mobs.rabbits
-import com.barefootbird.birdaddon.utils.M4Mobs.sheep
-import com.barefootbird.birdaddon.utils.M4Mobs.wolves
-import com.barefootbird.birdaddon.utils.M4Mobs.bear
-import com.barefootbird.birdaddon.utils.M4State
+import com.barefootbird.birdaddon.utils.state.Mobs.thorn
+import com.barefootbird.birdaddon.utils.state.Mobs.bear
+import com.barefootbird.birdaddon.utils.state.BossLifecycle
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.Color
@@ -157,7 +152,7 @@ object Highlight: Module(
     @JvmStatic
     fun shouldHideEntity(entity: Entity): Boolean {
         if (!enabled) return false
-        if (!M4State.inBoss()) return false
+        if (!BossLifecycle.inBoss()) return false
         if (hideNameTags) {
             if (entity is ArmorStand && entity.name.string.contains("❤")) return true
         }
@@ -295,14 +290,14 @@ object Highlight: Module(
     init {
 
         on<TickEvent.Server> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
             if (damaged > -1) {
                 damaged--
             }
         }
 
         onReceive<ClientboundHurtAnimationPacket> {
-            if (!M4State.inBoss()) return@onReceive
+            if (!BossLifecycle.inBoss()) return@onReceive
             val entity = OdinMod.mc.level!!.getEntity(this.id)
             if (entity is Ghast) {
                 damaged = dmgFlashDuration
@@ -310,7 +305,7 @@ object Highlight: Module(
         }
 
         on<RenderExtractEvent> {
-            if (!M4State.inBoss()) return@on
+            if (!BossLifecycle.inBoss()) return@on
             runCatching {
                 val style = renderStyle
 
@@ -318,12 +313,12 @@ object Highlight: Module(
                     list.forEach { drawStyledBox(it.renderBoundingBox, color, style, depth) }
                 }
 
-                if (highlightSheep) draw(sheep, sheepColor)
-                if (highlightWolves) draw(wolves, wolfColor)
-                if (highlightBats) draw(bats, batColor)
-                if (highlightChicken) draw(chickens, chickenColor)
-                if (highlightRabbit) draw(rabbits, rabbitColor)
-                if (highlightCow) draw(cows, cowColor)
+                if (highlightSheep) draw(Mobs.animalsOf(Sheep::class.java), sheepColor)
+                if (highlightWolves) draw(Mobs.animalsOf(Wolf::class.java), wolfColor)
+                if (highlightBats) draw(Mobs.animalsOf(Bat::class.java), batColor)
+                if (highlightChicken) draw(Mobs.animalsOf(Chicken::class.java), chickenColor)
+                if (highlightRabbit) draw(Mobs.animalsOf(Rabbit::class.java), rabbitColor)
+                if (highlightCow) draw(Mobs.animalsOf(Cow::class.java), cowColor)
 
                 if (highlightThorn) {
                     thorn?.let {
