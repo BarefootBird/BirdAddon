@@ -22,6 +22,7 @@ import com.odtheking.odin.utils.toFixed
 import net.minecraft.world.entity.ambient.Bat
 import net.minecraft.world.entity.animal.cow.Cow
 import net.minecraft.world.entity.animal.rabbit.Rabbit
+import net.minecraft.world.entity.animal.wolf.Wolf
 import net.minecraft.world.phys.Vec3
 
 object Rabbits: Module(
@@ -47,7 +48,7 @@ object Rabbits: Module(
 
     private val decimals by NumberSetting("Decimals", 2, 1..2, 1, "How many decimals to show").withDependency { hud.enabled }
 
-    private val showFromStart by BooleanSetting("Show on boss start", true, "Shows the timer from start of boss").withDependency { hud.enabled }
+    private val showFromStart by BooleanSetting("Show on boss start", false, "Shows the timer from start of boss").withDependency { hud.enabled }
     private val showAfterB1 by BooleanSetting("Show after b1 start", true, "Shows the timer only after b1 starts spawning").withDependency { !showFromStart && hud.enabled }
     private val secondsBefore by NumberSetting("Seconds before", 4, 2..7, 1, "How many seconds before rabbits spawn to render the timer").withDependency {
         !showFromStart && !showAfterB1 && hud.enabled
@@ -99,7 +100,7 @@ object Rabbits: Module(
         lines.add("§b$displayText ${(ticksUntilRabbitSpawn / 20.0).toFixed(decimals)}s")
 
         if (showArenaMobs && DungeonUtils.currentDungeonPlayer.clazz != DungeonClass.HEALER) {
-            val groundMobs = Mobs.animalsOf(Cow::class.java).size + Mobs.animalsOf(Rabbit::class.java).size
+            val groundMobs = Mobs.animalsOf(Cow::class.java).size + Mobs.animalsOf(Wolf::class.java).size
 
             if (groundMobs > 0 || !hideWhen0) {
                 lines.add("§dGround: $groundMobs")
