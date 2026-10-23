@@ -65,16 +65,16 @@ object MobCounters : Module(
 
     data class AnimalCounterConfig(
         val type: Class<out Entity>,
-        val on: Boolean,
+        val enabled: () -> Boolean,
     )
 
     private val animalCounterConfigs = listOf(
-        AnimalCounterConfig(Cow::class.java, cowsGUI),
-        AnimalCounterConfig(Sheep::class.java, sheepGUI),
-        AnimalCounterConfig(Chicken::class.java, chickensGUI),
-        AnimalCounterConfig(Bat::class.java, batsGUI),
-        AnimalCounterConfig(Wolf::class.java, wolvesGUI),
-        AnimalCounterConfig(Rabbit::class.java, rabbitsGUI),
+        AnimalCounterConfig(Cow::class.java) { cowsGUI },
+        AnimalCounterConfig(Sheep::class.java) { sheepGUI },
+        AnimalCounterConfig(Chicken::class.java) { chickensGUI },
+        AnimalCounterConfig(Bat::class.java) { batsGUI },
+        AnimalCounterConfig(Wolf::class.java) { wolvesGUI },
+        AnimalCounterConfig(Rabbit::class.java) { rabbitsGUI },
     )
 
     private val hud by HUD(name, "Mob Counter Hud", false) { example ->
@@ -147,7 +147,7 @@ object MobCounters : Module(
 
         val animalCounters = animalCounterConfigs.map {
             Counter(
-                it.on,
+                it.enabled(),
                 Mobs.mobColorFor(it.type),
                 Mobs.mobNameFor(it.type),
                 Mobs.mobNameFor(it.type, short = true),
