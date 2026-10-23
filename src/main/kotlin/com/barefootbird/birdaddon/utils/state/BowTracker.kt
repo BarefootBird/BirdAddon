@@ -5,6 +5,7 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
+import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.world.InteractionHand
 
 
@@ -23,10 +24,9 @@ object BowTracker {
     private var drawn = false
 
     private fun updateSpiritBowData () {
+        val playersSnapshot: List<AbstractClientPlayer?> = mc.level?.players()?.toList() ?: return
 
-        val playersSnapshot = mc.level!!.players().toList()
-
-        if (playersSnapshot.any { it.getItemInHand(InteractionHand.MAIN_HAND).displayName.string == "[Spirit Bow]" && it.isUsingItem }) {
+        if (playersSnapshot.filterNotNull().any { it.getItemInHand(InteractionHand.MAIN_HAND).displayName.string == "[Spirit Bow]" && it.isUsingItem }) {
             if (!drawn) {
                 state = state.copy(draw = Timers.timer)
             }
@@ -45,6 +45,7 @@ object BowTracker {
         }
 
         on<TickEvent.Server> {
+            if (!BossLifecycle.inBoss()) return@on
             updateSpiritBowData()
         }
 
