@@ -11,6 +11,7 @@ version = property("mod_version")!!
 
 repositories {
     mavenCentral()
+    google()
     maven("https://jitpack.io")
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
@@ -25,7 +26,7 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_api_version")}")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
-    modImplementation(files("libs/Odin-0.3.7.jar"))
+    modImplementation("com.github.odtheking:Odin:${property("odin_version")}")
 
     modImplementation("com.github.stivais:Commodore:${property("commodore_version")}")
 
