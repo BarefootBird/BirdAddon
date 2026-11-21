@@ -7,7 +7,6 @@ import com.barefootbird.birdaddon.utils.state.Mobs
 import com.barefootbird.birdaddon.utils.state.BossLifecycle
 import com.barefootbird.birdaddon.utils.state.Timers
 import com.odtheking.odin.OdinMod
-import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.LevelEvent
@@ -16,10 +15,14 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.drawLine
+import com.odtheking.odin.utils.render.drawText
+import com.odtheking.odin.utils.renderPos
 import net.minecraft.network.protocol.game.ClientboundHurtAnimationPacket
+import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket
 import net.minecraft.world.entity.monster.Ghast
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
@@ -34,8 +37,9 @@ object ThornMovement: Module(
     category = Category.Testing
 ) {
 
-    private val pathFeatures by BooleanSetting("Path Features", true, "Enables thorn path features")
-    private val renderPath by BooleanSetting("Render Path", true, "Renders thorn's path").withDependency { pathFeatures }
+    private val renderPath by BooleanSetting("Render Path", true, "Renders thorn's path")
+    private val renderSpeed by BooleanSetting("render Speed", true, "Renders thorns speed")
+    private val colorPathBySpeed by BooleanSetting("Color Path By Speed", true, "Red = 0.35, blue = 0.27")
 
     private val directionLine by BooleanSetting("direction line", true, "Renders a line with the direction thorn is facing")
     private val bidirectionalLine by BooleanSetting("Biderectional Line", true, "Renders the line in both the direction thorn is going and where they came from")
@@ -110,24 +114,55 @@ object ThornMovement: Module(
             }
         }
     }
+    var thornSpeed = 0.0
+
+    private fun colorForSpeed(speed: Double): Color{
+        val redSpeed = 0.35
+        val blueSpeed = 0.27
+
+        // t = 0 at red, t = 1 at blue
+        val t = ((redSpeed - speed) / (redSpeed - blueSpeed))
+            .coerceIn(0.0, 1.0)
+            .toFloat()
+
+        return Color(
+            (255 * (1f - t)).toInt(),
+            0,
+            (255 * t).toInt()
+        )
+    }
 
 
     init {
+        onReceive<ClientboundMoveEntityPacket> {
+            val packet = it.packet as? ClientboundMoveEntityPacket ?: return@onReceive
+            val level = mc.level ?: return@onReceive
+            val entity = packet.getEntity(level) ?: return@onReceive
+            if (entity is Ghast) {
+                //thornSpeed = entity.position().subtract(lastThornPos).length()
+                //lastThornPos = entity.position()
+                thornSpeed = entity.deltaMovement.length()
+            }
+        }
+
         on<RenderExtractEvent> {
             if (!BossLifecycle.inBoss()) return@on
 
-            if (renderPath) drawLine(positions, Colors.MINECRAFT_DARK_RED, depth = false)
-            if (renderSimPath) drawLine(simPositions, Colors.MINECRAFT_LIGHT_PURPLE, depth = false)
-            if (directionLine) {
-                val thorn = Mobs.thorn ?: return@on
-                val lookAngle = if (constantY) Vec3(thorn.lookAngle.x, 0.0, thorn.lookAngle.z) else thorn.lookAngle
-                val direction = thorn.position().add(lookAngle.scale(200.0))
-                val opposite = thorn.position().add(lookAngle.scale(-200.0))
-                val points = if (bidirectionalLine) listOf(opposite, direction)
-                             else listOf(thorn.position(), direction)
-
-                drawLine(points, Colors.MINECRAFT_AQUA, depth = false)
+            if (renderPath) {
+                if (colorPathBySpeed && positions.size >= 2) {
+                    for (i in 0 until positions.lastIndex) {
+                        val speed = positions[i + 1].subtract(positions[i]).length()
+                        drawLine(
+                            listOf(positions[i], positions[i + 1]),
+                            colorForSpeed(speed),
+                            depth = false
+                        )
+                    }
+                } else {
+                    drawLine(positions, Colors.MINECRAFT_DARK_RED, depth = false)
+                }
             }
+            if (renderSimPath) drawLine(simPositions, Colors.MINECRAFT_LIGHT_PURPLE, depth = false)
             if (thornSim) {
                 val target = simulatedThorn
                 val now = System.nanoTime()
@@ -148,10 +183,24 @@ object ThornMovement: Module(
                 val pos = displayedSimulatedThorn
                 drawFilledBox(AABB(pos.subtract(0.5), pos.add(0.5)), Colors.MINECRAFT_LIGHT_PURPLE)
             }
+            val thorn = Mobs.thorn ?: return@on
+            if (renderSpeed) {
+                drawText(thornSpeed.toString(), thorn.renderPos, 10f, false)
+            }
+
+            if (directionLine) {
+                val lookAngle = if (constantY) Vec3(thorn.lookAngle.x, 0.0, thorn.lookAngle.z) else thorn.lookAngle
+                val direction = thorn.position().add(lookAngle.scale(200.0))
+                val opposite = thorn.position().add(lookAngle.scale(-200.0))
+                val points = if (bidirectionalLine) listOf(opposite, direction)
+                else listOf(thorn.position(), direction)
+
+                drawLine(points, Colors.MINECRAFT_AQUA, depth = false)
+            }
         }
 
         on<TickEvent.Server> {
-            if (!BossLifecycle.inBoss() || !pathFeatures) return@on
+            if (!BossLifecycle.inBoss()) return@on
 
             if (stunTimer > -1) {
                 stunTimer--
