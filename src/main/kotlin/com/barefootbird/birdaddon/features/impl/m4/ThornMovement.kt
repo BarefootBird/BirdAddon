@@ -26,6 +26,7 @@ import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket
 import net.minecraft.world.entity.monster.Ghast
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
+import kotlin.math.pow
 import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.ranges.rangeTo
@@ -45,8 +46,10 @@ object ThornMovement: Module(
     private val bidirectionalLine by BooleanSetting("Biderectional Line", true, "Renders the line in both the direction thorn is going and where they came from")
     private val constantY by BooleanSetting("flat direction line", true, "Makes the line have a constant y value instead of going up/down")
 
-    private val printSpeed by BooleanSetting("printSpeed", true, "")
-    private val printPosAtCorner by BooleanSetting("printPosAtCorner", true, "")
+    private val printSpeed by BooleanSetting("printSpeed", false, "")
+    private val printPosAtCorner by BooleanSetting("printPosAtCorner", false, "")
+    private val printPosAndDirectionAtCorner by BooleanSetting("printPosAndDirAtCorner", false, "print position and direction of thorn at the corners")
+    private val printLineEquationAtCorner by BooleanSetting("PrintLineEquationAtCorner", false, "prints the equation for the line that thorn is travelling on at the corners")
 
     private val thornSim by BooleanSetting("Thorn Sim", true, "")
     private val renderSimPath by BooleanSetting("Render Sim Path", true, "Renders simmed thorn's path")
@@ -59,6 +62,7 @@ object ThornMovement: Module(
     var simPositions = listOf<Vec3>()
 
     var lastLookAngle: Vec3? = null
+    var lastLastLookAngle: Vec3? = null
 
     var simulatedThorn = Vec3(5.0, 84.0, 29.0)
     var displayedSimulatedThorn = simulatedThorn
@@ -130,6 +134,10 @@ object ThornMovement: Module(
             0,
             (255 * t).toInt()
         )
+    }
+
+    private fun round(number: Double, dp: Int): Double {
+        return (number * 10.0.pow(dp)).roundToInt() / 10.0.pow(dp)
     }
 
 
@@ -228,9 +236,17 @@ object ThornMovement: Module(
             positions = positions + listOf(thorn.position())
 
 
-            if (printPosAtCorner && lastLookAngle != thorn.lookAngle) {
+            if (thorn.lookAngle == lastLookAngle && lastLookAngle != lastLastLookAngle && printLineEquationAtCorner) {
+                val slope = thorn.lookAngle.z / thorn.lookAngle.x
+                modMessage("y = ${round(slope, 5)}(x + ${round(-thorn.x, 5)}) + ${round(thorn.z, 5)}")
+            }
+            if (thorn.lookAngle == lastLookAngle && lastLookAngle != lastLastLookAngle && printPosAtCorner) {
                 modMessage("thorn PosAtCorner: ${(thorn.x * 100).roundToInt() / 100.0} ${thorn.y} ${(thorn.z * 100).roundToInt() / 100.0}")
             }
+            if (thorn.lookAngle == lastLookAngle && lastLookAngle != lastLastLookAngle && printPosAndDirectionAtCorner) {
+                modMessage("thorn pos: ${(thorn.x * 1000).roundToInt() / 1000.0} ${(thorn.z * 1000).roundToInt() / 1000.0}, dir: ${(thorn.lookAngle.x * 1000000).roundToInt() / 1000000.0} ${(thorn.lookAngle.z * 1000000).roundToInt() / 1000000.0}")
+            }
+            lastLastLookAngle = lastLookAngle
             lastLookAngle = thorn.lookAngle
         }
 
